@@ -1,0 +1,78 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+#sidebar {
+    min-height: 100vh;
+    background-color: #faf1e6;
+    position: fixed;
+}
+
+#sidebar .nav-link {
+    font-weight: 500;
+    color: #2c2c2c;
+}
+
+#sidebar .nav-link:hover {
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.container-fluid {
+    margin-left: 240px;
+}
+
+.card {
+    background-color: #faf1e6;
+    border: 1px solid #e0d7c6;
+    border-radius: 10px;
+}
+
+
+#rounded-circle {
+    float: left;
+    height: 19px;
+    width: 19px;
+}
+
+a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.regularText {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.1em;
+}
+
+.small {
+    font-size: 0.85em;
+}
+
+.card {
+    border-radius: 12px;
+    background-color: #faf1e6;
+    border: 1px solid #e0d7c6;
+}
+
+.card-body h5,
+.card-body h6 {
+    font-family: 'Crimson Text', serif;
+    font-weight: bold;
+}
+
+input.form-control[readonly] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: #0061F2;
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0348b1;
+}

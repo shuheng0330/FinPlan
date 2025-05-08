@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinPlan Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Matemasie&family=New+Amsterdam&display=swap" rel="stylesheet">
+</head>
+<body class="d-flex">
+
+<!-- Sidebar -->
+<div class="border-end p-3" id="sidebar" style="width: 240px;">
+  <h4 class="mb-4">FinPlan</h4>
+  <ul class="nav flex-column">
+
+    <!-- Dashboard -->
+    <li class="nav-item mb-3">
+      <div class="d-flex align-items-center gap-3 nav-link">
+        <img src="../../svgs/dashboard-svgrepo-com.svg" class="rounded-circle" alt="dashboard" style="width:40px; height: 40px;">
+        <a href="dashboard.html">Dashboard</a>
+      </div>
+    </li>
+
+    <!-- Profile -->
+    <li class="nav-item mb-3">
+      <div class="d-flex align-items-center gap-3 nav-link">
+        <img src="../../svgs/reshot-icon-profile-QX6KDSLJC5.svg" class="rounded-circle" alt="profile" style="width:40px; height: 45px;">
+        <a href="profile.html">Personal Profile</a>
+      </div>
+    </li>
+
+    <!-- Financial Goals -->
+    <li class="nav-item mb-3">
+      <div class="d-flex align-items-center gap-3 nav-link">
+        <img src="../../svgs/financial-goals-icon-can-be-used-for-uiux-etc-vector.svg" class="rounded-circle" alt="Financial Goals" style="width:40px; height: 40px;">
+        <a href="#goals">Financial Goals</a>
+      </div>
+    </li>
+
+    <!-- Investment Strategy -->
+    <li class="nav-item mb-3">
+      <div class="d-flex align-items-center gap-3 nav-link">
+        <img src="../../svgs/investment strategy.svg" class="rounded-circle" alt="Investment Strategy" style="width:40px; height: 40px;">
+        <a href="#strategy">Investment Strategy</a>
+      </div>
+    </li>
+
+    <!-- Market Insights -->
+    <li class="nav-item mb-3">
+      <div class="d-flex align-items-center gap-3 nav-link">
+        <img src="../../svgs/market-research-digital-marketing-marketing-research-png-favpng-apKr4vKuaT3nGwR2Cbd4jM8zz.svg" class="rounded-circle" alt="Market Insights" style="width:40px; height: 40px;">
+        <a href="#insights">Market Insights</a>
+      </div>
+    </li>
+
+    <!-- Investment ROI -->
+    <li class="nav-item mb-3">
+      <div class="d-flex align-items-center gap-3 nav-link">
+        <img src="../../svgs/return-of-investment.svg" class="rounded-circle" alt="Investment ROI" style="width:40px; height: 40px;">
+        <a href="#roi">Investment ROI</a>
+      </div>
+    </li>
+
+    <hr style="border-width: 2px;">
+
+    <!-- Logout -->
+    <li class="nav-item mt-3">
+      <div class="d-flex align-items-center gap-3 nav-link">
+        <img src="../../svgs/logout-png-favpng-LwgEn5YThKc5NxUXYqXXV8Zhf.svg" class="rounded-circle" alt="Logout" style="width:40px; height: 40px;">
+        <a href="#" class="text-danger">Log Out</a>
+      </div>
+    </li>
+
+  </ul>
+</div>
+
+
+  <!-- Main Content -->
+  <div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3>Dashboard</h3>
+      <div class="d-flex align-items-center gap-3 p-1">
+        <div class="d-flex flex-column text-start me-2">  <!-- Text container -->
+            <p class="mb-0 fw-medium">Thong Shu Heng</p>  <!-- Added fw-medium -->
+            <p class="mb-0 text-muted small">thongshuheng030@gmail.com</p>  <!-- Added text-muted and small -->
+        </div>
+        <img src="../../svgs/man-user-circle-icon.svg" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="User Avatar">
+      </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Financial Goals -->
+        <div class="col-md-6 mb-3">
+          <section id="goals">
+            <div class="card p-3 h-100" style="background-color: #fef5eb;">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="fw-semibold mb-0">Financial Goals</h5>
+                <a href="#goals" class="btn btn-sm btn-outline-secondary">See more →</a>
+              </div>
+              <hr style="width:50%;margin-top: -3px">
+              <p class="mb-1 regularText">House down payment</p>
+              <div class="progress mb-1"><div class="progress-bar bg-success" style="width: 56%">56%</div></div>
+              <p class="small mb-1">RM560,000 of RM1,000,000</p>
+      
+              <p class="mt-3 mb-1 regularText">Education fund</p>
+              <div class="progress mb-1"><div class="progress-bar bg-success" style="width: 33%">33%</div></div>
+              <p class="small mb-1">RM330,000 of RM1,000,000</p>
+            </div>
+          </section>
+        </div>
+      
+        <!-- Investment Strategy -->
+        <div class="col-md-6 mb-3">
+            <section id="strategy">
+              <div class="card p-3 h-100" style="background-color: #fef5eb;">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h5 class="fw-semibold mb-0">Investment Strategy Overview</h5>
+                  <a href="#strategy" class="btn btn-sm btn-outline-secondary">See more →</a>
+                </div>
+                <hr style="width:50%;margin-top: -3px">
+          
+                <div class="row">
+                  <!-- Aggressive Growth -->
+                  <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-white rounded shadow-sm h-100">
+                      <h6 class="fw-bold">Aggressive Growth</h6>
+                      <span class="badge rounded-pill text-bg-danger mb-2">High Risk</span>
+                      <p class="fw-bold mb-1">
+                        <span class="text-success">+5%</span>
+                        <span class="fw-normal regularText">this month</span>
+                      </p>
+                      <p class="small" style="opacity: 80%;">Estimated return: 6% annually</p>
+                    </div>
+                  </div>
+          
+                  <!-- Conservative Bonds -->
+                  <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-white rounded shadow-sm h-100">
+                      <h6 class="fw-bold">Conservative Bonds</h6>
+                      <span class="badge rounded-pill text-bg-success mb-2">Low Risk</span>
+                      <p class="fw-bold mb-1">
+                        <span class="text-success">+3%</span>
+                        <span class="fw-normal regularText">this month</span>
+                      </p>
+                      <p class="small" style="opacity: 80%;">Estimated return: 2% annually</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+          
+      
+          <!-- market insights -->
+          <section id="insights" class="mb-4">
+            <div class="card p-3" style="background-color: #fef5eb;">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="fw-semibold mb-0">Market Insights</h5>
+                <a href="#insights" class="btn btn-sm btn-outline-secondary">See more →</a>
+              </div>
+          
+              <hr style="width: 50%; margin-top: -5px;">
+              <h6 class="fw-bold">Stocks</h6>
+          
+              <div class="row">
+                <!-- Apple, Inc -->
+                <div class="col-md-4 mb-3">
+                  <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex align-items-center mb-2">
+                      <img src="../../svgs/trace.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                      <span class="fw-semibold">Apple, Inc</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                      <p class="mb-0 fw-bold">$1234.79</p>
+                      <span class="badge rounded-pill p-2" style="background-color: #c8f5cf; color: #155724;">11.01%</span>
+                    </div>
+                  </div>
+                </div>
+          
+                <!-- Tesla, Inc -->
+                <div class="col-md-4 mb-3">
+                  <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
+                    <div class="d-flex align-items-center mb-2">
+                      <img src="../../svgs/tesla-svgrepo-com.svg" alt="Tesla logo" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                      <span class="fw-semibold">Tesla, Inc</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                      <p class="mb-0 fw-bold">$134.79</p>
+                      <span class="badge rounded-pill p-2" style="background-color: #c8f5cf; color: #155724;">5.21%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Amazon -->
+                <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
+                      <div class="d-flex align-items-center mb-2">
+                        <img src="../../svgs/trace (1).svg" alt="Amazon logo" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                        <span class="fw-semibold">Amazon, Inc</span>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <p class="mb-0 fw-bold">$134.79</p>
+                        <span class="badge rounded-pill p-2" style="background-color: #c8f5cf; color: #155724;">5.21%</span>
+                      </div>
+                    </div>
+                </div>
+                <h6 class="fw-bold">Market News</h6>
+                  <ol class="ms-4 mb-1">
+                    <li class="mb-2 regularText">Tech Stocks Surge as Market Recovers</li>
+                    <li class="mb-2 regularText">Global Oil Prices Drop After Major Agreement</li>
+                    <li class="mb-2 regularText">Cryptocurrency Market Sees Record-Breaking Week</li>
+                  </ol>
+
+              </div>
+            </div>
+        </section>
+      </div>
+    <!-- </section> -->
+
+    <section id="roi" class="mb-4">
+      <div class="card p-3" style="background-color: #fef5eb;">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="fw-semibold mb-0">Investment ROI</h5>
+          <a href="#roi" class="btn btn-sm btn-outline-secondary">See more →</a>
+        </div>
+        <hr style="width: 50%; margin-top: -5px;">
+        <h6 class="fw-bold">Your investment</h6>
+    
+        <div class="row mt-2">
+          <!-- Nvidia -->
+          <div class="col-md-4 mb-3">
+            <div class="p-3 bg-white rounded shadow-sm h-100">
+              <div class="d-flex align-items-center mb-2">
+                <img src="../../svgs/nvidia-svgrepo-com.svg" alt="Nvidia logo" class="me-2" style="width: 35px; height: 35px; object-fit: contain;">
+                <span class="fw-semibold">Nvidia, Inc</span>
+              </div>
+              <p class="mb-1 mt-3 d-flex justify-content-between">
+                <span class="regularText">Invested amount:</span>
+                <span class="fw-bold">$1200</span>
+              </p>
+              <p class="mb-1 d-flex justify-content-between">
+                <span clas="regularText">Current value:</span>
+                <span class="fw-bold">$7200</span>
+              </p>
+              <p class="mb-0 d-flex justify-content-between">
+                <span class="regularText">ROI:</span>
+                <span class="text-success fw-semibold">+5.21%</span>
+              </p>
+            </div>
+          </div>
+    
+          <!-- Google -->
+          <div class="col-md-4 mb-3">
+            <div class="p-3 bg-white rounded shadow-sm h-100">
+              <div class="d-flex align-items-center mb-2">
+                <img src="../../svgs/google-icon-logo-svgrepo-com.svg" alt="Google logo" class="me-2" style="width: 35px; height: 35px; object-fit: contain;">
+                <span class="fw-semibold">Google, Inc</span>
+              </div>
+              <p class="mb-1 mt-3 d-flex justify-content-between">
+                <span class="regularText">Invested amount:</span>
+                <span class="fw-bold">$3200</span>
+              </p>
+              <p class="mb-1 d-flex justify-content-between">
+                <span class="regularText">Current value:</span>
+                <span class="fw-bold">$9200</span>
+              </p>
+              <p class="mb-0 d-flex justify-content-between">
+                <span class="regularText">ROI:</span>
+                <span class="text-success fw-semibold">+3.91%</span>
+              </p>
+            </div>
+          </div>
+    
+          <!-- McDonald's -->
+          <div class="col-md-4 mb-3">
+            <div class="p-3 bg-white rounded shadow-sm h-100">
+              <div class="d-flex align-items-center mb-2">
+                <img src="../../svgs/mcdonalds-icon.svg" alt="McDonald's logo" class="me-2" style="width: 35px; height: 35px; object-fit: contain;">
+                <span class="fw-semibold">McDonald’s, Inc</span>
+              </div>
+              <p class="mb-1 mt-3 d-flex justify-content-between">
+                <span class="regularText">Invested amount:</span>
+                <span class="fw-bold">$200</span>
+              </p>
+              <p class="mb-1 d-flex justify-content-between">
+                <span class="regularText">Current value:</span>
+                <span class="fw-bold">$8200</span>
+              </p>
+              <p class="mb-0 d-flex justify-content-between">
+                <span class="regularText">ROI:</span>
+                <span class="text-success fw-semibold">+0.61%</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>    
+
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
