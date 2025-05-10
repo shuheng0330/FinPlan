@@ -1,0 +1,271 @@
+ .goal-header {
+      background-color: #fef5eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .goal-icon {
+      width: 48px;
+      height: 48px;
+      margin-right: 15px;
+    }
+    
+    .circular-progress-container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+    
+    .circular-progress {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 0 auto;
+    }
+    
+    .progress-circle {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+    
+    .progress-circle-bg {
+      fill: none;
+      stroke: #e0e0e0;
+      stroke-width: 15;
+    }
+    
+    .progress-circle-fill {
+      fill: none;
+      stroke: #4CAF50;
+      stroke-width: 15;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.5s ease;
+    }
+    
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 80%;
+    }
+
+    .progress-amount {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .progress-label {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .goal-details {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+    
+    .detail-label {
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .detail-value {
+      font-weight: 600;
+    }
+    
+    .transactions-container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      margin-top: 50px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .transaction-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .transaction-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .transaction-date {
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .transaction-amount {
+      font-weight: 600;
+      color: #4CAF50;
+    }
+    
+    .transaction-amount.negative {
+      color: #f44336;
+    }
+    
+    .chart-container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      height: 400px;
+      position: relative;
+    }
+    
+    .chart-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+    }
+    
+    .priority-badge {
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+      margin-left: 10px;
+    }
+    
+    .priority-high {
+      background-color: #fff3cd;
+      color: #ffc107;
+    }
+    
+    .priority-medium {
+      background-color: #cff4fc;
+      color: #0dcaf0;
+    }
+    
+    .priority-low {
+      background-color: #e2e3e5;
+      color: #6c757d;
+    }
+    
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      color: #333;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    
+    .back-button:hover {
+      color: #000;
+    }
+    
+    .back-button svg {
+      margin-right: 5px;
+    }
+    
+    .time-period-toggle {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+      background-color: #f8f9fa;
+      border-radius: 20px;
+      padding: 5px;
+      width: fit-content;
+      margin: 0 auto 15px;
+    }
+    
+    .time-period-toggle button {
+      background: none;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 15px;
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .time-period-toggle button.active {
+      background-color: #6366f1;
+      color: white;
+    }
+    
+    .goal-info {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .info-label {
+      color: #666;
+      font-weight: 500;
+    }
+    
+    .info-value {
+      font-weight: 600;
+    }
+    
+    .view-toggle {
+      text-align: center;
+      margin-top: 15px;
+    }
+    
+    .view-toggle a {
+      color: #6366f1;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .goal-duration {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .duration-item {
+      text-align: center;
+    }
+    
+    .duration-value {
+      font-weight: 600;
+    }
+    
+    .duration-label {
+      font-size: 14px;
+      color: #666;
+    }
