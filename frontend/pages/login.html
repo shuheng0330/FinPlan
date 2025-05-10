@@ -65,16 +65,23 @@
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value.trim();
             const validatePassword = localStorage.getItem("password");
+            const validateEmail = localStorage.getItem("userEmail");
 
             if(!email || !password){
                 alert("Please fill in both password and email!");
                 return;
             };
 
+            if(email !== validateEmail){
+                alert("Email don't exist!");
+                return;
+            }
+
             if(password !== validatePassword){
                 alert("Password don't match! Please try again!");
                 return;
             }
+
 
             // Store email in localStorage
             localStorage.setItem("userEmail", email);
