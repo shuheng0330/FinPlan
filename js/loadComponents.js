@@ -1,3 +1,5 @@
+const pageTitle = window.pageTitle || "FinPlan";
+
 // Load Sidebar
 fetch("components/sidebar.html")
   .then(response => response.text())
@@ -21,6 +23,11 @@ fetch("components/header.html")
 
     if (userName) {
       document.getElementById("username").textContent = userName;
+    }
+
+    const titleName = document.getElementById("page-title");
+    if(titleName){
+        titleName.textContent = pageTitle;
     }
   });
 

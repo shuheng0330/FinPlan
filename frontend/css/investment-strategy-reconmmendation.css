@@ -395,3 +395,13 @@
     .comparison-table .highlight {
       background-color: #f5f5ff;
     }
+
+        /* fade.css */
+    .fade-in {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
