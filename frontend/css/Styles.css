@@ -101,8 +101,16 @@ font-size:0.85em;
   min-height: 400px;       /* Adjust based on canvas size */
   width: 100%;
   padding-left: 35%;
- 
-  
+}
+
+/* fade.css */
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 
