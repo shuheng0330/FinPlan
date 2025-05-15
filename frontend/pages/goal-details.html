@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinPlan - Goal Details</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/goal-details.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Matemasie&family=New+Amsterdam&display=swap" rel="stylesheet">
+</head>
+<body class="fade-in d-flex">
+
+<!-- Sidebar -->
+<div id="sidebar-placeholder"></div>
+
+
+<!-- Main Content -->
+<div class="container-fluid p-4" style="background-color: #f8f9fa;">
+  <script>
+    window.pageTitle = "Goal Details"
+  </script>
+    <div id="header-placeholder"></div>
+
+  <!-- Back Button -->
+  <a href="goal-planning.html" class="back-button">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+    </svg>
+    Back to list
+  </a>
+
+  <!-- Goal Header -->
+  <div class="goal-header">
+    <div class="d-flex align-items-center ">
+      <img src="../../svgs/vacation-svgrepo-com.svg" alt="Vacation" class="goal-icon">
+      <h4 class="mb-0">Vacation <span class="priority-badge priority-low">Low Priority</span></h4>
+    </div>
+  </div>
+
+  <!-- Circular Progress -->
+  <div class="circular-progress-container">
+    <div class="circular-progress">
+      <svg class="progress-circle" viewBox="0 0 100 100">
+        <circle class="progress-circle-bg" cx="50" cy="50" r="42"></circle>
+        <circle class="progress-circle-fill" cx="50" cy="50" r="42" id="progressCircle"></circle>
+      </svg>
+      <div class="progress-text">
+        <div class="progress-amount">RM 1,300.00</div>
+        <div class="progress-label">Saved so far</div>
+      </div>
+    </div>
+    
+    <div class="goal-info mt-4">
+      <div class="info-row">
+        <span class="info-label">Target amount</span>
+        <span class="info-value">RM 2,500.00</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Remaining</span>
+        <span class="info-value">RM 1,200.00</span>
+      </div>
+    </div>
+    
+    <div class="view-toggle">
+      <a href="#" id="toggleDetails">View More Details</a>
+    </div>
+  </div>
+
+  <!-- Goal Details (Hidden by default) -->
+  <div class="goal-details" id="goalDetailsSection" style="display: none;">
+    <h5 class="mb-3">Goal Details</h5>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="detail-item">
+          <span class="detail-label">Target Amount</span>
+          <span class="detail-value">RM 2,500.00</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Current Savings</span>
+          <span class="detail-value">RM 1,300.00</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Remaining Amount</span>
+          <span class="detail-value">RM 1,200.00</span>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="detail-item">
+          <span class="detail-label">Start Date</span>
+          <span class="detail-value">January 15, 2023</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Target Date</span>
+          <span class="detail-value">December 31, 2025</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Time Remaining</span>
+          <span class="detail-value">1 year, 7 months</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Goal Duration</span>
+          <span class="detail-value">24 months</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart View -->
+  <div class="chart-container">
+    <div class="time-period-toggle">
+      <button class="active" data-period="day">Day</button>
+      <button data-period="week">Week</button>
+      <button data-period="month">Month</button>
+      <button data-period="year">Year</button>
+    </div>
+    <canvas id="transactionChart"></canvas>
+  </div>
+
+  <!-- Transactions -->
+  <div class="transactions-container">
+    <div class="transaction-header">
+      <h5 class="mb-0">Transactions</h5>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+        Add Transaction
+      </button>
+    </div>
+    
+    <div id="transactions-list">
+      <div class="transaction-item">
+        <div>
+          <h6 class="mb-0">Monthly Deposit</h6>
+          <span class="transaction-date">May 1, 2024</span>
+        </div>
+        <span class="transaction-amount">+RM 100.00</span>
+      </div>
+      <div class="transaction-item">
+        <div>
+          <h6 class="mb-0">Monthly Deposit</h6>
+          <span class="transaction-date">April 1, 2024</span>
+        </div>
+        <span class="transaction-amount">+RM 100.00</span>
+      </div>
+      <div class="transaction-item">
+        <div>
+          <h6 class="mb-0">Monthly Deposit</h6>
+          <span class="transaction-date">March 1, 2024</span>
+        </div>
+        <span class="transaction-amount">+RM 100.00</span>
+      </div>
+      <div class="transaction-item">
+        <div>
+          <h6 class="mb-0">Monthly Deposit</h6>
+          <span class="transaction-date">February 1, 2024</span>
+        </div>
+        <span class="transaction-amount">+RM 100.00</span>
+      </div>
+      <div class="transaction-item">
+        <div>
+          <h6 class="mb-0">Monthly Deposit</h6>
+          <span class="transaction-date">January 1, 2024</span>
+        </div>
+        <span class="transaction-amount">+RM 100.00</span>
+      </div>
+      <div class="transaction-item">
+        <div>
+          <h6 class="mb-0">Bonus Deposit</h6>
+          <span class="transaction-date">December 25, 2023</span>
+        </div>
+        <span class="transaction-amount">+RM 500.00</span>
+      </div>
+      <div class="transaction-item">
+        <div>
+          <h6 class="mb-0">Emergency Withdrawal</h6>
+          <span class="transaction-date">November 15, 2023</span>
+        </div>
+        <span class="transaction-amount negative">-RM 200.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Transaction Modal -->
+  <div class="modal fade" id="addTransactionModal" tabindex="-1" aria-labelledby="addTransactionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #fef5eb;">
+          <h5 class="modal-title" id="addTransactionModalLabel">Add Transaction</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addTransactionForm">
+            <div class="mb-3">
+              <label for="transactionDescription" class="form-label">Description</label>
+              <input type="text" class="form-control" id="transactionDescription" placeholder="e.g., Monthly Deposit" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="transactionAmount" class="form-label">Amount (RM)</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" id="transactionAmount" placeholder="e.g., 100" step="0.01" required>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="transactionType" class="form-label">Transaction Type</label>
+              <select class="form-select" id="transactionType" required>
+                <option value="deposit" selected>Deposit</option>
+                <option value="withdrawal">Withdrawal</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="transactionDate" class="form-label">Date</label>
+              <input type="date" class="form-control" id="transactionDate" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="transactionNotes" class="form-label">Notes (Optional)</label>
+              <textarea class="form-control" id="transactionNotes" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveTransactionBtn">Save Transaction</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../../js/SavingGoals/goal-details.js"></script>
+<script src="../../js/loadComponents.js"></script>
+</body>
+</html>

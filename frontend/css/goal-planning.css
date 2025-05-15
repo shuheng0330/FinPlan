@@ -1,0 +1,356 @@
+ .goal-card {
+      background-color: #faf1e6;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .goal-icon {
+      width: 32px;
+      height: 32px;
+      margin-right: 10px;
+    }
+    
+    .goal-options {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      cursor: pointer;
+    }
+    
+    .progress {
+        height: 6px;
+        margin: 15px 0;
+        background-color: #d6d6d6;
+        border-radius: 3px;
+        overflow: hidden;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+    }   
+
+    
+    .progress-bar {
+      background-color: #4CAF50;
+    }
+    
+    .goal-amount {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 10px 0;
+    }
+    
+    .saved-amount {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    
+    .target-date {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .remaining-amount {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .goal-info-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #f0f0f0;
+    }
+    
+    .start-date {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .start-date img {
+      width: 20px;
+      height: 20px;
+      margin-right: 5px;
+    }
+    
+    .priority-badge {
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .priority-high {
+      background-color: #f8d7da; /* light red background */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      color: #dc3545; 
+    }
+    
+    .priority-medium {
+        background-color: #fffbe6; /* very light yellow */
+        color: #fcbf1e; /* bright, saturated yellow */
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+
+    
+    .priority-low {
+      background-color: #e2e3e5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      color: #6c757d;
+    }
+    
+    .date-info {
+      display: flex;
+      align-items: center;
+      color: #888;
+      font-size: 12px;
+    }
+    
+    .date-info img {
+      width: 14px;
+      height: 14px;
+      margin-right: 5px;
+    }
+    
+    .filter-btn.active {
+      background-color: #e0d7c6;
+      color: #000;
+    }
+    
+    .icon-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.icon-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.icon-option:hover,
+.icon-option.selected {
+  border-color: #4CAF50;
+  background-color: #f0f7f0;
+}
+
+.icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-circle img {
+  width: 24px;
+  height: 24px;
+}
+
+.icon-option span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+    
+    .icon-option img {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .motivation-banner {
+      background-color: #fef5eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .motivation-text {
+      flex: 1;
+      padding-right: 20px;
+    }
+    
+    .motivation-text h4 {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .motivation-text p {
+      font-family: "Crimson Text", serif;
+      font-size: 1.1em;
+      margin-bottom: 0;
+    }
+    
+    .motivation-image {
+      flex: 1;
+      text-align: right;
+    }
+    
+    .motivation-image img {
+      max-width: 50%;
+      max-height: 50%;
+      height: auto;
+      border-radius: 8px;
+    }
+    
+    .filter-container {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .filter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .filter-header h5 {
+      font-weight: 600;
+      margin-bottom: 0;
+    }
+    
+    .reset-btn {
+      color: #6366f1;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .filter-section {
+      margin-bottom: 20px;
+    }
+    
+    .filter-label {
+      font-weight: 500;
+      margin-bottom: 10px;
+      display: block;
+    }
+    
+    .filter-dropdown {
+      position: relative;
+      width: 100%;
+    }
+    
+    .filter-input {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .filter-input-icon {
+      margin-right: 10px;
+      color: #6c757d;
+    }
+
+    .filter-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+    
+    .filter-dropdown-content {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 10;
+      max-height: 250px;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .filter-dropdown-content.show {
+      display: block;
+    }
+    
+    .filter-option {
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+    }
+    
+    .filter-option:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .filter-option.selected {
+      background-color: #f0f7f0;
+    }
+    
+    .filter-option img {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
+    
+    .filter-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .filter-tag {
+      display: flex;
+      align-items: center;
+      background-color: #f0f0f0;
+      border-radius: 16px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+    
+    .filter-tag-close {
+      margin-left: 5px;
+      cursor: pointer;
+    }
+    
+    .filter-clear {
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    /* fade.css */
+    .fade-in {
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }

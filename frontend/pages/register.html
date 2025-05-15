@@ -10,7 +10,7 @@
 <body>
     <div class="container">
         <div class="logo">
-            <img src="../../svgs/logo.png" height="50" width="50">
+            <img src="../../svgs/logo_FinPlan(remove bg).png" height="50" width="50">
             <p>FinPlan</p>
         </div>
 
@@ -40,7 +40,7 @@
                 <!-- <span class="toggle-visibility">👁️</span> -->
             </div>
 
-            <button class="register-btn">Register</button>
+            <button class="register-btn" id="register-btn">Register</button>
 
             <div class="or-register">
                 <hr>
@@ -69,7 +69,37 @@
                 in to start building your financial success today.</p>
             <img src="../../svgs/financial planning.jpg" class="dashboard-img" />
         </div>
+
     </div>
+    <script>
+        document.getElementById("register-btn").addEventListener("click",function(){
+            const username = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const confirm = document.getElementById("confirm-password").value.trim();
+
+            if (!username || !email || !password || !confirm) {
+                alert("Please fill in all fields.");
+                return;
+            };
+
+        
+            if( password !== confirm){
+                alert("Please confirm your password correctly");
+                return;
+            };
+
+            localStorage.setItem("userName",username);
+            localStorage.setItem("userEmail",email);
+            localStorage.setItem("password",password);
+
+
+            alert("Account created successfully!");
+            window.location.href="login.html";
+
+
+        })
+    </script>
 </body>
 
 </html>

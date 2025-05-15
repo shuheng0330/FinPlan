@@ -14,95 +14,17 @@
     rel="stylesheet">
 </head>
 
-<body class="d-flex">
+<body class="fade-in d-flex">
 
-  <!-- Sidebar -->
-  <div class="border-end p-3" id="sidebar" style="width: 240px;">
-    <h4 class="mb-4">FinPlan</h4>
-    <ul class="nav flex-column">
-
-      <!-- Dashboard -->
-      <li class="nav-item mb-3">
-        <div class="d-flex align-items-center gap-3 nav-link">
-          <img src="../../svgs/dashboard-svgrepo-com.svg" class="rounded-circle" alt="dashboard"
-            style="width:40px; height: 40px;">
-          <a href="dashboard.html">Dashboard</a>
-        </div>
-      </li>
-
-      <!-- Profile -->
-      <li class="nav-item mb-3">
-        <div class="d-flex align-items-center gap-3 nav-link">
-          <img src="../../svgs/reshot-icon-profile-QX6KDSLJC5.svg" class="rounded-circle" alt="profile"
-            style="width:40px; height: 45px;">
-          <a href="profile.html">Personal Profile</a>
-        </div>
-      </li>
-
-      <!-- Financial Goals -->
-      <li class="nav-item mb-3">
-        <div class="d-flex align-items-center gap-3 nav-link">
-          <img src="../../svgs/financial-goals-icon-can-be-used-for-uiux-etc-vector.svg" class="rounded-circle"
-            alt="Financial Goals" style="width:40px; height: 40px;">
-          <a href="#goals">Financial Goals</a>
-        </div>
-      </li>
-
-      <!-- Investment Strategy -->
-      <li class="nav-item mb-3">
-        <div class="d-flex align-items-center gap-3 nav-link">
-          <img src="../../svgs/investment strategy.svg" class="rounded-circle" alt="Investment Strategy"
-            style="width:40px; height: 40px;">
-          <a href="#strategy">Investment Strategy</a>
-        </div>
-      </li>
-
-      <!-- Market Insights -->
-      <li class="nav-item mb-3">
-        <div class="d-flex align-items-center gap-3 nav-link">
-          <img
-            src="../../svgs/market-research-digital-marketing-marketing-research-png-favpng-apKr4vKuaT3nGwR2Cbd4jM8zz.svg"
-            class="rounded-circle" alt="Market Insights" style="width:40px; height: 40px;">
-          <a href="#insights">Market Insights</a>
-        </div>
-      </li>
-
-      <!-- Investment ROI -->
-      <li class="nav-item mb-3">
-        <div class="d-flex align-items-center gap-3 nav-link">
-          <img src="../../svgs/return-of-investment.svg" class="rounded-circle" alt="Investment ROI"
-            style="width:40px; height: 40px;">
-          <a href="#roi">Investment ROI</a>
-        </div>
-      </li>
-
-      <hr style="border-width: 2px;">
-
-      <!-- Logout -->
-      <li class="nav-item mt-3">
-        <div class="d-flex align-items-center gap-3 nav-link">
-          <img src="../../svgs/logout-png-favpng-LwgEn5YThKc5NxUXYqXXV8Zhf.svg" class="rounded-circle" alt="Logout"
-            style="width:40px; height: 40px;">
-          <a href="#" class="text-danger">Log Out</a>
-        </div>
-      </li>
-
-    </ul>
-  </div>
+<!-- Sidebar -->
+<div id="sidebar-placeholder"></div>
 
   <!-- Main Content -->
   <div class="container-fluid p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3>Personal Profile</h3>
-      <div class="d-flex align-items-center gap-3 p-1">
-        <div class="d-flex flex-column text-start me-2"> <!-- Text container -->
-          <p class="mb-0 fw-medium">Thong Shu Heng</p> <!-- Added fw-medium -->
-          <p class="mb-0 text-muted small">thongshuheng030@gmail.com</p> <!-- Added text-muted and small -->
-        </div>
-        <img src="../../svgs/man-user-circle-icon.svg" class="rounded-circle"
-          style="width: 40px; height: 40px; object-fit: cover;" alt="User Avatar">
-      </div>
-    </div>
+    <script>
+      window.pageTitle = "Personal Profile"
+    </script>
+    <div id="header-placeholder"></div>
 
     <div class="row g-4">
       <!-- Left Column -->
@@ -144,12 +66,12 @@
             <form>
               <div class="mb-3">
                 <label class="form-label">Full Name</label>
-                <input type="text" class="form-control" value="Thong Shu Heng">
+                <input type="text" class="form-control" id="username" value="Thong Shu Heng">
               </div>
 
               <div class="mb-3">
                 <label class="form-label">Email Address</label>
-                <input type="email" class="form-control" value="thongshuheng030@gmail.com" readonly>
+                <input type="email" class="form-control" id="user-email" value="thongshuheng030@gmail.com" readonly>
               </div>
 
               <hr class="my-4">
@@ -176,9 +98,29 @@
           </div>
         </div>
       </div>
+
+      <!-- Footer -->
+      <div id="footer-placeholder"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    const userEmail = localStorage.getItem("userEmail");
+    const userName = localStorage.getItem("userName")
+    if (userEmail) {
+        document.getElementById("user-email").value = userEmail;
+    } else {
+        document.getElementById("user-email").value = "No email found";
+    }
+
+    if(userName){
+      document.getElementById("username").value = userName;
+    } else{
+      document.getElementById("username").value = "No username found";
+    }
+</script>
+<script src="../../js/loadComponents.js"></script>
+
 </body>
 
 </html>
