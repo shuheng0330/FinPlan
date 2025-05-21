@@ -3,14 +3,14 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>FinPlan Registration</title>
-    <link rel="stylesheet" href="../css/login_register.css" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/login_register.css" />
 </head>
 
 <body>
     <div class="container">
         <div class="logo">
-            <img src="../../svgs/logo_FinPlan(remove bg).png" height="50" width="50">
+            <img src="/svgs/logo_FinPlan(remove bg).png" height="50" width="50">
             <p>FinPlan</p>
         </div>
 
@@ -31,13 +31,11 @@
             <div class="form-group password-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" placeholder="Enter your password" />
-                <!-- <span class="toggle-visibility">👁️</span> -->
             </div>
 
             <div class="form-group password-group">
                 <label for="confirm-password">Confirm Password</label>
                 <input type="password" id="confirm-password" placeholder="Confirm your password" />
-                <!-- <span class="toggle-visibility">👁️</span> -->
             </div>
 
             <button class="register-btn" id="register-btn">Register</button>
@@ -49,16 +47,16 @@
             </div>
 
             <button class="google-btn">
-                <img src="../../svgs/google.jpg" height="15" width="15">
+                <img src="/svgs/google.jpg" height="15" width="15">
                 Sign up with Google
             </button>
 
             <div class="signin">
-                Already Have An Account? <a href="login.html">Sign In.</a>
+                Already Have An Account? <a href="/">Sign In.</a>
             </div>
 
             <div class="footer">
-                Copyright © 2025 FinPlan Enterprises LTD.
+                Copyright © <%= new Date().getFullYear() %> FinPlan Enterprises LTD.
                 <a href="#">Privacy Policy</a>
             </div>
         </div>
@@ -67,38 +65,14 @@
             <h2>Your Smart Financial Planning Companion</h2>
             <p>Manage your goals, explore investment strategies, and plan your future—all in one place. Sign up or log
                 in to start building your financial success today.</p>
-            <img src="../../svgs/financial planning.jpg" class="dashboard-img" />
+            <img src="/svgs/financial planning.jpg" class="dashboard-img" />
         </div>
-
     </div>
+    
     <script>
-        document.getElementById("register-btn").addEventListener("click",function(){
-            const username = document.getElementById("name").value.trim();
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const confirm = document.getElementById("confirm-password").value.trim();
-
-            if (!username || !email || !password || !confirm) {
-                alert("Please fill in all fields.");
-                return;
-            };
-
-        
-            if( password !== confirm){
-                alert("Please confirm your password correctly");
-                return;
-            };
-
-            localStorage.setItem("userName",username);
-            localStorage.setItem("userEmail",email);
-            localStorage.setItem("password",password);
-
-
-            alert("Account created successfully!");
-            window.location.href="login.html";
-
-
-        })
+        document.getElementById("register-btn").addEventListener("click", function() {
+            window.location.href = "/";
+        });
     </script>
 </body>
 

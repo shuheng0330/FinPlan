@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FinPlan Dashboard</title>
+    <title><%= title %></title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../css/Styles.css" />
+    <link rel="stylesheet" href="/css/Styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -20,14 +20,11 @@
 
   <body class="fade-in d-flex">
 <!-- Sidebar -->
-<div id="sidebar-placeholder"></div>
+<%- include('partials/sidebar') %>
 
     <!-- Main Content -->
     <div class="container-fluid p-4">
-      <script>
-        window.pageTitle = "Investment ROI"
-      </script>
-        <div id="header-placeholder"></div>
+      <%- include('partials/header') %>
 
         <!-- ROI Calculator -->
         <section id="insights" class="mb-4">
@@ -122,7 +119,7 @@
             <div class="col-md-3 mb-3">
               <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
                 <div class="d-flex align-items-center mb-2">
-                  <img src="../../svgs/tesla-svgrepo-com.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                  <img src="/svgs/tesla-svgrepo-com.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                   <span class="fw-semibold">Tesla, Inc</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-auto">
@@ -137,7 +134,7 @@
             <div class="col-md-3 mb-3">
                 <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
                   <div class="d-flex align-items-center mb-2">
-                    <img src="../../svgs/nvidia-svgrepo-com.svg" alt="Nvidia logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                    <img src="/svgs/nvidia-svgrepo-com.svg" alt="Nvidia logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                     <span class="fw-semibold">Nvidia, Inc</span>
                   </div>
                   <div class="d-flex justify-content-between align-items-center mt-auto">
@@ -160,7 +157,7 @@
             <div class="col-md-3 mb-3">
               <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
                 <div class="d-flex align-items-center mb-2">
-                  <img src="../../svgs/mcdonalds-icon.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                  <img src="/svgs/mcdonalds-icon.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                   <span class="fw-semibold">McDonald, Inc</span>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-auto">
@@ -175,7 +172,7 @@
             <div class="col-md-3 mb-3">
                 <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
                   <div class="d-flex align-items-center mb-2">
-                    <img src="../../svgs/trace.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                    <img src="/svgs/trace.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                     <span class="fw-semibold">Apple, Inc</span>
                   </div>
                   <div class="d-flex justify-content-between align-items-center mt-auto">
@@ -190,7 +187,7 @@
         <div class="col-md-3 mb-3">
             <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
               <div class="d-flex align-items-center mb-2">
-                <img src="../../svgs/trace (1).svg" alt="Amazon logo" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                <img src="/svgs/trace (1).svg" alt="Amazon logo" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
                 <span class="fw-semibold">Amazon, Inc</span>
               </div>
               <div class="d-flex justify-content-between align-items-center mt-auto">
@@ -205,7 +202,7 @@
         <div class="col-md-3 mb-3">
           <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
             <div class="d-flex align-items-center mb-2">
-              <img src="../../svgs/google-icon-logo-svgrepo-com.svg" alt="Google logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+              <img src="/svgs/google-icon-logo-svgrepo-com.svg" alt="Google logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
               <span class="fw-semibold">Google, Inc</span>
             </div>
             <div class="d-flex justify-content-between align-items-center mt-auto">
@@ -236,16 +233,14 @@
         
       
           <!-- Footer -->
-          <div id="footer-placeholder"></div>
+          <%- include('partials/footer') %>
     </div>
     
 
     <!-- Script to sync slider and input -->
-    <script src="../../js/ROI/script.js"></script>
+    <script src="/js/ROI/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src = "../../js/ROI/riskchart.js"></script>
-    <script src="../../js/ROI/returnchart.js"></script>
-    <script src="../../js/loadComponents.js"></script>
-
+    <script src = "/js/ROI/riskchart.js"></script>
+    <script src="/js/ROI/returnchart.js"></script>
   </body>
 </html>

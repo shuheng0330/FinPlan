@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
-    <title>FinPlan Login</title>
-    <link rel="stylesheet" href="../css/login_register.css" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/login_register.css" />
 </head>
 
 <body>
     <div class="container">
         <div class="logo">
-            <img src="../../svgs/logo_FinPlan(remove bg).png" height="50" width="50">
+            <img src="/svgs/logo_FinPlan(remove bg).png" height="50" width="50">
             <p>FinPlan</p>
         </div>
 
@@ -26,7 +25,6 @@
             <div class="form-group password-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" placeholder="Enter your password" required />
-                <!-- <span class="toggle-visibility">👁️</span> -->
             </div>
 
             <button class="login-btn" id="login-btn">Login</button>
@@ -38,16 +36,16 @@
             </div>
 
             <button class="google-btn">
-                <img src="../../svgs/google.jpg" height="15" width="15">
+                <img src="/svgs/google.jpg" height="15" width="15">
                 Sign in with Google
             </button>
 
             <div class="signup">
-                Don't have an account? <a href="register.html">Sign Up.</a>
+                Don't have an account? <a href="/register">Sign Up.</a>
             </div>
 
             <div class="footer">
-                Copyright © 2025 FinPlan Enterprises LTD.
+                Copyright © <%= new Date().getFullYear() %> FinPlan Enterprises LTD.
                 <a href="#">Privacy Policy</a>
             </div>
         </div>
@@ -56,40 +54,14 @@
             <h2>Your Smart Financial Planning Companion</h2>
             <p>Manage your goals, explore investment strategies, and plan your future—all in one place. Sign up or log
                 in to start building your financial success today.</p>
-            <img src="../../svgs/financial planning.jpg" class="dashboard-img" />
+            <img src="/svgs/financial planning.jpg" class="dashboard-img" />
         </div>
     </div>
 
     <script>
-        document.getElementById("login-btn").addEventListener("click",function(){
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const validatePassword = localStorage.getItem("password");
-            const validateEmail = localStorage.getItem("userEmail");
-
-            if(!email || !password){
-                alert("Please fill in both password and email!");
-                return;
-            };
-
-            if(email !== validateEmail){
-                alert("Email don't exist!");
-                return;
-            }
-
-            if(password !== validatePassword){
-                alert("Password don't match! Please try again!");
-                return;
-            }
-
-
-            // Store email in localStorage
-            localStorage.setItem("userEmail", email);
-
-            window.location.href="dashboard.html";
+        document.getElementById("login-btn").addEventListener("click", function() {
+            window.location.href = "/dashboard";
         });
-        
     </script>
 </body>
-
 </html>

@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Navigate to the goal details page
-        window.location.href = 'goal-details.html';
+        window.location.href = '/goal-details';
       });
       
       // Add pointer cursor to indicate clickable
