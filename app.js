@@ -1,8 +1,9 @@
 const express = require('express');
+const goalRouter = require('./routers/goal-PlanningRoute');
 const app = express();
 const path = require('path');
-const port = 3000;
 
+app.use(express.json());
 app.set('view engine','ejs');
 app.set('views',path.join(__dirname,'/views'));
 app.use(express.static(path.join(__dirname,'public')));
@@ -34,14 +35,16 @@ app.get('/profile',(req,res)=>{
 });
 
 
-app.get("/goal-planning", (req, res) => {
+ app.get("/goal-planning", (req, res) => {
   res.render("goal-planning", {
     title: "FinPlan - Goal Planning",
     username: "Thong Shu Heng",
     userEmail: "thongshuheng030@gmail.com",
-    pageTitle: "Financial Goals",
+     pageTitle: "Financial Goals",
   })
-});
+ });
+
+app.use('/api/v1/goals', goalRouter);
 
 app.get("/goal-details", (req, res) => {
   res.render("goal-details", {
@@ -79,6 +82,4 @@ app.get("/roi-calculator", (req, res) => {
   })
 });
 
-app.listen(port,()=>{
-    console.log(`Server running on port ${port}`);
-});
+module.exports = app; 
