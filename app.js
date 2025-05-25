@@ -1,5 +1,6 @@
 const express = require('express');
 const goalRouter = require('./routers/goal-PlanningRoute');
+const Goal = require("./models/goal-planningModel");
 const app = express();
 const path = require('path');
 
@@ -55,13 +56,27 @@ app.get("/goal-details", (req, res) => {
   })
 });
 
-app.get("/investment-strategy", (req, res) => {
-  res.render("investment-strategy", {
-    title: "FinPlan - Investment Strategy",
-    username: "Thong Shu Heng",
-    userEmail: "thongshuheng030@gmail.com",
-    pageTitle: "Investment Strategy",
-  })
+app.get("/investment-strategy", async (req, res) => {
+  try {
+    const goals = await Goal.find(); // Fetch all goals
+
+    res.render("investment-strategy", {
+      title: "FinPlan - Investment Strategy",
+      username: "Thong Shu Heng",
+      userEmail: "thongshuheng030@gmail.com",
+      pageTitle: "Investment Strategy",
+      goals: goals, // Pass to EJS
+    });
+  } catch (err) {
+    console.error("Error fetching goals:", err);
+    res.render("investment-strategy", {
+      title: "FinPlan - Investment Strategy",
+      username: "Thong Shu Heng",
+      userEmail: "thongshuheng030@gmail.com",
+      pageTitle: "Investment Strategy",
+      goals: [], // Fallback to empty
+    });
+  }
 });
 
 app.get("/market", (req, res) => {

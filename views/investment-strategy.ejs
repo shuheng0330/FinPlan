@@ -36,111 +36,40 @@
   <div class="goal-selector">
     <h5 class="mb-3">Select a Goal</h5>
     
-    <div class="goal-pages">
-      <div class="goal-page active" data-page="1">
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <div class="goal-card selected" data-goal-id="1">
-              <div class="d-flex align-items-center mb-2">
-                <img src="/svgs/vacation-svgrepo-com.svg" alt="Vacation" class="goal-icon">
-                <div>
-                  <h6 class="mb-0">Vacation</h6>
-                  <small class="text-muted">Short-term (2 years)</small>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Target: RM2,500</span>
-                <span>Progress: 52%</span>
+<div class="goal-pages">
+  <div class="goal-page active" data-page="1">
+    <div class="row mb-3">
+      <% goals.forEach((goal, index) => { %>
+        <div class="col-md-4 mb-3">
+          <div class="goal-card selected" data-goal-id="<%= index + 1 %>">
+            <div class="d-flex align-items-center mb-2">
+              <img src="/svgs/<%= goal.icon%>-svgrepo-com.svg" alt="Goal Icon" class="goal-icon">
+              <div>
+                <h6 class="mb-0"><%= goal.goalName %></h6>
+                <small class="text-muted">
+                  <%= new Date(goal.targetDate).getFullYear() - new Date(goal.startDate).getFullYear() <= 2 ? "Short-term (≤ 2 years)" : "Long-term (> 2 years)" %>
+                </small>
               </div>
             </div>
-          </div>
-          
-          <div class="col-md-4">
-            <div class="goal-card" data-goal-id="2">
-              <div class="d-flex align-items-center mb-2">
-                <img src="/svgs/house-svgrepo-com.svg" alt="Home" class="goal-icon">
-                <div>
-                  <h6 class="mb-0">Home Renovation</h6>
-                  <small class="text-muted">Medium-term (3 years)</small>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Target: RM35,000</span>
-                <span>Progress: 45%</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-md-4">
-            <div class="goal-card" data-goal-id="3">
-              <div class="d-flex align-items-center mb-2">
-                <img src="/svgs/education-svgrepo-com.svg" alt="Education" class="goal-icon">
-                <div>
-                  <h6 class="mb-0">Education</h6>
-                  <small class="text-muted">Long-term (5 years)</small>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Target: RM35,000</span>
-                <span>Progress: 75%</span>
-              </div>
+            <div class="d-flex justify-content-between">
+              <span>Target: RM<%= goal.goalAmount.toLocaleString() %></span>
+              <span>
+                Progress: 
+                <% if (goal.goalAmount ===0) {%>
+                  N/A
+                <%} else { %>
+                  <%= Math.min(100, Math.round((goal.currentAmount / goal.goalAmount) * 100)) %>%
+                <% } %>
+              </span>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div class="goal-page" data-page="2">
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <div class="goal-card" data-goal-id="4">
-              <div class="d-flex align-items-center mb-2">
-                <img src="/svgs/car-svgrepo-com.svg" alt="Car" class="goal-icon">
-                <div>
-                  <h6 class="mb-0">New Car</h6>
-                  <small class="text-muted">Medium-term (3 years)</small>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Target: RM25,000</span>
-                <span>Progress: 25%</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-md-4">
-            <div class="goal-card" data-goal-id="5">
-              <div class="d-flex align-items-center mb-2">
-                <img src="/svgs/retirement-svgrepo-com.svg" alt="Retirement" class="goal-icon">
-                <div>
-                  <h6 class="mb-0">Retirement</h6>
-                  <small class="text-muted">Long-term (30 years)</small>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Target: RM500,000</span>
-                <span>Progress: 15%</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="col-md-4">
-            <div class="goal-card" data-goal-id="6">
-              <div class="d-flex align-items-center mb-2">
-                <img src="/svgs/emergency-svgrepo-com.svg" alt="Emergency" class="goal-icon">
-                <div>
-                  <h6 class="mb-0">Emergency Fund</h6>
-                  <small class="text-muted">Short-term (1 year)</small>
-                </div>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Target: RM15,000</span>
-                <span>Progress: 90%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <% }) %>
     </div>
+  </div>
+</div>
+
+          
 
     <div class="pagination-controls">
       <button class="pagination-btn" id="prevGoalsBtn" disabled>
