@@ -2,57 +2,64 @@ const Goal = require('./../models/goal-planningModel');
 
 exports.getAllGoals = async (req, res) => {
   try {
-    const goals = await Goal.find(); 
-    res.status(200).json({
-      status: 'success',
-      results: goals.length,
-      data: {
-        goals
-      }
+    const goals = await Goal.find();
+    res.render("goal-planning", {
+      title: "FinPlan - Goal Planning",
+      username: "Thong Shu Heng",
+      userEmail: "thongshuheng030@gmail.com",
+      pageTitle: "Financial Goals",
+      goals: goals
     });
   } catch (err) {
-    res.status(500).json({
-      status: 'error',
-      message: err.message
+    console.error("Error fetching goals:", err);
+    res.render("goal-planning", {
+      title: "FinPlan - Goal Planning",
+      username: "Thong Shu Heng",
+      userEmail: "thongshuheng030@gmail.com",
+      pageTitle: "Financial Goals",
+      goals: [] // fallback
     });
   }
 };
 
-exports.createGoal = async (req,res) =>{
+
+// exports.createGoal = async (req,res) =>{
     
-    try{
-        const {
-            goalName,
-            goalAmount,
-            currentAmount,
-            progress,
-            targetDate,
-            startDate,
-            goalPriority,
-            icon
-        } = req.body;
+//     try{
+//         const {
+//             goalName,
+//             goalAmount,
+//             currentAmount,
+//             progress,
+//             targetDate,
+//             startDate,
+//             goalPriority,
+//             icon
+//         } = req.body;
 
-    const newGoal = await Goal.create({
-      goalName,
-      goalAmount,
-      currentAmount,
-      progress,
-      targetDate,
-      startDate,
-      goalPriority,
-      icon
-    });
+//     const newGoal = await Goal.create({
+//       goalName,
+//       goalAmount,
+//       currentAmount,
+//       progress,
+//       targetDate,
+//       startDate,
+//       goalPriority,
+//       icon
+//     });
 
-    res.status(201).json({
-      status: 'success',
-      data: newGoal
-    });
-    }
-    catch(err){
-      res.status(500).json({
-      status: 'error',
-      message: err.message
-    });
-    }
-};
+//     res.status(201).json({
+//       status: 'success',
+//       data: newGoal
+//     });
+//     }
+//     catch(err){
+//       res.status(500).json({
+//       status: 'error',
+//       message: err.message
+//     });
+//     }
+// };
+
+//can use mine one
 

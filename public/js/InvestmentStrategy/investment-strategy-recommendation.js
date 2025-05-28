@@ -360,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Attempting to send goal data:', goalData);
 
             try {
-                const response = await fetch('/api/v1/goals', { // Corrected API endpoint for consistency
+                const response = await fetch('/investment-strategy', { // Corrected API endpoint for consistency
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
