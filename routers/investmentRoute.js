@@ -4,8 +4,6 @@ const investmentController = require('./../controllers/investment-strategyContro
 const router = express.Router();
 
 
-router.get('/',investmentController.renderStrategypage);
-
-router.post('/',investmentController.createGoal);
+// router.post('/',investmentController.createGoal);
 
 module.exports = router;

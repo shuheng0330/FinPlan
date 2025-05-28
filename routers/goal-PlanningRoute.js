@@ -1,11 +1,10 @@
 const express = require('express');
 const goalPlanningController = require('./../controllers/goal-planningController');
-const investmentController = require('../controllers/investment-strategyController')
 
 const router = express.Router();
 router
    .route('/')
-   .post(investmentController.createGoal);
+   .post(goalPlanningController.createGoal);
 
 
 
