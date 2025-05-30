@@ -1,3 +1,5 @@
+import { initializeAddGoalForm } from '/js/common-add-goal-logic.js'; // Adjust path if needed
+
 document.addEventListener('DOMContentLoaded', function() {
     // Filter functionality
     const filterDropdowns = document.querySelectorAll('.filter-dropdown');
@@ -113,45 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.display = 'block';
       });
     });
-    
-    // Icon selector functionality
-    const iconOptions = document.querySelectorAll('.icon-option');
-    iconOptions.forEach(option => {
-      option.addEventListener('click', function() {
-        // Remove selected class from all options in the same selector
-        const parentSelector = this.closest('.icon-selector');
-        parentSelector.querySelectorAll('.icon-option').forEach(opt => {
-          opt.classList.remove('selected');
-        });
-        
-        // Add selected class to clicked option
-        this.classList.add('selected');
-      });
-    });
-    
-    // Add Goal functionality
-    const saveGoalBtn = document.getElementById('saveGoalBtn');
-    saveGoalBtn.addEventListener('click', function() {
-      // Here you would normally save the data to a database
-      // For this demo, we'll just close the modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('addGoalModal'));
-      modal.hide();
-      
-      // Show success message
-      alert('Goal added successfully!');
-      
-      // Reset form
-      document.getElementById('addGoalForm').reset();
-      
-      // Reset icon selection
-      document.querySelectorAll('.icon-selector .icon-option').forEach((opt, index) => {
-        if (index === 0) {
-          opt.classList.add('selected');
-        } else {
-          opt.classList.remove('selected');
-        }
-      });
-    });
+
+
+    initializeAddGoalForm();
     
     // Edit Goal functionality
     const editButtons = document.querySelectorAll('[data-bs-target="#editGoalModal"]');

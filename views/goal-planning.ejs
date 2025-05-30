@@ -119,316 +119,76 @@
     </button>
   </div>
 
-  <!-- Goals List -->
-  <div class="row" id="goals-container">
-    <!-- Vacation -->
-    <div class="col-md-4 mb-4" data-category="vacation" data-progress="in-progress" data-priority="low">
-      <div class="goal-card">
-        <div class="goal-options">
-          <div class="dropdown">
-            <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-              </svg>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal" data-goal-id="1">Edit</a></li>
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteGoalModal" data-goal-id="1">Delete</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="d-flex align-items-center mb-2">
-          <img src="/svgs/vacation-svgrepo-com.svg" alt="Vacation" class="goal-icon">
-          <span>Vacation</span>
-        </div>
-        
-        <div class="goal-amount">RM 2,500</div>
-        
-        <div class="saved-amount">RM 1,300 saved so far</div>
-        
-        <div class="progress">
-          <div class="progress-bar" role="progressbar" style="width: 52%;" aria-valuenow="52" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        
-        <div class="d-flex justify-content-between mt-2 mb-3">
-          <div>
-            <div class="target-date">Target</div>
-            <div class="remaining-amount">Remaining</div>
-          </div>
-          <div class="text-end">
-            <div class="target-date">Dec 30, 2025</div>
-            <div class="remaining-amount">RM 1,200</div>
-          </div>
-        </div>
-        
-        <div class="goal-info-footer">
-          <div class="start-date">
-            <img src="/svgs/date-svgrepo-com.svg" alt="Calendar">
-            <span>Started: Jan 15, 2023</span>
-          </div>
-          <span class="priority-badge priority-low">Low Priority</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Home Renovation -->
-    <div class="col-md-4 mb-4" data-category="house" data-progress="in-progress" data-priority="high">
-      <div class="goal-card">
-        <div class="goal-options">
-          <div class="dropdown">
-            <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-              </svg>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal" data-goal-id="2">Edit</a></li>
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteGoalModal" data-goal-id="2">Delete</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="d-flex align-items-center mb-2">
-          <img src="/svgs/house-svgrepo-com.svg" alt="Home" class="goal-icon">
-          <span>Home Renovation</span>
-        </div>
-        
-        <div class="goal-amount">RM 35,000</div>
-        
-        <div class="saved-amount">RM 15,750 saved so far</div>
-        
-        <div class="progress">
-          <div class="progress-bar" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        
-        <div class="d-flex justify-content-between mt-2 mb-3">
-          <div>
-            <div class="target-date">Target</div>
-            <div class="remaining-amount">Remaining</div>
-          </div>
-          <div class="text-end">
-            <div class="target-date">Dec 30, 2025</div>
-            <div class="remaining-amount">RM 19,250</div>
-          </div>
-        </div>
-        
-        <div class="goal-info-footer">
-          <div class="start-date">
-            <img src="/svgs/date-svgrepo-com.svg" alt="Calendar">
-            <span>Started: Mar 10, 2023</span>
-          </div>
-          <span class="priority-badge priority-high">High Priority</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Emergency Fund -->
-    <div class="col-md-4 mb-4" data-category="emergency" data-progress="completed" data-priority="high">
-      <div class="goal-card">
-        <div class="goal-options">
-          <div class="dropdown">
-            <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-              </svg>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal" data-goal-id="3">Edit</a></li>
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteGoalModal" data-goal-id="3">Delete</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="d-flex align-items-center mb-2">
-          <img src="/svgs/emergency-svgrepo-com.svg" alt="Emergency" class="goal-icon">
-          <span>Emergency Fund</span>
-        </div>
-        
-        <div class="goal-amount">RM 50,000</div>
-        
-        <div class="saved-amount">RM 50,000 saved so far</div>
-        
-        <div class="progress">
-          <div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        
-        <div class="d-flex justify-content-between mt-2 mb-3">
-          <div>
-            <div class="target-date">Target</div>
-            <div class="remaining-amount">Remaining</div>
-          </div>
-          <div class="text-end">
-            <div class="target-date">Dec 30, 2025</div>
-            <div class="remaining-amount">RM 0</div>
-          </div>
-        </div>
-        
-        <div class="goal-info-footer">
-          <div class="start-date">
-            <img src="/svgs/date-svgrepo-com.svg" alt="Calendar">
-            <span>Started: Feb 5, 2022</span>
-          </div>
-          <span class="priority-badge priority-high">High Priority</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- New Car -->
-    <div class="col-md-4 mb-4" data-category="car" data-progress="in-progress" data-priority="medium">
-      <div class="goal-card">
-        <div class="goal-options">
-          <div class="dropdown">
-            <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-              </svg>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal" data-goal-id="4">Edit</a></li>
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteGoalModal" data-goal-id="4">Delete</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="d-flex align-items-center mb-2">
-          <img src="/svgs/car-svgrepo-com.svg" alt="Car" class="goal-icon">
-          <span>New Car</span>
-        </div>
-        
-        <div class="goal-amount">RM 25,000</div>
-        
-        <div class="saved-amount">RM 6,250 saved so far</div>
-        
-        <div class="progress">
-          <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        
-        <div class="d-flex justify-content-between mt-2 mb-3">
-          <div>
-            <div class="target-date">Target</div>
-            <div class="remaining-amount">Remaining</div>
-          </div>
-          <div class="text-end">
-            <div class="target-date">Dec 30, 2025</div>
-            <div class="remaining-amount">RM 18,750</div>
-          </div>
-        </div>
-        
-        <div class="goal-info-footer">
-          <div class="start-date">
-            <img src="/svgs/date-svgrepo-com.svg" alt="Calendar">
-            <span>Started: May 20, 2023</span>
-          </div>
-          <span class="priority-badge priority-medium">Medium Priority</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Education -->
-    <div class="col-md-4 mb-4" data-category="education" data-progress="in-progress" data-priority="high">
-      <div class="goal-card">
-        <div class="goal-options">
-          <div class="dropdown">
-            <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-              </svg>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal" data-goal-id="5">Edit</a></li>
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteGoalModal" data-goal-id="5">Delete</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="d-flex align-items-center mb-2">
-          <img src="/svgs/education-svgrepo-com.svg" alt="Education" class="goal-icon">
-          <span>Education</span>
-        </div>
-        
-        <div class="goal-amount">RM 35,000</div>
-        
-        <div class="saved-amount">RM 26,250 saved so far</div>
-        
-        <div class="progress">
-          <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        
-        <div class="d-flex justify-content-between mt-2 mb-3">
-          <div>
-            <div class="target-date">Target</div>
-            <div class="remaining-amount">Remaining</div>
-          </div>
-          <div class="text-end">
-            <div class="target-date">Dec 30, 2025</div>
-            <div class="remaining-amount">RM 8,750</div>
-          </div>
-        </div>
-        
-        <div class="goal-info-footer">
-          <div class="start-date">
-            <img src="/svgs/date-svgrepo-com.svg" alt="Calendar">
-            <span>Started: Apr 12, 2022</span>
-          </div>
-          <span class="priority-badge priority-high">High Priority</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Investments -->
-    <div class="col-md-4 mb-4" data-category="investment" data-progress="expired" data-priority="medium">
-      <div class="goal-card">
-        <div class="goal-options">
-          <div class="dropdown">
-            <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-              </svg>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal" data-goal-id="6">Edit</a></li>
-              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteGoalModal" data-goal-id="6">Delete</a></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="d-flex align-items-center mb-2">
-          <img src="/svgs/investment-svgrepo-com.svg" alt="Investments" class="goal-icon">
-          <span>Investments</span>
-        </div>
-        
-        <div class="goal-amount">RM 80,000</div>
-        
-        <div class="saved-amount">RM 52,000 saved so far</div>
-        
-        <div class="progress">
-          <div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        
-        <div class="d-flex justify-content-between mt-2 mb-3">
-          <div>
-            <div class="target-date">Target</div>
-            <div class="remaining-amount">Remaining</div>
-          </div>
-          <div class="text-end">
-            <div class="target-date">Dec 2023</div>
-            <div class="remaining-amount">RM 28,000</div>
-          </div>
-        </div>
-        
-        <div class="goal-info-footer">
-          <div class="start-date">
-            <img src="/svgs/date-svgrepo-com.svg" alt="Calendar">
-            <span>Started: Jun 3, 2021</span>
-          </div>
-          <span class="priority-badge priority-medium">Medium Priority</span>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="row" id="goals-container">
+  <% goals.forEach((goal, index) => {
+    // Rely on the 'progress' field already calculated by the Mongoose model
+    // The model ensures it's min 0, max 100, and handled division by zero.
+    const displayProgress = goal.progress || 0; // Use goal.progress, default to 0 if null/undefined
+    const remaining = goal.goalAmount - goal.currentAmount;
+  %>
+    <div class="col-md-4 mb-4"
+          data-category="<%= goal.icon %>"
+          data-progress="<%= goal.status || 'in-progress' %>"
+          data-priority="<%= goal.goalPriority?.toLowerCase() || 'medium' %>">
 
-  <!-- Add Goal Modal -->
+      <div class="goal-card">
+        <div class="goal-options">
+          <div class="dropdown">
+            <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+              </svg>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editGoalModal" data-goal-id="<%= goal._id %>">Edit</a></li>
+              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteGoalModal" data-goal-id="<%= goal._id %>">Delete</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center mb-2">
+          <img src="/svgs/<%= goal.icon %>-svgrepo-com.svg" alt="<%= goal.goalName %>" class="goal-icon">
+          <span><%= goal.goalName %></span>
+        </div>
+
+        <div class="goal-amount">RM <%= goal.goalAmount.toLocaleString() %></div>
+        <div class="saved-amount">RM <%= goal.currentAmount.toLocaleString() %> saved so far</div>
+
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" style="width: <%= displayProgress %>%;" aria-valuenow="<%= displayProgress %>" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+
+        
+
+        <div class="d-flex justify-content-between mt-2 mb-3">
+          <div>
+            <div class="target-date">Target</div>
+            <div class="remaining-amount">Remaining</div>
+          </div>
+          <div class="text-end">
+            <div class="target-date"><%= new Date(goal.targetDate).toLocaleDateString('en-MY', { year: 'numeric', month: 'short', day: 'numeric' }) %></div>
+            <div class="remaining-amount">RM <%= remaining.toLocaleString() %></div>
+          </div>
+        </div>
+
+        <div class="goal-info-footer">
+          <div class="start-date">
+            <img src="/svgs/date-svgrepo-com.svg" alt="Calendar">
+            <span>Started: <%= new Date(goal.startDate).toLocaleDateString('en-MY', { year: 'numeric', month: 'short', day: 'numeric' }) %></span>
+          </div>
+          <span class="priority-badge priority-<%= goal.goalPriority?.toLowerCase() || 'medium' %>">
+            <%= goal.goalPriority || 'Medium Priority' %>
+          </span>
+        </div>
+      </div>
+    </div>
+  <% }) %>
+</div>
+
+    
+
+
+<!-- Add Goal Modal -->
   <div class="modal fade" id="addGoalModal" tabindex="-1" aria-labelledby="addGoalModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -480,73 +240,73 @@
               <div class="icon-selector">
                 <div class="icon-option selected">
                   <div class="icon-circle">
-                    <img src="/svgs/vacation-svgrepo-com.svg" alt="Vacation" data-icon="vacation">
+                    <img src="../../svgs/vacation-svgrepo-com.svg" alt="Vacation" data-icon="vacation">
                   </div>
                   <span>Vacation</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/house-svgrepo-com.svg" alt="House" data-icon="house">
+                    <img src="../../svgs/house-svgrepo-com.svg" alt="House" data-icon="house">
                   </div>
                   <span>House</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/emergency-svgrepo-com.svg" alt="Emergency" data-icon="emergency">
+                    <img src="../../svgs/emergency-svgrepo-com.svg" alt="Emergency" data-icon="emergency">
                   </div>
                   <span>Emergency</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/car-svgrepo-com.svg" alt="Car" data-icon="car">
+                    <img src="../../svgs/car-svgrepo-com.svg" alt="Car" data-icon="car">
                   </div>
                   <span>Car</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/education-svgrepo-com.svg" alt="Education" data-icon="education">
+                    <img src="../../svgs/education-svgrepo-com.svg" alt="Education" data-icon="education">
                   </div>
                   <span>Education</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/investment-svgrepo-com.svg" alt="Investment" data-icon="investment">
+                    <img src="../../svgs/investment-svgrepo-com.svg" alt="Investment" data-icon="investment">
                   </div>
                   <span>Investment</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/retirement-svgrepo-com.svg" alt="Retirement" data-icon="retirement">
+                    <img src="../../svgs/retirement-svgrepo-com.svg" alt="Retirement" data-icon="retirement">
                   </div>
                   <span>Retirement</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/wedding-svgrepo-com.svg" alt="Wedding" data-icon="wedding">
+                    <img src="../../svgs/wedding-svgrepo-com.svg" alt="Wedding" data-icon="wedding">
                   </div>
                   <span>Wedding</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/family-svgrepo-com.svg" alt="Family" data-icon="family">
+                    <img src="../../svgs/family-svgrepo-com.svg" alt="Family" data-icon="family">
                   </div>
                   <span>Family</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/electronic-svgrepo-com.svg" alt="Electronics" data-icon="electronic">
+                    <img src="../../svgs/electronic-svgrepo-com.svg" alt="Electronics" data-icon="electronic">
                   </div>
                   <span>Electronics</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/debt-svgrepo-com.svg" alt="Debt" data-icon="debt">
+                    <img src="../../svgs/debt-svgrepo-com.svg" alt="Debt" data-icon="debt">
                   </div>
                   <span>Debt</span>
                 </div>
                 <div class="icon-option">
                   <div class="icon-circle">
-                    <img src="/svgs/charity-svgrepo-com.svg" alt="Charity" data-icon="charity">
+                    <img src="../../svgs/charity-svgrepo-com.svg" alt="Charity" data-icon="charity">
                   </div>
                   <span>Charity</span>
                 </div>
@@ -658,7 +418,9 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/SavingGoals/goal-planning.js"></script>
-
+<script type="module" src="/js/common-add-goal-logic.js"></script>
+<script type="module" src="/js/SavingGoals/goal-planning.js"></script>
 </body>
 </html>
+
+
