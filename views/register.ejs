@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/login_register.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="/svgs/logo_FinPlan(remove bg).png" height="50" width="50">
+            <p>FinPlan</p>
+        </div>
+
+        <div class="left">
+            <h1>Create an Account</h1>
+            <p>Begin your personalized financial planning experience.</p>
+
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" placeholder="Enter your name" />
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email address" />
+            </div>
+
+            <div class="form-group password-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" />
+            </div>
+
+            <div class="form-group password-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm your password" />
+            </div>
+
+            <button class="register-btn" id="register-btn">Register</button>
+
+            <div class="or-register">
+                <hr>
+                <span>Or Register With</span>
+                <hr>
+            </div>
+
+            <button class="google-btn">
+                <img src="/svgs/google.jpg" height="15" width="15">
+                Sign up with Google
+            </button>
+
+            <div class="signin">
+                Already Have An Account? <a href="/">Sign In.</a>
+            </div>
+
+            <div class="footer">
+                Copyright © <%= new Date().getFullYear() %> FinPlan Enterprises LTD.
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+
+        <div class="right">
+            <h2>Your Smart Financial Planning Companion</h2>
+            <p>Manage your goals, explore investment strategies, and plan your future—all in one place. Sign up or log
+                in to start building your financial success today.</p>
+            <img src="/svgs/financial planning.jpg" class="dashboard-img" />
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById("register-btn").addEventListener("click", function() {
+            window.location.href = "/";
+        });
+    </script>
+</body>
+
+</html>

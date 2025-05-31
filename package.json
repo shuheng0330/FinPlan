@@ -1,0 +1,29 @@
+{
+  "name": "finplan",
+  "version": "1.0.0",
+  "description": "This is for Web Programming WIA2003 course group assignments",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuheng0330/FinPlan.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shuheng0330/FinPlan/issues"
+  },
+  "homepage": "https://github.com/shuheng0330/FinPlan#readme",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "mongoose": "^8.15.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
