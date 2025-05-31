@@ -1,247 +1,281 @@
+import { initializeAddGoalForm } from '/js/common-add-goal-logic.js'; // Adjust path if needed
 
-  document.addEventListener('DOMContentLoaded', function() {
-    // Goal selection
-    const goalCards = document.querySelectorAll('.goal-card');
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Existing Goal Selection Logic ---
+    const goalCards = document.querySelectorAll('.goal-card'); // Still selecting all for click handler
     goalCards.forEach(card => {
-      card.addEventListener('click', function() {
-        // Remove selected class from all cards
-        goalCards.forEach(c => c.classList.remove('selected'));
-        
-        // Add selected class to clicked card
-        this.classList.add('selected');
-      });
+        card.addEventListener('click', function() {
+            goalCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+        });
     });
 
-     const iconOptions = document.querySelectorAll(".icon-option");
-      iconOptions.forEach(option => {
-        option.addEventListener("click", () => {
-          // Remove .selected from all
-          iconOptions.forEach(o => o.classList.remove("selected"));
-          // Add .selected to clicked one
-          option.classList.add("selected");
-        });
-      });
-    
-    // Goal pagination
-    const goalPages = document.querySelectorAll('.goal-page');
+
+
+// --- MODIFIED Goal Pagination Logic (as provided in previous answer) ---
+    const allGoalCols = document.querySelectorAll('.goal-page .col-md-4');
+    const goalsPerPage = 3;
+    let currentPage = 1;
+    const totalGoals = allGoalCols.length;
+    const totalPages = Math.ceil(totalGoals / goalsPerPage);
+
     const prevGoalsBtn = document.getElementById('prevGoalsBtn');
     const nextGoalsBtn = document.getElementById('nextGoalsBtn');
-    let currentPage = 1;
-    const totalPages = goalPages.length;
 
-    // Function to update page visibility
-    function updateGoalPages() {
-      // Hide all pages
-      goalPages.forEach(page => {
-        page.classList.remove('active');
-      });
+    function updateGoalCardVisibility() {
+        allGoalCols.forEach(col => {
+            col.style.display = 'none';
+        });
 
-      // Show current page
-      document.querySelector(`.goal-page[data-page="${currentPage}"]`).classList.add('active');
+        const startIndex = (currentPage - 1) * goalsPerPage;
+        const endIndex = Math.min(startIndex + goalsPerPage, totalGoals);
 
-      // Update button states
-      prevGoalsBtn.disabled = currentPage === 1;
-      nextGoalsBtn.disabled = currentPage === totalPages;
+        for (let i = startIndex; i < endIndex; i++) {
+            if (allGoalCols[i]) {
+                allGoalCols[i].style.display = 'block';
+            }
+        }
+
+        if (prevGoalsBtn) {
+            prevGoalsBtn.disabled = currentPage === 1;
+            prevGoalsBtn.style.display = totalGoals <= goalsPerPage ? 'none' : 'inline-flex';
+        }
+        if (nextGoalsBtn) {
+            nextGoalsBtn.disabled = currentPage === totalPages || totalGoals === 0;
+            nextGoalsBtn.style.display = totalGoals <= goalsPerPage ? 'none' : 'inline-flex';
+        }
     }
 
-    // Previous button click handler
-    prevGoalsBtn.addEventListener('click', function() {
-      if (currentPage > 1) {
-        currentPage--;
-        updateGoalPages();
-      }
-    });
-
-    // Next button click handler
-    nextGoalsBtn.addEventListener('click', function() {
-      if (currentPage < totalPages) {
-        currentPage++;
-        updateGoalPages();
-      }
-    });
-
-    // Initialize pagination
-    updateGoalPages();
-    
-    // Initialize allocation chart
-    const allocationCtx = document.getElementById('allocationChart').getContext('2d');
-    const allocationChart = new Chart(allocationCtx, {
-      type: 'pie',
-      data: {
-        labels: [
-          'FTSE Bursa Malaysia KLCI ETF',
-          'Malaysian Government Securities',
-          'Malaysian REITs',
-          'ASEAN Equity Funds',
-          'Fixed Deposits'
-        ],
-        datasets: [{
-          data: [25, 20, 15, 25, 15],
-          backgroundColor: [
-            '#4CAF50',
-            '#2196F3',
-            '#9C27B0',
-            '#FF9800',
-            '#607D8B'
-          ],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.label + ': ' + context.raw + '%';
-              }
+    if (prevGoalsBtn) {
+        prevGoalsBtn.addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                updateGoalCardVisibility();
             }
-          }
-        }
-      }
-    });
-    
-    // Initialize risk-return chart in modal
-    const riskReturnCtx = document.getElementById('riskReturnChart').getContext('2d');
-    const riskReturnChart = new Chart(riskReturnCtx, {
-      type: 'scatter',
-      data: {
-        datasets: [
-          {
-            label: 'Conservative',
-            data: [{ x: 5, y: 3.5 }],
-            backgroundColor: '#4CAF50',
-            pointRadius: 10
-          },
-          {
-            label: 'Moderate',
-            data: [{ x: 10, y: 5.8 }],
-            backgroundColor: '#FF9800',
-            pointRadius: 10
-          },
-          {
-            label: 'Aggressive',
-            data: [{ x: 15, y: 7.5 }],
-            backgroundColor: '#F44336',
-            pointRadius: 10
-          },
-          {
-            label: 'Your Strategy',
-            data: [{ x: 10, y: 5.8 }],
-            backgroundColor: '#6366f1',
-            pointRadius: 12,
-            pointStyle: 'star'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'Risk (Volatility)'
-            },
-            min: 0,
-            max: 20
-          },
-          y: {
-            title: {
-              display: true,
-              text: 'Expected Return (%)'
-            },
-            min: 0,
-            max: 10
-          }
-        },
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.dataset.label + ': ' + context.raw.y + '% return, ' + context.raw.x + ' risk';
-              }
+        });
+    }
+
+    if (nextGoalsBtn) {
+        nextGoalsBtn.addEventListener('click', function() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updateGoalCardVisibility();
             }
-          }
+        });
+    }
+
+    if (totalGoals > 0) {
+        updateGoalCardVisibility();
+        // --- NEW CODE HERE: Select the first goal card after initial display ---
+        const firstGoalCard = document.querySelector('.goal-card'); // Select the first goal card
+        if (firstGoalCard) {
+            // Remove 'selected' from all first, to be safe (though EJS should no longer add it)
+            goalCards.forEach(c => c.classList.remove('selected'));
+            firstGoalCard.classList.add('selected'); // Add 'selected' to the first one
         }
-      }
-    });
-    
-    // Risk slider functionality
+    } else {
+        if (prevGoalsBtn) prevGoalsBtn.style.display = 'none';
+        if (nextGoalsBtn) nextGoalsBtn.style.display = 'none';
+    }
+
+
+    // --- Existing Chart and Calculator Initializations (unchanged) ---
+    const allocationCtx = document.getElementById('allocationChart') ? document.getElementById('allocationChart').getContext('2d') : null;
+    if (allocationCtx) {
+        const allocationChart = new Chart(allocationCtx, {
+            type: 'pie',
+            data: {
+                labels: [
+                    'FTSE Bursa Malaysia KLCI ETF',
+                    'Malaysian Government Securities',
+                    'Malaysian REITs',
+                    'ASEAN Equity Funds',
+                    'Fixed Deposits'
+                ],
+                datasets: [{
+                    data: [25, 20, 15, 25, 15],
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#2196F3',
+                        '#9C27B0',
+                        '#FF9800',
+                        '#607D8B'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    const riskReturnCtx = document.getElementById('riskReturnChart') ? document.getElementById('riskReturnChart').getContext('2d') : null;
+    if (riskReturnCtx) {
+        const riskReturnChart = new Chart(riskReturnCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'Conservative',
+                        data: [{ x: 5, y: 3.5 }],
+                        backgroundColor: '#4CAF50',
+                        pointRadius: 10
+                    },
+                    {
+                        label: 'Moderate',
+                        data: [{ x: 10, y: 5.8 }],
+                        backgroundColor: '#FF9800',
+                        pointRadius: 10
+                    },
+                    {
+                        label: 'Aggressive',
+                        data: [{ x: 15, y: 7.5 }],
+                        backgroundColor: '#F44336',
+                        pointRadius: 10
+                    },
+                    {
+                        label: 'Your Strategy',
+                        data: [{ x: 10, y: 5.8 }],
+                        backgroundColor: '#6366f1',
+                        pointRadius: 12,
+                        pointStyle: 'star'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Risk (Volatility)'
+                        },
+                        min: 0,
+                        max: 20
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Expected Return (%)'
+                        },
+                        min: 0,
+                        max: 10
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw.y + '% return, ' + context.raw.x + ' risk';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     const riskSlider = document.getElementById('riskSlider');
-    riskSlider.addEventListener('input', function() {
-      // This would update the recommendation in a real app
-      // For this demo, we'll just log the value
-      console.log('Risk level:', this.value);
-    });
-    
-    // Generate strategy button
+    if (riskSlider) {
+        riskSlider.addEventListener('input', function() {
+            console.log('Risk level:', this.value);
+        });
+    }
+
     const generateStrategyBtn = document.getElementById('generateStrategyBtn');
-    generateStrategyBtn.addEventListener('click', function() {
-      // In a real app, this would generate a new strategy based on the selected goal and risk level
-      // For this demo, we'll just scroll to the recommendation section
-      document.querySelector('.strategy-recommendation').scrollIntoView({ behavior: 'smooth' });
-    });
-    
-    // Download strategy button
+    if (generateStrategyBtn) {
+        generateStrategyBtn.addEventListener('click', function() {
+            document.querySelector('.strategy-recommendation').scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+
     const downloadStrategyBtn = document.getElementById('downloadStrategyBtn');
-    downloadStrategyBtn.addEventListener('click', function() {
-      alert('Strategy PDF downloaded successfully!');
-    });
-    
-    // Implement strategy button
+    if (downloadStrategyBtn) {
+        downloadStrategyBtn.addEventListener('click', function() {
+            alert('Strategy PDF downloaded successfully!');
+        });
+    }
+
     const implementStrategyBtn = document.getElementById('implementStrategyBtn');
-    implementStrategyBtn.addEventListener('click', function() {
-      alert('Strategy implementation initiated! You will be redirected to the investment platform to complete the process.');
-    });
-    
-    // Regenerate button
+    if (implementStrategyBtn) {
+        implementStrategyBtn.addEventListener('click', function() {
+            alert('Strategy implementation initiated! You will be redirected to the investment platform to complete the process.');
+        });
+    }
+
     const regenerateBtn = document.getElementById('regenerateBtn');
-    regenerateBtn.addEventListener('click', function() {
-      alert('Generating alternative strategy...');
-      // In a real app, this would generate a new strategy
-    });
-    
-    // ROI Calculator
+    if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', function() {
+            alert('Generating alternative strategy...');
+        });
+    }
+
     const calculateRoiBtn = document.getElementById('calculateRoiBtn');
-    calculateRoiBtn.addEventListener('click', function() {
-      const initialInvestment = parseFloat(document.getElementById('initialInvestment').value);
-      const monthlyContribution = parseFloat(document.getElementById('monthlyContribution').value);
-      const annualReturn = parseFloat(document.getElementById('annualReturn').value) / 100;
-      const investmentPeriod = parseInt(document.getElementById('investmentPeriod').value);
-      
-      // Calculate results
-      const monthlyRate = annualReturn / 12;
-      let balance = initialInvestment;
-      
-      for (let i = 0; i < investmentPeriod * 12; i++) {
-        balance = balance * (1 + monthlyRate) + monthlyContribution;
-      }
-      
-      const totalInvestment = initialInvestment + (monthlyContribution * investmentPeriod * 12);
-      const totalInterest = balance - totalInvestment;
-      const roi = (totalInterest / totalInvestment) * 100;
-      
-      // Update results
-      document.getElementById('totalInvestment').textContent = 'RM' + totalInvestment.toFixed(2);
-      document.getElementById('totalInterest').textContent = 'RM' + totalInterest.toFixed(2);
-      document.getElementById('finalBalance').textContent = 'RM' + balance.toFixed(2);
-      document.getElementById('roiPercentage').textContent = roi.toFixed(2) + '%';
-    });
-    
-    // Save goal button
-    const saveGoalBtn = document.getElementById('saveGoalBtn');
-    saveGoalBtn.addEventListener('click', function() {
-      // In a real app, this would save the goal to a database
-      // For this demo, we'll just close the modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('addGoalModal'));
-      modal.hide();
-      
-      // Show success message
-      alert('Goal added successfully!');
-    });
-  });
+    if (calculateRoiBtn) {
+        calculateRoiBtn.addEventListener('click', function() {
+            const initialInvestmentInput = document.getElementById('initialInvestment');
+            const monthlyContributionInput = document.getElementById('monthlyContribution');
+            const annualReturnInput = document.getElementById('annualReturn');
+            const investmentPeriodInput = document.getElementById('investmentPeriod');
+
+            const initialInvestment = parseFloat(initialInvestmentInput.value);
+            const monthlyContribution = parseFloat(monthlyContributionInput.value);
+            const annualReturn = parseFloat(annualReturnInput.value) / 100;
+            const investmentPeriod = parseInt(investmentPeriodInput.value);
+
+            if (isNaN(initialInvestment) || initialInvestment < 0) {
+                alert('Please enter a valid non-negative Initial Investment.');
+                initialInvestmentInput.focus();
+                return;
+            }
+            if (isNaN(monthlyContribution) || monthlyContribution < 0) {
+                alert('Please enter a valid non-negative Monthly Contribution.');
+                monthlyContributionInput.focus();
+                return;
+            }
+            if (isNaN(annualReturn) || annualReturn < 0) {
+                alert('Please enter a valid non-negative Annual Return (percentage).');
+                annualReturnInput.focus();
+                return;
+            }
+            if (isNaN(investmentPeriod) || investmentPeriod <= 0) {
+                alert('Please enter a valid positive Investment Period (in years).');
+                investmentPeriodInput.focus();
+                return;
+            }
+
+            const monthlyRate = annualReturn / 12;
+            let balance = initialInvestment;
+
+            for (let i = 0; i < investmentPeriod * 12; i++) {
+                balance = balance * (1 + monthlyRate) + monthlyContribution;
+            }
+
+            const totalInvestment = initialInvestment + (monthlyContribution * investmentPeriod * 12);
+            const totalInterest = balance - totalInvestment;
+            const roi = (totalInvestment > 0) ? (totalInterest / totalInvestment) * 100 : 0;
+
+            document.getElementById('totalInvestment').textContent = 'RM' + totalInvestment.toFixed(2);
+            document.getElementById('totalInterest').textContent = 'RM' + totalInterest.toFixed(2);
+            document.getElementById('finalBalance').textContent = 'RM' + balance.toFixed(2);
+            document.getElementById('roiPercentage').textContent = roi.toFixed(2) + '%';
+        });
+    }
+
+    initializeAddGoalForm();
+});
