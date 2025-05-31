@@ -174,34 +174,6 @@ async function fetchAnalystRatings(symbols = ['AAPL', 'NVDA', 'TSLA']) {
 }
 
 
-//   try {
-//     showLoading('earnings');
-//     if (cache.earnings && Date.now() - cache.lastUpdated < 300000) {
-//       return cache.earnings;
-//     }
-//     const response = await fetch(
-//       `${API_CONFIG.fmp.baseUrl}calendar/earnings?from=${new Date().toISOString().split('T')[0]}&to=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}&apikey=${API_CONFIG.fmp.key}`
-//     );
-//     if (!response.ok) throw new Error('Network response was not ok');
-//     const data = await response.json();
-//     const filteredData = data.filter(event => symbols.includes(event.symbol)).map(event => ({
-//       symbol: event.symbol,
-//       name: event.companyName || event.symbol,
-//       date: event.date
-//     }));
-//     cache.earnings = filteredData;
-//     cache.lastUpdated = Date.now();
-//     hideLoading('earnings');
-//     return filteredData;
-//   } catch (error) {
-//     console.error('Error fetching earnings data:', error);
-//     showError('earnings');
-//     return [];
-//   }
-// }
-
-// Helper Functions
-
 function showLoading(type) {
   const loader = document.getElementById(`loading-${type}`);
   const error = document.getElementById(`error-${type}`);
