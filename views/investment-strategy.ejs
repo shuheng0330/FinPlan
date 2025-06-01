@@ -111,140 +111,91 @@
   </div>
 
   <!-- Strategy Recommendation -->
-  <div class="strategy-recommendation">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h5 class="mb-0">Recommended Strategy <span class="risk-level-badge risk-medium">Moderate Risk</span></h5>
-      <button class="btn btn-sm btn-outline-secondary" id="regenerateBtn">Regenerate</button>
-    </div>
-    
-    <div class="row">
-      <div class="col-md-6">
-        <div class="allocation-chart-container">
-          <canvas id="allocationChart"></canvas>
+<div id="strategyDisplaySection" class="mt-5" style="display: none;">
+    <div class="strategy-recommendation">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Recommended Strategy <span class="risk-level-badge" id="riskLevelBadge"></span></h5>
+            <button class="btn btn-sm btn-outline-secondary" id="regenerateBtn">Regenerate</button>
         </div>
-      </div>
-      
-      <div class="col-md-6">
-        <h6 class="mb-3">Asset Allocation</h6>
-        
-        <div class="asset-item">
-          <div class="asset-color" style="background-color: #4CAF50;"></div>
-          <div class="asset-name">FTSE Bursa Malaysia KLCI ETF</div>
-          <div class="asset-percentage">25%</div>
-        </div>
-        
-        <div class="asset-item">
-          <div class="asset-color" style="background-color: #2196F3;"></div>
-          <div class="asset-name">Malaysian Government Securities</div>
-          <div class="asset-percentage">20%</div>
-        </div>
-        
-        <div class="asset-item">
-          <div class="asset-color" style="background-color: #9C27B0;"></div>
-          <div class="asset-name">Malaysian REITs</div>
-          <div class="asset-percentage">15%</div>
-        </div>
-        
-        <div class="asset-item">
-          <div class="asset-color" style="background-color: #FF9800;"></div>
-          <div class="asset-name">ASEAN Equity Funds</div>
-          <div class="asset-percentage">25%</div>
-        </div>
-        
-        <div class="asset-item">
-          <div class="asset-color" style="background-color: #607D8B;"></div>
-          <div class="asset-name">Fixed Deposits</div>
-          <div class="asset-percentage">15%</div>
-        </div>
-        
-        <div class="mt-4">
-          <h6 class="mb-3">Recommended Funds</h6>
-          <ul class="list-group">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              CIMB-Principal KLCI-Linked Fund
-              <span class="badge bg-primary rounded-pill">25%</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              Maybank Malaysian Government Bond Fund
-              <span class="badge bg-primary rounded-pill">20%</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              Kenanga REIT Income Fund
-              <span class="badge bg-primary rounded-pill">15%</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              Public ASEAN Growth Fund
-              <span class="badge bg-primary rounded-pill">25%</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              CIMB Fixed Deposit-i
-              <span class="badge bg-primary rounded-pill">15%</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    
-    <div class="strategy-details mt-4">
-      <div class="strategy-detail-item">
-        <div class="strategy-detail-value">RM250</div>
-        <div class="strategy-detail-label">Suggested Monthly Investment</div>
-      </div>
-      
-      <div class="strategy-detail-item">
-        <div class="strategy-detail-value">5.8%</div>
-        <div class="strategy-detail-label">Expected Annual Return</div>
-      </div>
-      
-      <div class="strategy-detail-item">
-        <div class="strategy-detail-value">Medium</div>
-        <div class="strategy-detail-label">Risk Level</div>
-      </div>
-      
-      <div class="strategy-detail-item">
-        <div class="strategy-detail-value">2 years</div>
-        <div class="strategy-detail-label">Investment Horizon</div>
-      </div>
-    </div>
-    
-    <div class="strategy-actions mt-4">
-      <button class="btn btn-outline-primary" id="downloadStrategyBtn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-2" viewBox="0 0 16 16">
-          <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-          <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-        </svg>
-        Download Strategy
-      </button>
-      
-      <button class="btn btn-success" id="implementStrategyBtn">Implement Strategy</button>
-    </div>
-  </div>
 
-  <!-- Strategy Explanation -->
-  <div class="strategy-explanation">
-    <h5 class="mb-3">Strategy Explanation</h5>
-    
-    <div class="explanation-item">
-      <div class="explanation-title">Why This Strategy?</div>
-      <div class="explanation-text">
-        This balanced strategy is designed for your vacation goal with a 2-year time horizon in the Malaysian market. With a moderate risk appetite, we've allocated 50% to Malaysian and ASEAN equities for growth potential, 35% to fixed income and 15% to cash for stability. This balance aims to provide reasonable growth while protecting your principal as you approach your target date, taking into account the unique characteristics of the Malaysian market.
-      </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="allocation-chart-container">
+                    <canvas id="allocationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="mb-3">Asset Allocation</h6>
+
+                <div id="dynamicAssetAllocationContainer">
+                    </div>
+
+                <div class="mt-4">
+                    <h6 class="mb-3">Recommended Funds</h6>
+                    <ul class="list-group" id="recommendedFundsList">
+                        </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="strategy-details mt-4">
+            <div class="strategy-detail-item">
+                <div class="strategy-detail-value" id="suggestedMonthlyInvestmentValue"></div>
+                <div class="strategy-detail-label">Suggested Monthly Investment</div>
+            </div>
+
+            <div class="strategy-detail-item">
+                <div class="strategy-detail-value" id="expectedAnnualReturnValue"></div>
+                <div class="strategy-detail-label">Expected Annual Return</div>
+            </div>
+
+            <div class="strategy-detail-item">
+                <div class="strategy-detail-value" id="riskLevelValue"></div>
+                <div class="strategy-detail-label">Risk Level</div>
+            </div>
+
+            <div class="strategy-detail-item">
+                <div class="strategy-detail-value" id="investmentHorizonValue"></div>
+                <div class="strategy-detail-label">Investment Horizon</div>
+            </div>
+        </div>
+
+        <div class="strategy-actions mt-4">
+            <button class="btn btn-outline-primary" id="downloadStrategyBtn" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-2" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Download Strategy
+            </button>
+
+            <button class="btn btn-success" id="implementStrategyBtn" disabled>Implement Strategy</button>
+        </div>
     </div>
-    
-    <div class="explanation-item">
-      <div class="explanation-title">Risk vs. Return Analysis</div>
-      <div class="explanation-text">
-        With a 5.8% expected annual return, this strategy has a moderate risk profile for the Malaysian market. The diversification across Malaysian and ASEAN assets helps reduce volatility while still providing growth potential. Historical simulations show this portfolio has had positive returns in 80% of 2-year periods in the Malaysian market, with an average return of 5.5-6.2%.
-      </div>
+
+    <div class="strategy-explanation mt-4">
+        <h5 class="mb-3">Strategy Explanation</h5>
+
+        <div class="explanation-item">
+            <div class="explanation-title">Why This Strategy?</div>
+            <div class="explanation-text" id="whyThisStrategyText">
+                </div>
+        </div>
+
+        <div class="explanation-item">
+            <div class="explanation-title">Risk vs. Return Analysis</div>
+            <div class="explanation-text" id="riskReturnAnalysisText">
+                </div>
+        </div>
+
+        <div class="explanation-item">
+            <div class="explanation-title">Investment Horizon Impact</div>
+            <div class="explanation-text" id="investmentHorizonImpactText">
+                </div>
+        </div>
     </div>
-    
-    <div class="explanation-item">
-      <div class="explanation-title">Investment Horizon Impact</div>
-      <div class="explanation-text">
-        Your 2-year investment horizon is relatively short, which is why we've included a higher allocation to bonds and cash (40%) than would be typical for longer-term goals. This helps protect your capital as you approach your target date, reducing the impact of potential market downturns close to when you need the funds.
-      </div>
-    </div>
-  </div>
+</div>
 
   <!-- Strategy Comparison -->
   <div class="strategy-container">

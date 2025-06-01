@@ -129,6 +129,8 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
                 ],
                 "suggestedMonthlyInvestment": ${calculatedMonthlyInvestment},
                 "expectedAnnualReturn": ${riskAppetite === 'Aggressive' ? 0.08 : riskAppetite === 'Moderate' ? 0.06 : 0.04},
+                "investmentHorizon": "${investmentHorizonYears} years", 
+                "riskLevel": "${riskAppetite}", 
                 "strategyExplanation": {
                     "whyThisStrategy": "This strategy balances your goal with your ${riskAppetite} risk appetite, aiming for optimal growth while managing potential volatility.",
                     "riskReturnAnalysis": "A ${riskAppetite} allocation typically offers higher potential returns in exchange for higher volatility. Bonds provide stability, while equities drive growth.",
