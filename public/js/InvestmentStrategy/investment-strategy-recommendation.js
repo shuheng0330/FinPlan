@@ -1,14 +1,128 @@
 import { initializeAddGoalForm } from '/js/common-add-goal-logic.js'; // Adjust path if needed
 
+let selectedGoalId = null; // Variable to store the ID of the selected goal
+let riskAppetite = 'Moderate';
+// let allocationChartInstance = null;
+
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Existing Goal Selection Logic ---
-    const goalCards = document.querySelectorAll('.goal-card'); // Still selecting all for click handler
+    const goalCards = document.querySelectorAll('.goal-card');
+    const riskAppetiteSlider = document.getElementById('riskSlider');
+    const generateStrategyBtn = document.getElementById('generateStrategyBtn');
+    const strategyDisplaySection = document.getElementById('strategyDisplaySection'); // Main container for strategy
+
+    // Action Buttons
+    const regenerateBtn = document.getElementById('regenerateBtn');
+    const downloadStrategyBtn = document.getElementById('downloadStrategyBtn');
+    const implementStrategyBtn = document.getElementById('implementStrategyBtn');
+
+    // --- Goal Selection Logic ---
     goalCards.forEach(card => {
         card.addEventListener('click', function() {
             goalCards.forEach(c => c.classList.remove('selected'));
             this.classList.add('selected');
+            selectedGoalId = this.dataset.goalId;
+            console.log('Selected Goal ID:', selectedGoalId);
+            updateGenerateButtonState(); // Call to update button state
         });
     });
+
+    // --- Risk Appetite Slider Logic ---
+    if (riskAppetiteSlider) {
+        riskAppetiteSlider.addEventListener('input', function() {
+            const sliderValue = parseInt(this.value);
+            console.log('Risk level',sliderValue);
+
+            if (sliderValue <= 3) { 
+                riskAppetite = 'Conservative';
+            } else if (sliderValue <= 7) { 
+                riskAppetite = 'Moderate';
+            } else { 
+                riskAppetite = 'Aggressive';
+            }
+            console.log('Risk Appetite:', riskAppetite);
+            updateGenerateButtonState(); // Call to update button state
+        });
+    }
+
+    // --- Function to update the Generate Strategy button state ---
+    function updateGenerateButtonState() {
+        if (generateStrategyBtn) {
+            // Enable button only if a goal is selected AND risk appetite is determined
+            // (riskAppetite will always have a value due to default or slider change)
+            generateStrategyBtn.disabled = !selectedGoalId; // Only needs a selected goal
+        }
+    }
+
+
+    // Initial call to set the button state when the page loads
+    updateGenerateButtonState();
+
+    if(generateStrategyBtn){
+        generateStrategyBtn.addEventListener('click',async function(){
+            if(!selectedGoalId){
+                alert('Please select a goal first!');
+                return;
+            }
+
+            this.disabled = true; //disable button to prevent multiple clicks
+            this.textContent = 'Generating...';
+
+            console.log('Attempting to generate strategy for Goal ID:', selectedGoalId, 'with Risk Appetite:', riskAppetite);
+
+            try{
+                const response = await fetch('/investment-strategy/generate',{
+                    method: 'POST',
+                    headers:{
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        goalId: selectedGoalId,
+                        riskAppetite: riskAppetite
+                    }),
+                });
+
+                if(response.ok){
+                    const strategyData = await response.json();
+                    console.log('Generated Strategy:', strategyData);
+                    alert('Strategy generated successfully! (Check console for data)');
+                }else{
+                    const errorData = await response.json();
+                    console.error('Error generating strategy:', errorData);
+                    alert('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'));
+                }
+            }catch(error){
+                console.error('Network error during strategy generation:',error);
+                alert('Could not connect to the server to generate strategy. Please check your internet connection.');
+            }finally{
+                this.disabled = false; // Re-enable button
+                this.textContent = 'Generate Strategy'; // Reset button text
+            }
+        });
+    }
+
+    // --- Action Button Click Handlers (Implement in next steps) ---
+    if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', function() {
+            // Simply trigger the generateStrategyBtn click
+            generateStrategyBtn.click();
+        });
+    }
+
+    // (Add event listeners for downloadStrategyBtn and implementStrategyBtn here later)
+    if (downloadStrategyBtn) {
+        downloadStrategyBtn.addEventListener('click', function() {
+            console.log('Download Strategy clicked');
+            // Logic for PDF download
+        });
+    }
+
+    if (implementStrategyBtn) {
+        implementStrategyBtn.addEventListener('click', function() {
+            console.log('Implement Strategy clicked');
+            // Logic for saving/implementing strategy
+        });
+    }
 
 
 
@@ -190,38 +304,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const riskSlider = document.getElementById('riskSlider');
-    if (riskSlider) {
-        riskSlider.addEventListener('input', function() {
-            console.log('Risk level:', this.value);
-        });
-    }
-
-    const generateStrategyBtn = document.getElementById('generateStrategyBtn');
     if (generateStrategyBtn) {
         generateStrategyBtn.addEventListener('click', function() {
             document.querySelector('.strategy-recommendation').scrollIntoView({ behavior: 'smooth' });
-        });
-    }
-
-    const downloadStrategyBtn = document.getElementById('downloadStrategyBtn');
-    if (downloadStrategyBtn) {
-        downloadStrategyBtn.addEventListener('click', function() {
-            alert('Strategy PDF downloaded successfully!');
-        });
-    }
-
-    const implementStrategyBtn = document.getElementById('implementStrategyBtn');
-    if (implementStrategyBtn) {
-        implementStrategyBtn.addEventListener('click', function() {
-            alert('Strategy implementation initiated! You will be redirected to the investment platform to complete the process.');
-        });
-    }
-
-    const regenerateBtn = document.getElementById('regenerateBtn');
-    if (regenerateBtn) {
-        regenerateBtn.addEventListener('click', function() {
-            alert('Generating alternative strategy...');
         });
     }
 
@@ -279,3 +364,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initializeAddGoalForm();
 });
+
+// You might want to export selectedGoalId or a getter function if other modules need it
+export { selectedGoalId, riskAppetite };

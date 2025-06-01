@@ -41,7 +41,7 @@
     <div class="row mb-3">
       <% goals.forEach((goal, index) => { %>
         <div class="col-md-4 mb-3">
-          <div class="goal-card selected" data-goal-id="<%= index + 1 %>">
+          <div class="goal-card selected" data-goal-id="<%= goal._id %>">
             <div class="d-flex align-items-center mb-2">
               <img src="/svgs/<%= goal.icon%>-svgrepo-com.svg" alt="Goal Icon" class="goal-icon">
               <div>
@@ -106,7 +106,7 @@
     </div>
     
     <div class="text-center mt-4">
-      <button class="btn btn-primary" id="generateStrategyBtn">Generate Strategy</button>
+      <button class="btn btn-primary" id="generateStrategyBtn" disabled>Generate Strategy</button>
     </div>
   </div>
 
