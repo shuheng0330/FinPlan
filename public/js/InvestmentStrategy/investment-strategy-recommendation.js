@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    initializeAddGoalForm();
+    initializeAddGoalForm(showToast);
 });
 
 // You might want to export selectedGoalId or a getter function if other modules need it
