@@ -10,6 +10,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const generateStrategyBtn = document.getElementById('generateStrategyBtn');
     const strategyDisplaySection = document.getElementById('strategyDisplaySection'); // Main container for strategy
 
+    // Toast elements
+    const successToast = document.getElementById('successToast');
+    const successToastBody = document.getElementById('successToastBody');
+    const errorToast = document.getElementById('errorToast');
+    const errorToastBody = document.getElementById('errorToastBody');
+
+    // Bootstrap Toast instances
+    const bsSuccessToast = new bootstrap.Toast(successToast, { autohide: true, delay: 5000 });
+    const bsErrorToast = new bootstrap.Toast(errorToast, { autohide: true, delay: 7000 });
+
     const riskLevelBadge = document.getElementById('riskLevelBadge');
     const allocationChartCanvas = document.getElementById('allocationChart');
     const dynamicAssetAllocationContainer = document.getElementById('dynamicAssetAllocationContainer');
@@ -26,6 +36,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const regenerateBtn = document.getElementById('regenerateBtn');
     const downloadStrategyBtn = document.getElementById('downloadStrategyBtn');
     const implementStrategyBtn = document.getElementById('implementStrategyBtn');
+
+    // --- Helper function to show toast messages ---
+    function showToast(message, type = 'success') {
+        if (type === 'success') {
+            successToastBody.textContent = message;
+            bsSuccessToast.show();
+        } else {
+            errorToastBody.textContent = message;
+            bsErrorToast.show();
+        }
+    }
 
     // --- Goal Selection Logic ---
     goalCards.forEach(card => {
@@ -233,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         investmentHorizonImpactText.textContent = strategyData.strategyExplanation.investmentHorizonImpact;
 
                         strategyDisplaySection.style.display = 'block'; // Show the strategy display section
-                        alert('Strategy generated successfully!');
+                         showToast('Strategy generated successfully!', 'success');
 
                         // Enable action buttons
                         downloadStrategyBtn.disabled = false;
@@ -241,17 +262,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         regenerateBtn.disabled = false;
 
                     } else {
-                        alert('Generated strategy data is empty.');
+                        showToast('Generated strategy data is empty.', 'error');
                     }
 
                 } else {
                     const errorData = await response.json();
                     console.error('Error generating strategy:', errorData);
-                    alert('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'));
+                    showToast('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'), 'error'); // Replaced alert
                 }
             } catch (error) {
                 console.error('Network error during strategy generation:', error);
-                alert('Could not connect to the server to generate strategy. Please check your internet connection.');
+                showToast('Could not connect to the server to generate strategy. Please check your internet connection.', 'error'); // Replaced alert
             } finally {
                 this.disabled = false;
                 this.textContent = 'Generate Strategy';
@@ -349,118 +370,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (prevGoalsBtn) prevGoalsBtn.style.display = 'none';
         if (nextGoalsBtn) nextGoalsBtn.style.display = 'none';
     }
-
-
-    // // --- Existing Chart and Calculator Initializations (unchanged) ---
-    // const allocationCtx = document.getElementById('allocationChart') ? document.getElementById('allocationChart').getContext('2d') : null;
-    // if (allocationCtx) {
-    //     const allocationChart = new Chart(allocationCtx, {
-    //         type: 'pie',
-    //         data: {
-    //             labels: [
-    //                 'FTSE Bursa Malaysia KLCI ETF',
-    //                 'Malaysian Government Securities',
-    //                 'Malaysian REITs',
-    //                 'ASEAN Equity Funds',
-    //                 'Fixed Deposits'
-    //             ],
-    //             datasets: [{
-    //                 data: [25, 20, 15, 25, 15],
-    //                 backgroundColor: [
-    //                     '#4CAF50',
-    //                     '#2196F3',
-    //                     '#9C27B0',
-    //                     '#FF9800',
-    //                     '#607D8B'
-    //                 ],
-    //                 borderWidth: 0
-    //             }]
-    //         },
-    //         options: {
-    //             responsive: true,
-    //             maintainAspectRatio: false,
-    //             plugins: {
-    //                 legend: {
-    //                     display: false
-    //                 },
-    //                 tooltip: {
-    //                     callbacks: {
-    //                         label: function(context) {
-    //                             return context.label + ': ' + context.raw + '%';
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
-
-    // const riskReturnCtx = document.getElementById('riskReturnChart') ? document.getElementById('riskReturnChart').getContext('2d') : null;
-    // if (riskReturnCtx) {
-    //     const riskReturnChart = new Chart(riskReturnCtx, {
-    //         type: 'scatter',
-    //         data: {
-    //             datasets: [
-    //                 {
-    //                     label: 'Conservative',
-    //                     data: [{ x: 5, y: 3.5 }],
-    //                     backgroundColor: '#4CAF50',
-    //                     pointRadius: 10
-    //                 },
-    //                 {
-    //                     label: 'Moderate',
-    //                     data: [{ x: 10, y: 5.8 }],
-    //                     backgroundColor: '#FF9800',
-    //                     pointRadius: 10
-    //                 },
-    //                 {
-    //                     label: 'Aggressive',
-    //                     data: [{ x: 15, y: 7.5 }],
-    //                     backgroundColor: '#F44336',
-    //                     pointRadius: 10
-    //                 },
-    //                 {
-    //                     label: 'Your Strategy',
-    //                     data: [{ x: 10, y: 5.8 }],
-    //                     backgroundColor: '#6366f1',
-    //                     pointRadius: 12,
-    //                     pointStyle: 'star'
-    //                 }
-    //             ]
-    //         },
-    //         options: {
-    //             responsive: true,
-    //             maintainAspectRatio: false,
-    //             scales: {
-    //                 x: {
-    //                     title: {
-    //                         display: true,
-    //                         text: 'Risk (Volatility)'
-    //                     },
-    //                     min: 0,
-    //                     max: 20
-    //                 },
-    //                 y: {
-    //                     title: {
-    //                         display: true,
-    //                         text: 'Expected Return (%)'
-    //                     },
-    //                     min: 0,
-    //                     max: 10
-    //                 }
-    //             },
-    //             plugins: {
-    //                 tooltip: {
-    //                     callbacks: {
-    //                         label: function(context) {
-    //                             return context.dataset.label + ': ' + context.raw.y + '% return, ' + context.raw.x + ' risk';
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
 
     if (generateStrategyBtn) {
         generateStrategyBtn.addEventListener('click', function() {

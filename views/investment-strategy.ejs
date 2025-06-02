@@ -111,7 +111,7 @@
   </div>
 
   <!-- Strategy Recommendation -->
-<div id="strategyDisplaySection" class="mt-5" style="display: none;">
+<div id="strategyDisplaySection" class="mt-5 strategy-section" style="display: none;">
     <div class="strategy-recommendation">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0">Recommended Strategy <span class="risk-level-badge" id="riskLevelBadge"></span></h5>
@@ -686,10 +686,28 @@
   <%- include('partials/footer') %>
 </div>
 
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="successToast" class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="successToastBody">
+                </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div id="errorToast" class="toast text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="errorToastBody">
+                </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="/js/SavingGoals/goal-planning.js"></script>
-<script type ="module" src="/js/InvestmentStrategy/investment-strategy-recommendation.js"></script>
+<script type ="module" defer src="/js/InvestmentStrategy/investment-strategy-recommendation.js"></script>
 
 </body>
 </html>
