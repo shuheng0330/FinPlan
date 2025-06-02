@@ -1,4 +1,15 @@
 const Goal = require('../models/goal-planningModel');
+const dotenv = require('dotenv');
+dotenv.config({ path: './config.env' }); // Load environment variables from .env file
+
+const { OpenAI } = require('openai');
+
+// Initialize the OpenAI client to use OpenRouter's API
+const openai = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1", // OpenRouter API base URL
+  apiKey: process.env.OPENROUTER_API_KEY, // Use the new environment variable
+});
+
 
 exports.renderStrategypage = async(req,res)=>{
     try{
@@ -74,12 +85,20 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
         const remainingAmount = goal.goalAmount - goal.currentAmount;
         // The .toLocaleString() is fine for the prompt string as it's sent to Grok as text.
         const prompt = `Generate a diversified investment strategy for a user in the Malaysian market with the following details:
+        The response must be purely JSON, with no markdown or extra text.
+
+        Goal Details:
         - Goal: ${goal.goalName}
         - Target Amount: RM${goal.goalAmount.toLocaleString()}
         - Current Savings: RM${goal.currentAmount.toLocaleString()}
         - Remaining Amount to Save: RM${remainingAmount.toLocaleString()}
+        - Start Date: ${goal.startDate ? goal.startDate.toISOString().split('T')[0] : 'N/A'}
+        - Target Date: ${goal.targetDate ? goal.targetDate.toISOString().split('T')[0] : 'N/A'}
         - Investment Horizon: ${investmentHorizonYears} years
-        - Risk Appetite: ${riskAppetite} (from a scale of Conservative, Moderate, Aggressive)
+        - Priority: ${goal.goalPriority}
+
+
+        User's Risk Appetite: ${riskAppetite} (from a scale of Conservative, Moderate, Aggressive)
 
         Provide the output as a JSON object with the following structure:
         {
@@ -95,15 +114,19 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             { "fundName": "Fund Name 2", "description": "Short description of Fund 2" }
             // ... more funds
           ],
-          "suggestedMonthlyInvestment": 0, // In RM
+          "suggestedMonthlyInvestment": 0, // In RM (float, 2 decimal places)
           "expectedAnnualReturn": 0, // As a decimal, e.g., 0.08 for 8%
+          "investmentHorizon": "${investmentHorizonYears} years", 
+          "riskLevel": "${riskAppetite}", 
           "strategyExplanation": {
             "whyThisStrategy": "Explain why this strategy is suitable.",
             "riskReturnAnalysis": "Analyze the risk vs. return.",
             "investmentHorizonImpact": "Explain the impact of the investment horizon."
           }
         }
-        Ensure the asset allocation percentages sum up to 100%. Adjust the percentage for each asset class and provide suitable fund names based on the risk appetite and investment horizon.`;
+        Ensure the asset allocation percentages sum up to 100%. Adjust the percentage for each asset class and provide suitable fund names based on the risk appetite and investment horizon.
+        Ensure numerical values are correctly formatted and strings are descriptive.
+        Focus on Malaysian context for funds and financial advice.`;
 
         console.log('Sending prompt to AI model:', prompt);
 
@@ -112,8 +135,13 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
         // For now, let's return a dummy response to test the flow.
         let aiRawResponse;
         if (process.env.NODE_ENV === 'development') {
-            // Simulate AI response for development
-            // Ensure suggestedMonthlyInvestment calculation results in a finite number
+            const completion = await openai.chat.completions.create({
+                messages: [{ role: 'user', content: prompt }],
+                model: 'mistralai/mistral-7b-instruct-v0.2',
+                response_format: {type:"json_object"},
+            });
+            aiRawResponse = completion.choices[0].message.content; 
+        } else {
             const calculatedMonthlyInvestment = Math.round(remainingAmount / (investmentHorizonYears * 12) * (1 + (riskAppetite === 'Aggressive' ? 0.02 : riskAppetite === 'Moderate' ? 0.01 : 0)));
             
             aiRawResponse = `{
@@ -137,13 +165,6 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
                     "investmentHorizonImpact": "With a ${investmentHorizonYears}-year horizon, there's sufficient time for market fluctuations to smooth out, making growth-oriented assets more viable even for moderate risk."
                 }
             }`;
-        } else {
-            // **Actual Grok API Call (Example using a hypothetical Grok SDK)**
-            // const grokResponse = await grokClient.chat.completions.create({
-            //     messages: [{ role: 'user', content: prompt }],
-            //     model: 'grok-1' // Or the specific model you intend to use
-            // });
-            // aiRawResponse = grokResponse.choices[0].message.content; // Adjust based on actual Grok response structure
         }
 
 

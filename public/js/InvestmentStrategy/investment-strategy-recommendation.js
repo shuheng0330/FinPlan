@@ -239,11 +239,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         recommendedFundsList.innerHTML = ''; // Clear previous content
                         strategyData.recommendedFunds.forEach(fund => {
                             const listItem = document.createElement('li');
-                            listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                            listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
                             // Using description as badge text if no specific percentage for fund is given by AI
                             listItem.innerHTML = `
-                                ${fund.fundName}
-                                <span class="badge bg-primary rounded-pill">${fund.description}</span>
+                                <div>
+                                   <h6 class="mb-1">${fund.fundName}</h6>
+                                   <p class="mb-0 text-muted small">${fund.description}</p>
+                                </div>
                             `;
                             recommendedFundsList.appendChild(listItem);
                         });
