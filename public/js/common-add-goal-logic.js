@@ -117,7 +117,7 @@ function initializeAddGoalForm(){
                 } else {
                     const errorData = await response.json();
                     console.error('Error saving goal:', errorData);
-                    alert('Error saving goal: ' + (errorData.message || 'Something went wrong. Please check your inputs.'));
+                    alert('Error saving goal: ' + (errorData.errors || 'Something went wrong. Please check your inputs.'));
                 }
             } catch (error) {
                 console.error('Network error or unexpected issue:', error);
