@@ -38,7 +38,7 @@ const goalSchema = new mongoose.Schema(
             type: String,
             required: [true, 'A saving goal must have a priority level'],
             enum: {
-                values: ['high', 'medium', 'low'],
+                values: ['High', 'Medium', 'Low'],
                 message: 'Priority can be high, medium, or low'
             }
         },
@@ -83,6 +83,16 @@ goalSchema.pre('validate', function(next) {
         this.invalidate('targetDate', 'Target Date cannot be before Start Date.', this.targetDate);
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Clear time for comparison
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    if (this.targetDate && this.targetDate < tomorrow) {
+        this.invalidate('targetDate', 'Target Date must be at least one day in the future.', this.targetDate);
+    }
+
     next(); // Continue with validation
 });
 
@@ -104,6 +114,7 @@ goalSchema.pre('save', function(next) {
         this.status = 'in-progress';
     }
 
+    
     next(); // Continue with saving
 });
 
@@ -121,6 +132,11 @@ goalSchema.virtual('term').get(function() {
     return diffYears <= 2 ? 'Short-term (≤ 2 years)' : 'Long-term (> 2 years)';
 });
 
+goalSchema.virtual('transactions', {
+  ref: 'Transaction',
+  foreignField: 'goal',
+  localField: '_id'
+});
 
 const Goal = mongoose.model('Goal', goalSchema);
 module.exports = Goal;

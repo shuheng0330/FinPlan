@@ -1,5 +1,6 @@
 const express = require('express');
 const goalRouter = require('./routers/goal-PlanningRoute');
+const goalDetailsRouter = require('./routers/goal-detailsRoute');
 const investmentRouter = require('./routers/investmentRoute');
 const viewRouter = require('./routers/viewRoute');
 const Goal = require("./models/goal-planningModel");
@@ -14,6 +15,7 @@ app.use(express.static(path.join(__dirname,'public')));
 
 app.use('/goal-planning', goalRouter);
 app.use('/investment-strategy',investmentRouter);
+app.use('/goal-details', goalDetailsRouter);
 app.use('/',viewRouter);
 
 

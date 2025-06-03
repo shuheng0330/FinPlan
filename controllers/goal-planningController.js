@@ -22,45 +22,6 @@ exports.getAllGoals = async (req, res) => {
   }
 };
 
-
-// exports.createGoal = async (req,res) =>{
-    
-//     try{
-//         const {
-//             goalName,
-//             goalAmount,
-//             currentAmount,
-//             progress,
-//             targetDate,
-//             startDate,
-//             goalPriority,
-//             icon
-//         } = req.body;
-
-//     const newGoal = await Goal.create({
-//       goalName,
-//       goalAmount,
-//       currentAmount,
-//       progress,
-//       targetDate,
-//       startDate,
-//       goalPriority,
-//       icon
-//     });
-
-//     res.status(201).json({
-//       status: 'success',
-//       data: newGoal
-//     });
-//     }
-//     catch(err){
-//       res.status(500).json({
-//       status: 'error',
-//       message: err.message
-//     });
-//     }
-// };
-
 exports.createGoal = async(req,res)=>{
         try {
         // Server-side validation
@@ -146,4 +107,129 @@ exports.createGoal = async(req,res)=>{
         });
     }
   };
+
+  exports.deleteGoal = async (req, res) => {
+    try {
+        const goalId = req.params.id;
+
+        // Validate the goal ID format
+        if (!goalId.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ status: 'fail', message: 'Invalid goal ID format.' });
+        }
+
+        // Try to find and delete the goal
+        const deletedGoal = await Goal.findByIdAndDelete(goalId);
+
+        if (!deletedGoal) {
+            return res.status(404).json({ status: 'fail', message: 'Goal not found.' });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Goal deleted successfully.',
+            data: {
+                goal: deletedGoal
+            }
+        });
+    } catch (error) {
+        console.error('Error deleting goal:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to delete goal',
+            error: error.message
+        });
+    }
+};
+
+exports.getGoal = async (req, res) => {
+  try {
+    const goalId = req.params.id;
+    const goal = await Goal.findById(goalId);
+
+    if (!goal) {
+      return res.status(404).json({ message: 'Goal not found' });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        goal
+      }
+    });
+  } catch (err) {
+    console.error('Error fetching goal by ID:', err);
+    res.status(500).json({ message: 'Error retrieving goal', error: err.message });
+  }
+};
+
+exports.updateGoal = async (req, res) => {
+    try {
+        const goalId = req.params.id;
+        const { goalName, goalAmount, currentAmount, targetDate, startDate, goalPriority, icon } = req.body;
+
+    
+
+        if (!goalName || !goalAmount || !targetDate || !startDate || !icon) {
+            return res.status(400).json({ message: 'All required fields must be provided.' });
+        }
+
+        if (currentAmount > goalAmount) {
+            return res.status(400).json({ message: 'Current savings cannot be greater than the goal amount.' });
+        }
+
+        const parsedStartDate = new Date(startDate);
+        const parsedTargetDate = new Date(targetDate);
+
+        if (parsedStartDate > parsedTargetDate) {
+            return res.status(400).json({ message: 'Start Date cannot be after Target Date.' });
+        }
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        if (parsedTargetDate < tomorrow) {
+        return res.status(400).json({ message: 'Target Date must be at least one day in the future.' });
+        }
+
+        const allowedIcons = [
+            'vacation', 'house', 'emergency', 'car', 'education', 'investment',
+            'retirement', 'wedding', 'family', 'electronic', 'debt', 'charity'
+        ];
+
+        if (!allowedIcons.includes(icon)) {
+            return res.status(400).json({ message: `Invalid icon. Allowed icons: ${allowedIcons.join(', ')}` });
+        }
+
+        const updatedGoal = await Goal.findByIdAndUpdate(
+            goalId,
+            {
+                goalName,
+                goalAmount,
+                currentAmount,
+                targetDate: parsedTargetDate,
+                startDate: parsedStartDate,
+                goalPriority,
+                icon
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedGoal) {
+            return res.status(404).json({ message: 'Goal not found.' });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Goal updated successfully.',
+            data: {
+                goal: updatedGoal
+            }
+        });
+    } catch (error) {
+        console.error('Error updating goal:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to update goal', error: error.message });
+    }
+};
 
