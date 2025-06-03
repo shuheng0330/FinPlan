@@ -224,25 +224,39 @@ exports.downloadStrategyPdf = async (req, res) => {
             });
         }
 
-        // NO AI CALL OR MOCK RESPONSE GENERATION HERE.
-        // We directly use the 'generatedStrategy' passed from the frontend.
+        // Generate chart colors for consistency
+        const colors = ['#4CAF50', '#2196F3', '#9C27B0', '#FF9800', '#607D8B', '#FFC107', '#795548', '#00BCD4'];
+        const chartLabels = [];
+        const chartData = [];
+        const chartColors = [];
 
-        // Render EJS template to HTML string
+        generatedStrategy.assetAllocation.forEach((item, index) => {
+            const assetColor = colors[index % colors.length];
+            chartLabels.push(item.assetClass);
+            chartData.push(item.percentage);
+            chartColors.push(assetColor);
+        });
+
+        // Render EJS template to HTML string with chart data
         const templatePath = path.join(__dirname, '../views/strategy-pdf-template.ejs');
         const htmlContent = await ejs.renderFile(templatePath, {
             username: "Thong Shu Heng", // Replace with actual user data if available
             userEmail: "thongshuheng030@gmail.com", // Replace with actual user data
             goalName: goal.goalName,
             riskAppetite: riskAppetite,
-            strategy: generatedStrategy // Use the passed strategy data
+            strategy: generatedStrategy, // Use the passed strategy data
+            chartLabels: JSON.stringify(chartLabels),
+            chartData: JSON.stringify(chartData),
+            chartColors: JSON.stringify(chartColors)
         });
 
         const browser = await puppeteer.launch({
             headless: 'new',
             args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
-        const page = await browser.newPage();
+        const page = await browser.newPage();  
 
+        // Set content and wait for network to be idle
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
 
         const pdfBuffer = await page.pdf({
@@ -250,10 +264,10 @@ exports.downloadStrategyPdf = async (req, res) => {
             landscape: true,
             printBackground: true,
             margin: {
-                top: '20mm',
-                right: '20mm',
-                bottom: '20mm',
-                left: '20mm'
+                top: '10mm',
+                right: '10mm',
+                bottom: '10mm',
+                left: '10mm'
             }
         });
 
