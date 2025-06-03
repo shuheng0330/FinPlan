@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: {
-                                        display: false,
+                                        display: true,
                                     },
                                     tooltip: {
                                         callbacks: {
@@ -236,6 +236,24 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         });
 
+                        
+                            setTimeout(() => {
+                                try {
+                                    console.log("Canvas size:", ctx.canvas.width, ctx.canvas.height);
+                                    console.log("Chart data:", allocationChartInstance.data);
+
+                                    const chartImageBase64 = allocationChartInstance.toBase64Image();
+                                    currentGeneratedStrategy.chartImage = chartImageBase64.startsWith("data:image")? chartImageBase64: "data:image/png;base64," + chartImageBase64.split(',')[1];
+
+                                    window.chartRendered = true;
+                                    console.log("Chart rendered and flag set to true.");
+                                    console.log("Chart image size (base64):", currentGeneratedStrategy.chartImage?.length);
+                                    console.log("chartImage starts with:", currentGeneratedStrategy.chartImage.slice(0, 30));
+                                } catch (e) {
+                                    console.error("Failed to convert chart to image:", e);
+                                    currentGeneratedStrategy.chartImage = null;
+                                }
+                            }, 1500); // waits 500ms to ensure canvas rendering is complete
 
                         // Populate Recommended Funds (Dynamic Generation)
                         recommendedFundsList.innerHTML = ''; // Clear previous content
