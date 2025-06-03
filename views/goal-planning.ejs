@@ -131,7 +131,7 @@
           data-progress="<%= goal.status || 'in-progress' %>"
           data-priority="<%= goal.goalPriority?.toLowerCase() || 'medium' %>">
 
-      <div class="goal-card">
+      <div class="goal-card" data-goal-id="<%= goal._id %>">
         <div class="goal-options">
           <div class="dropdown">
             <button class="btn btn-sm btn-link" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -177,7 +177,7 @@
             <span>Started: <%= new Date(goal.startDate).toLocaleDateString('en-MY', { year: 'numeric', month: 'short', day: 'numeric' }) %></span>
           </div>
           <span class="priority-badge priority-<%= goal.goalPriority?.toLowerCase() || 'medium' %>">
-            <%= goal.goalPriority || 'Medium Priority' %>
+            <%= goal.goalPriority || 'Medium ' %> Priority
           </span>
         </div>
       </div>
@@ -228,9 +228,9 @@
               <div class="col-md-6">
                 <label for="goalPriority" class="form-label">Priority Level</label>
                 <select class="form-select" id="goalPriority" required>
-                  <option value="high">High Priority</option>
-                  <option value="medium" selected>Medium Priority</option>
-                  <option value="low">Low Priority</option>
+                  <option value="High">High Priority</option>
+                  <option value="Medium" selected>Medium Priority</option>
+                  <option value="Low">Low Priority</option>
                 </select>
               </div>
             </div>
@@ -363,24 +363,88 @@
               <div class="col-md-6">
                 <label for="editGoalPriority" class="form-label">Priority Level</label>
                 <select class="form-select" id="editGoalPriority" required>
-                  <option value="high">High Priority</option>
-                  <option value="medium">Medium Priority</option>
-                  <option value="low">Low Priority</option>
+                  <option value="High">High Priority</option>
+                  <option value="Medium">Medium Priority</option>
+                  <option value="Low">Low Priority</option>
                 </select>
               </div>
             </div>
             
-            <div class="mb-3">
+           <div class="mb-3">
               <label class="form-label">Select Icon</label>
-              <div class="icon-selector">
-                <!-- Same icon options as in Add Goal Modal -->
+              <div class="edit-icon-selector">
                 <div class="icon-option selected">
                   <div class="icon-circle">
-                    <img src="/svgs/vacation-svgrepo-com.svg" alt="Vacation" data-icon="vacation">
+                    <img src="../../svgs/vacation-svgrepo-com.svg" alt="Vacation" data-icon="vacation">
                   </div>
                   <span>Vacation</span>
                 </div>
-                <!-- More icon options... -->
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/house-svgrepo-com.svg" alt="House" data-icon="house">
+                  </div>
+                  <span>House</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/emergency-svgrepo-com.svg" alt="Emergency" data-icon="emergency">
+                  </div>
+                  <span>Emergency</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/car-svgrepo-com.svg" alt="Car" data-icon="car">
+                  </div>
+                  <span>Car</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/education-svgrepo-com.svg" alt="Education" data-icon="education">
+                  </div>
+                  <span>Education</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/investment-svgrepo-com.svg" alt="Investment" data-icon="investment">
+                  </div>
+                  <span>Investment</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/retirement-svgrepo-com.svg" alt="Retirement" data-icon="retirement">
+                  </div>
+                  <span>Retirement</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/wedding-svgrepo-com.svg" alt="Wedding" data-icon="wedding">
+                  </div>
+                  <span>Wedding</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/family-svgrepo-com.svg" alt="Family" data-icon="family">
+                  </div>
+                  <span>Family</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/electronic-svgrepo-com.svg" alt="Electronics" data-icon="electronic">
+                  </div>
+                  <span>Electronics</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/debt-svgrepo-com.svg" alt="Debt" data-icon="debt">
+                  </div>
+                  <span>Debt</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/charity-svgrepo-com.svg" alt="Charity" data-icon="charity">
+                  </div>
+                  <span>Charity</span>
+                </div>
               </div>
             </div>
           </form>
@@ -418,7 +482,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script type="module" src="/js/common-add-goal-logic.js"></script>
 <script type="module" src="/js/SavingGoals/goal-planning.js"></script>
 </body>
 </html>

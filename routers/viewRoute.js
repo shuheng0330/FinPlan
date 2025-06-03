@@ -34,7 +34,6 @@ router.get('/profile',(req,res)=>{
 
 
 
-router.get("/goal-planning",goalPlanningController.getAllGoals);
 router.get('/investment-strategy',investmentController.renderStrategypage);
 
 
