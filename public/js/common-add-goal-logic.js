@@ -1,4 +1,4 @@
-function initializeAddGoalForm(){
+function initializeAddGoalForm(showToastCallback){
     // --- Icon Selection Logic (Modified to store the selected icon) ---
     const iconOptions = document.querySelectorAll(".icon-option");
     let selectedIcon = ''; // Variable to store the selected icon's data-icon value
@@ -32,22 +32,29 @@ function initializeAddGoalForm(){
             const goalPriority = document.getElementById('goalPriority').value;
 
             if (goalName === '') {
-                alert('Goal Name cannot be empty.');
                 document.getElementById('goalName').focus();
+                if (showToastCallback) showToastCallback('Goal name cannot be empty.', 'error');
+                else alert('Goal name cannot be empty.');
                 return;
             }
             if (isNaN(goalAmount) || goalAmount <= 0) {
-                alert('Target Amount must be a positive number.');
+                if (showToastCallback) showToastCallback('Please enter a valid positive Goal Amount.', 'error');
+                else alert('Please enter a valid positive Goal Amount.');
+
                 document.getElementById('goalAmount').focus();
                 return;
             }
             if (isNaN(currentAmount) || currentAmount < 0) {
-                alert('Current Savings must be a non-negative number.');
+                if (showToastCallback) showToastCallback('Please enter a valid non-negative Current Amount.', 'error');
+                else alert('Please enter a valid non-negative Current Amount.');
+
                 document.getElementById('currentAmount').focus();
                 return;
             }
             if (currentAmount > goalAmount) {
-                alert('Current Savings cannot be greater than Target Amount.');
+                if (showToastCallback) showToastCallback('Current amount cannot be greater than goal amount.', 'error');
+                else alert('Current amount cannot be greater than goal amount.');
+
                 document.getElementById('currentAmount').focus();
                 return;
             }
@@ -56,16 +63,22 @@ function initializeAddGoalForm(){
             const parsedTargetDate = new Date(targetDate);
 
             if (isNaN(parsedStartDate.getTime()) || isNaN(parsedTargetDate.getTime())) {
-                alert('Please select valid Start and Target Dates.');
+                if (showToastCallback) showToastCallback('Please select a Start or target Date.', 'error');
+                else alert('Please select a Start or target Date.');
+
                 return;
             }
             if (parsedStartDate > parsedTargetDate) {
-                alert('Start Date cannot be after Target Date.');
+                if (showToastCallback) showToastCallback('Start Date must be before Target Date.', 'error');
+                else alert('Start Date must be before Target Date.');
+
                 document.getElementById('startDate').focus();
                 return;
             }
             if (!selectedIcon) {
-                alert('Please select an icon for your goal.');
+                if (showToastCallback) showToastCallback('Please select an icon for your goal.', 'error');
+                else alert('Please select an icon for your goal.');
+                
                 return;
             }
 
@@ -101,7 +114,7 @@ function initializeAddGoalForm(){
                         modal.hide();
                     }
 
-                    alert('Goal added successfully!');
+                    showToast('Goal added successfully!',success);
                     window.location.reload(); // Reloads the page
 
                     addGoalForm.reset();
