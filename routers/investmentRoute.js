@@ -5,5 +5,6 @@ const router = express.Router();
 
 
 // router.post('/',investmentController.createGoal);
+router.post('/generate', investmentController.generateInvestmentStrategy);
 
 module.exports = router;

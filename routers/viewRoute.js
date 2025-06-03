@@ -4,68 +4,70 @@ const goalPlanningController = require('../controllers/goal-planningController')
 const investmentController = require('../controllers/investment-strategyController');
 
 
-
-router.get('/',(req,res)=>{
-res.render('login', {title: "FinPlan - Login"});
+router.get('/', (req, res) => {
+  res.render('login', { title: "FinPlan - Login" });
 });
 
-router.get('/register',(req,res)=>{
-    res.render('register', {title: "FinPlan - Register"});
-});
-
-
-router.get('/dashboard',(req,res)=>{
-    res.render('dashboard', {
-        title:'FinPlan - Dashboard',
-        username: "Thong Shu Heng",
-        userEmail: "thongshuheng0330@gmail.com",
-        pageTitle: "Dashboard"
-    })
-});
-
-router.get('/profile',(req,res)=>{
-    res.render('profile',{
-        title: "FinPlan - Profile",
-        username: "Thong Shu Heng",
-        userEmail: "thongshuheng0330@gmail.com",
-        pageTitle: "Personal Profile"
-    })
+router.get('/register', (req, res) => {
+  res.render('register', { title: "FinPlan - Register" });
 });
 
 
+router.get('/dashboard', (req, res) => {
+  if (!req.isAuthenticated()) return res.redirect('/');
+  res.render('dashboard', {
+    title: 'FinPlan - Dashboard',
+    pageTitle: "Dashboard",
+    user: req.user
+  });
+});
 
-router.get("/goal-planning",goalPlanningController.getAllGoals);
-router.get('/investment-strategy',investmentController.renderStrategypage);
+router.get('/profile', (req, res) => {
+  if (!req.isAuthenticated()) return res.redirect('/');
+  res.render('profile', {
+    title: "FinPlan - Profile",
+    pageTitle: "Personal Profile",
+    user: req.user
+  });
+});
 
+router.get("/goal-planning", (req, res, next) => { 
+    if (!req.isAuthenticated()) return res.redirect('/users/login'); 
+    goalPlanningController.getAllGoals(req, res, next); 
+});
+
+router.get('/investment-strategy', (req, res, next) => { 
+    if (!req.isAuthenticated()) return res.redirect('/users/login'); 
+    investmentController.renderStrategypage(req, res, next);
+    
+});
 
 router.get("/goal-details", (req, res) => {
+  if (!req.isAuthenticated()) return res.redirect('/');
   res.render("goal-details", {
     title: "FinPlan - Goal Details",
-    username: "Thong Shu Heng",
-    userEmail: "thongshuheng030@gmail.com",
     pageTitle: "Goal Details",
-  })
+    user: req.user
+  });
 });
 
 router.get("/market", (req, res) => {
+  if (!req.isAuthenticated()) return res.redirect('/');
   res.render("market", {
     title: "FinPlan - Market Insights",
-    username: "Thong Shu Heng",
-    userEmail: "thongshuheng030@gmail.com",
     pageTitle: "Market Insights",
-  })
+    user: req.user
+  });
 });
-
 
 router.get("/roi-calculator", (req, res) => {
+  if (!req.isAuthenticated()) return res.redirect('/');
   res.render("roi-calculator", {
     title: "FinPlan - ROI Calculator",
-    username: "Thong Shu Heng",
-    userEmail: "thongshuheng030@gmail.com",
     pageTitle: "Investment ROI",
-  })
+    user: req.user
+  });
 });
-
 
 
 module.exports = router;

@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title><%= title %></title>
+    <title>
+        <%= title %>
+    </title>
     <link rel="stylesheet" href="/css/login_register.css" />
 </head>
 
@@ -57,7 +59,7 @@
 
             <div class="footer">
                 Copyright © <%= new Date().getFullYear() %> FinPlan Enterprises LTD.
-                <a href="#">Privacy Policy</a>
+                    <a href="#">Privacy Policy</a>
             </div>
         </div>
 
@@ -68,12 +70,8 @@
             <img src="/svgs/financial planning.jpg" class="dashboard-img" />
         </div>
     </div>
-    
-    <script>
-        document.getElementById("register-btn").addEventListener("click", function() {
-            window.location.href = "/";
-        });
-    </script>
+
+    <script src="/js/User/register.js"></script>
 </body>
 
 </html>

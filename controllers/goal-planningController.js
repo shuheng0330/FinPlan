@@ -5,8 +5,6 @@ exports.getAllGoals = async (req, res) => {
     const goals = await Goal.find();
     res.render("goal-planning", {
       title: "FinPlan - Goal Planning",
-      username: "Thong Shu Heng",
-      userEmail: "thongshuheng030@gmail.com",
       pageTitle: "Financial Goals",
       goals: goals
     });
@@ -14,8 +12,6 @@ exports.getAllGoals = async (req, res) => {
     console.error("Error fetching goals:", err);
     res.render("goal-planning", {
       title: "FinPlan - Goal Planning",
-      username: "Thong Shu Heng",
-      userEmail: "thongshuheng030@gmail.com",
       pageTitle: "Financial Goals",
       goals: [] // fallback
     });
