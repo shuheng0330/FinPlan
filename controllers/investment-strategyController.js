@@ -1,6 +1,10 @@
 const Goal = require('../models/goal-planningModel');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' }); // Load environment variables from .env file
+const puppeteer = require('puppeteer'); // Import puppeteer
+const ejs = require('ejs');
+const path = require('path');
+
 
 const { OpenAI } = require('openai');
 
@@ -193,6 +197,78 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
         res.status(500).json({
             status: 'error',
             message: 'Failed to generate investment strategy.',
+            error: err.message
+        });
+    }
+};
+
+
+exports.downloadStrategyPdf = async (req, res) => {
+    try {
+        // Expect goalId, riskAppetite, AND the generated strategy object
+        const { goalId, riskAppetite, strategy: generatedStrategy } = req.body;
+
+        if (!goalId || !riskAppetite || !generatedStrategy) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Goal ID, Risk Appetite, and Strategy data are required to generate the PDF.'
+            });
+        }
+
+        const goal = await Goal.findById(goalId);
+
+        if (!goal) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Goal not found.'
+            });
+        }
+
+        // NO AI CALL OR MOCK RESPONSE GENERATION HERE.
+        // We directly use the 'generatedStrategy' passed from the frontend.
+
+        // Render EJS template to HTML string
+        const templatePath = path.join(__dirname, '../views/strategy-pdf-template.ejs');
+        const htmlContent = await ejs.renderFile(templatePath, {
+            username: "Thong Shu Heng", // Replace with actual user data if available
+            userEmail: "thongshuheng030@gmail.com", // Replace with actual user data
+            goalName: goal.goalName,
+            riskAppetite: riskAppetite,
+            strategy: generatedStrategy // Use the passed strategy data
+        });
+
+        const browser = await puppeteer.launch({
+            headless: 'new',
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        });
+        const page = await browser.newPage();
+
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+        const pdfBuffer = await page.pdf({
+            format: 'A4',
+            landscape: true,
+            printBackground: true,
+            margin: {
+                top: '20mm',
+                right: '20mm',
+                bottom: '20mm',
+                left: '20mm'
+            }
+        });
+
+        await browser.close();
+
+        // Send ONLY the PDF file
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="investment-strategy.pdf"');
+        res.send(pdfBuffer);
+
+    } catch (err) {
+        console.error('Error generating PDF:', err);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to generate PDF for investment strategy.',
             error: err.message
         });
     }

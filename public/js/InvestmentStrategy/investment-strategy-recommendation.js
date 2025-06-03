@@ -3,6 +3,7 @@ import { initializeAddGoalForm } from '/js/common-add-goal-logic.js'; // Adjust 
 let selectedGoalId = null; // Variable to store the ID of the selected goal
 let riskAppetite = 'Moderate';
 let allocationChartInstance = null;
+let currentGeneratedStrategy = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     const goalCards = document.querySelectorAll('.goal-card');
@@ -151,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const responseData = await response.json();
                     const strategyData = responseData.data.strategy;
                     console.log('Generated Strategy:', strategyData);
+                    currentGeneratedStrategy = strategyData;
 
                     // --- Populate Display Section ---
                     if (strategyData) {
@@ -292,9 +294,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // (Add event listeners for downloadStrategyBtn and implementStrategyBtn here later)
     if (downloadStrategyBtn) {
-        downloadStrategyBtn.addEventListener('click', function() {
-            console.log('Download Strategy clicked');
-            // Logic for PDF download
+        downloadStrategyBtn.addEventListener('click', async function() {
+
+            console.log('Attempting PDF download...');
+            console.log('selectedGoalId:', selectedGoalId);
+            console.log('riskAppetite:', riskAppetite);
+            console.log('currentGeneratedStrategy:', currentGeneratedStrategy);
+
+            if (!selectedGoalId) {
+                showToast('error', 'Please select a goal first to generate a PDF.');
+                return;
+            }
+            if (!riskAppetite) {
+                showToast('error', 'Risk appetite is not set. Please generate a strategy first.');
+                return;
+            }
+
+            try {
+                // Send selectedGoalId and riskAppetite to the backend
+                const response = await fetch('/investment-strategy/download-pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        goalId: selectedGoalId,
+                        riskAppetite: riskAppetite,
+                        strategy: currentGeneratedStrategy
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'FinPlan_Investment_Strategy.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    showToast('Download successfully', 'success');
+                } else {
+                    const errorData = await response.json();
+                    console.error('Error downloading PDF:', errorData);
+                    showToast('error', `Failed to download PDF: ${errorData.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Network error during PDF download:', error);
+                showToast('error', 'Network error or unexpected issue during PDF download.');
+            }
         });
     }
 
