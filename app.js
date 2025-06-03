@@ -29,12 +29,18 @@ app.use(passport.session());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Middleware to check authentication and populate res.locals
 app.use((req, res, next) => {
     if (req.isAuthenticated()) {
         res.locals.user = req.user;
         res.locals.username = req.user.username;
         res.locals.userEmail = req.user.email;
         res.locals.profilePicture = req.user.profilePicture;
+    } else {
+        res.locals.user = null;
+        res.locals.username = null;
+        res.locals.userEmail = null;
+        res.locals.profilePicture = null;
     }
     next();
 });
@@ -51,4 +57,4 @@ app.use('/users', userRouter);
 app.use('/', dashboardRouter);
 app.use('/users', authRoutes);
 
-module.exports = app; 
+module.exports = app;

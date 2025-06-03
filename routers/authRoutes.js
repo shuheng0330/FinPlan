@@ -40,7 +40,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         const ext = path.extname(file.originalname);
-        const userId = req.session.userId; // Use userId from session
+        const userId = req.user ? req.user._id : null;
         if (!userId) {
             return cb(new Error("User ID not found in session for file upload."));
         }
@@ -60,6 +60,10 @@ const upload = multer({
     }
 });
 
+// Register
+router.post('/register', userController.createUser);
+
+// Login
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) {
@@ -81,10 +85,8 @@ router.post('/login', (req, res, next) => {
             // Send a success JSON response
             return res.status(200).json({ message: 'Login successful!', user: { id: user._id, username: user.username, email: user.email } });
         });
-    })(req, res, next); 
+    })(req, res, next);
 });
-
-router.post('/register', userController.createUser);
 
 // Logout
 router.get('/logout', (req, res, next) => {
@@ -103,7 +105,7 @@ router.get('/logout', (req, res, next) => {
     });
 });
 
-router.patch('/:id', userController.updateUser); 
+router.patch('/:id', userController.updateUser);
 
 // Delete a user's own account
 router.post('/delete-account', requireLogin, userController.deleteAccount);
@@ -114,7 +116,7 @@ router.post('/profile/updateProfile', requireLogin, userController.updateProfile
 // Profile Picture Upload Route
 router.post("/upload-profile-picture", requireLogin, upload.single("profilePicture"), async (req, res) => {
     try {
-        const userId = req.session.userId;
+        const userId = req.user._id;
         if (!userId) {
             return res.status(401).json({ success: false, message: "Unauthorized: User ID not found in session." });
         }

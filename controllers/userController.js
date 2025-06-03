@@ -41,11 +41,11 @@ exports.createUser = async (req, res) => {
         if (!username || !email || !authProvider) {
             return res.status(400).json({ message: 'Username, email, and auth provider are required.' });
         }
-/*
-        if (username.length < 3 || username.length > 20) {
-            return res.status(400).json({ message: 'Username must be between 3 and 20 characters.' });
-        }
-*/
+        /*
+                if (username.length < 3 || username.length > 20) {
+                    return res.status(400).json({ message: 'Username must be between 3 and 20 characters.' });
+                }
+        */
         if (!validator.isEmail(email)) {
             return res.status(400).json({ message: 'Invalid email format.' });
         }
@@ -201,18 +201,18 @@ exports.deleteAccount = async (req, res) => {
     try {
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).send('User not found');
+            return res.status(404).json({ message: 'User not found.' });
         }
 
         // Only allow local users to delete using password confirmation
         if (user.authProvider !== 'local') {
-            return res.status(403).send('Only local users can delete accounts using password');
+            return res.status(403).json({ message: 'Account managed via Google. Please delete through Google account settings.' });
         }
 
         // Verify password
         const isMatch = await bcrypt.compare(passwordToDelete, user.passwordHash); // <--- ENSURE passwordHash
         if (!isMatch) {
-            return res.status(401).send('Incorrect password');
+            return res.status(401).json({ message: 'Incorrect password.' });
         }
 
         // Delete user
@@ -222,72 +222,105 @@ exports.deleteAccount = async (req, res) => {
         req.session.destroy((err) => {
             if (err) {
                 console.error('Session destruction error:', err);
-                return res.status(500).send('Error logging out');
+                return res.status(200).json({ success: true, message: 'Account deleted, but session logout error occurred.' });
             }
-            res.redirect('/users/login'); // Redirect to consistent login page
+            res.status(200).json({ success: true, message: 'Account deleted successfully!' });
         });
     } catch (err) {
         console.error('Error deleting account:', err);
-        res.status(500).send('Server error');
+        res.status(500).json({ message: 'Server error during account deletion.' }); // Send JSON response
     }
 };
 
 // UPDATE PROFILE (for logged-in user)
 exports.updateProfile = async (req, res) => {
-    const userId = req.session.userId; // Get user ID from session
+    const userId = req.user ? req.user._id : null;
+
+    if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated or session expired.' });
+    }
+
     const { username, currentPassword, newPassword, confirmPassword } = req.body;
 
     try {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found.' });
+            return res.status(404).json({ message: 'User not found in database.' });
         }
+
+        let changesMade = false;
 
         // --- Handle Username Update ---
-        // Only update if username is provided in the request and it's different
         if (username !== undefined && username !== user.username) {
             user.username = username;
-            user.updatedAt = new Date();
+            changesMade = true;
         }
 
-        // --- Handle Password Change (if any password fields are provided) ---
-        // This block executes only if the user is attempting to change their password
+        // --- Handle Password Change (if any password-related fields are provided) ---
         if (currentPassword || newPassword || confirmPassword) {
-            // First, validate that ALL password fields are present if any are provided
+            if (user.authProvider !== 'local') {
+                return res.status(403).json({ message: 'Password change is only available for local accounts. Please manage your password through your Google account settings.' });
+            }
+
             if (!currentPassword || !newPassword || !confirmPassword) {
                 return res.status(400).json({ message: 'All password fields (Current, New, Confirm) are required to change your password.' });
             }
 
-            // Check if new password matches confirmation
             if (newPassword !== confirmPassword) {
                 return res.status(400).json({ message: 'New password and confirmation do not match.' });
             }
 
-            // Check if the user is a local authentication provider
-            if (user.authProvider !== 'local') {
-                return res.status(403).json({ message: 'Password change is only available for local accounts. Please manage your password through your Google account.' });
-            }
-
-            // Verify the current password
-            const isMatch = await bcrypt.compare(currentPassword, user.passwordHash); // <--- ENSURE passwordHash
+            const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
             if (!isMatch) {
                 return res.status(401).json({ message: 'Current password is incorrect. Please try again.' });
             }
 
-            // Hash the new password and update
+            const isSameAsCurrent = await bcrypt.compare(newPassword, user.passwordHash);
+            if (isSameAsCurrent) {
+                return res.status(400).json({ message: 'New password cannot be the same as your current password.' });
+            }
+
             user.passwordHash = await bcrypt.hash(newPassword, 12);
-            user.updatedAt = new Date(); // Update timestamp as password changed
+            changesMade = true;
         }
 
-        // Save the user document with all applied changes (username and/or password)
-        await user.save();
+        // --- Save Changes if any were made ---
+        if (changesMade) {
+            user.updatedAt = new Date();
+            const updatedUser = await user.save();
 
-        // Send a success response back to the client
-        res.status(200).json({ message: 'Profile updated successfully!', updatedUser: user });
+            // Re-login the user to update req.user in session
+            req.login(updatedUser, (err) => {
+                if (err) {
+                    console.error('Error re-logging in user:', err); // Keep this error log
+                    return res.status(500).json({ message: 'Profile updated but failed to refresh session.', error: err.message });
+                }
+                return res.status(200).json({
+                    message: 'Profile updated successfully!',
+                    updatedUser: {
+                        id: updatedUser._id,
+                        username: updatedUser.username,
+                        email: updatedUser.email,
+                        profilePicture: updatedUser.profilePicture
+                    }
+                });
+            });
+
+        } else {
+            return res.status(200).json({
+                message: 'No changes detected or applied.',
+                updatedUser: {
+                    id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    profilePicture: user.profilePicture
+                }
+            });
+        }
 
     } catch (err) {
-        console.error('Error updating profile:', err);
+        console.error('Server error during profile update:', err);
         res.status(500).json({ message: 'Server error. Failed to update profile. Please try again later.', error: err.message });
     }
 };

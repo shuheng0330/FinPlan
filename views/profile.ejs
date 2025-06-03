@@ -48,7 +48,7 @@
             <div class="card shadow-sm">
               <div class="card-body text-center">
                 <h5 class="mb-4 text-danger">Delete Account</h5>
-                <form action="/profile/delete-account" method="POST"
+                <form id="delete-account-form"
                   onsubmit="return confirm('Are you sure you want to delete your account permanently? This action cannot be undone.')">
                   <div class="modal-body">
                     <p>Are you sure you want to permanently delete your account and all associated data? This action
@@ -58,13 +58,13 @@
                       <label for="confirmPassword" class="form-label">Enter your password to confirm:</label>
 
                       <% if (user.authProvider==='local' ) { %>
-                        <input type="password" class="form-control" id="passwordToDelete" placeholder="Enter password">
+                        <input type="password" class="form-control" id="passwordToDelete" name="passwordToDelete"
+                          placeholder="Enter password">
                         <% } else { %>
                           <input type="password" class="form-control" id="passwordToDelete" readonly>
                           <div class="alert alert-info mt-2">
                             Your account is managed via Google. Please use your Google account settings to manage
-                            security
-                            and deletion.
+                            security and deletion.
                           </div>
                           <% } %>
                     </div>
@@ -82,8 +82,9 @@
             <div class="card shadow-sm">
               <div class="card-body">
                 <h5 class="mb-4">Account Details</h5>
+                <div id="general-messages-container" class="mb-3"></div>
 
-                <form action="/users/profile/updateProfile" method="POST">
+                <form id="profile-update-form" action="/users/profile/updateProfile" method="POST">
                   <!-- Account Info -->
                   <div class="mb-3">
                     <label class="form-label">Full Name</label>
@@ -100,6 +101,8 @@
                   <h5 class="mb-4">Change Password</h5>
 
                   <% if (user.authProvider==='local' ) { %>
+                    <div id="password-messages-container" class="mt-2"></div>
+
                     <div class="mb-3">
                       <label class="form-label">Current Password</label>
                       <input type="password" class="form-control" name="currentPassword">

@@ -9,16 +9,14 @@ passport.use(new LocalStrategy({
     usernameField: 'email'
 }, async (email, password, done) => {
     try {
-        // IMPORTANT: Changed user.password to user.passwordHash to match your User model
         const user = await User.findOne({ email, authProvider: 'local' });
-        if (!user) return done(null, false, { message: 'No user with that email' });
+        if (!user) return done(null, false, { message: 'No user with that email or not a local account.' });
 
-        // Ensure user.passwordHash exists for local users
         if (!user.passwordHash) {
             return done(null, false, { message: 'User not registered via local strategy.' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.passwordHash); // <--- CHANGE HERE
+        const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) return done(null, false, { message: 'Incorrect password' });
 
         return done(null, user);
@@ -31,7 +29,7 @@ passport.use(new LocalStrategy({
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/users/auth/google/callback" // This should match your authRoutes.js
+    callbackURL: "/users/auth/google/callback"
 },
     async (accessToken, refreshToken, profile, done) => {
         try {
@@ -52,13 +50,13 @@ passport.use(new GoogleStrategy({
                     email: profile.emails[0].value,
                     googleId: profile.id,
                     authProvider: 'google',
-                    profilePicture: profile.photos[0].value // Assuming profile.photos[0].value exists
+                    profilePicture: profile.photos[0].value
                 });
             }
 
             return done(null, user);
         } catch (err) {
-            console.error("Google Strategy Error:", err); // Added console.error for better debugging
+            console.error("Google Strategy Error:", err);
             return done(err, null);
         }
     }
