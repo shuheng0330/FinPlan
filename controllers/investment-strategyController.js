@@ -22,8 +22,6 @@ exports.renderStrategypage = async(req,res)=>{
 
         res.render("investment-strategy",{
             title:"FinPlan - Investment Strategy",
-            username: "Thong Shu Heng",
-            userEmail: "thongshuheng030@gmail.com",
             pageTitle: "Investment Strategy",
             goals: goals, // Pass to EJS
         });
@@ -31,8 +29,6 @@ exports.renderStrategypage = async(req,res)=>{
         console.error("Error fetching goals:", err);
         res.render("investment-strategy", {
             title: "FinPlan - Investment Strategy",
-            username: "Thong Shu Heng",
-            userEmail: "thongshuheng030@gmail.com",
             pageTitle: "Investment Strategy",
             goals: [], // Fallback to empty
     });
