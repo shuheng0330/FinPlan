@@ -10,6 +10,7 @@ require('./config/passport');
 const app = express();
 
 const goalRouter = require('./routers/goal-PlanningRoute');
+const goalDetailsRouter = require('./routers/goal-detailsRoute');
 const investmentRouter = require('./routers/investmentRoute');
 const viewRouter = require('./routers/viewRoute');
 const userRouter = require('./routers/userRoute');
@@ -51,6 +52,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/uploads", express.static("public/uploads"));
 
 app.use('/goal-planning', goalRouter);
+app.use('/goal-details', goalDetailsRouter);
 app.use('/investment-strategy', investmentRouter);
 app.use('/', viewRouter);
 app.use('/users', userRouter);

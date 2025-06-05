@@ -3,12 +3,23 @@ import { initializeAddGoalForm } from '/js/common-add-goal-logic.js'; // Adjust 
 let selectedGoalId = null; // Variable to store the ID of the selected goal
 let riskAppetite = 'Moderate';
 let allocationChartInstance = null;
+let currentGeneratedStrategy = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     const goalCards = document.querySelectorAll('.goal-card');
     const riskAppetiteSlider = document.getElementById('riskSlider');
     const generateStrategyBtn = document.getElementById('generateStrategyBtn');
     const strategyDisplaySection = document.getElementById('strategyDisplaySection'); // Main container for strategy
+
+    // Toast elements
+    const successToast = document.getElementById('successToast');
+    const successToastBody = document.getElementById('successToastBody');
+    const errorToast = document.getElementById('errorToast');
+    const errorToastBody = document.getElementById('errorToastBody');
+
+    // Bootstrap Toast instances
+    const bsSuccessToast = new bootstrap.Toast(successToast, { autohide: true, delay: 5000 });
+    const bsErrorToast = new bootstrap.Toast(errorToast, { autohide: true, delay: 7000 });
 
     const riskLevelBadge = document.getElementById('riskLevelBadge');
     const allocationChartCanvas = document.getElementById('allocationChart');
@@ -26,6 +37,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const regenerateBtn = document.getElementById('regenerateBtn');
     const downloadStrategyBtn = document.getElementById('downloadStrategyBtn');
     const implementStrategyBtn = document.getElementById('implementStrategyBtn');
+
+    // --- Helper function to show toast messages ---
+    function showToast(message, type = 'success') {
+        if (type === 'success') {
+            successToastBody.textContent = message;
+            bsSuccessToast.show();
+        } else {
+            errorToastBody.textContent = message;
+            bsErrorToast.show();
+        }
+    }
 
     // --- Goal Selection Logic ---
     goalCards.forEach(card => {
@@ -130,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const responseData = await response.json();
                     const strategyData = responseData.data.strategy;
                     console.log('Generated Strategy:', strategyData);
+                    currentGeneratedStrategy = strategyData;
 
                     // --- Populate Display Section ---
                     if (strategyData) {
@@ -193,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: {
-                                        display: false,
+                                        display: true,
                                     },
                                     tooltip: {
                                         callbacks: {
@@ -213,16 +236,36 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         });
 
+                        
+                            setTimeout(() => {
+                                try {
+                                    console.log("Canvas size:", ctx.canvas.width, ctx.canvas.height);
+                                    console.log("Chart data:", allocationChartInstance.data);
+
+                                    const chartImageBase64 = allocationChartInstance.toBase64Image();
+                                    currentGeneratedStrategy.chartImage = chartImageBase64.startsWith("data:image")? chartImageBase64: "data:image/png;base64," + chartImageBase64.split(',')[1];
+
+                                    window.chartRendered = true;
+                                    console.log("Chart rendered and flag set to true.");
+                                    console.log("Chart image size (base64):", currentGeneratedStrategy.chartImage?.length);
+                                    console.log("chartImage starts with:", currentGeneratedStrategy.chartImage.slice(0, 30));
+                                } catch (e) {
+                                    console.error("Failed to convert chart to image:", e);
+                                    currentGeneratedStrategy.chartImage = null;
+                                }
+                            }, 1500); // waits 500ms to ensure canvas rendering is complete
 
                         // Populate Recommended Funds (Dynamic Generation)
                         recommendedFundsList.innerHTML = ''; // Clear previous content
                         strategyData.recommendedFunds.forEach(fund => {
                             const listItem = document.createElement('li');
-                            listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                            listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start');
                             // Using description as badge text if no specific percentage for fund is given by AI
                             listItem.innerHTML = `
-                                ${fund.fundName}
-                                <span class="badge bg-primary rounded-pill">${fund.description}</span>
+                                <div>
+                                   <h6 class="mb-1">${fund.fundName}</h6>
+                                   <p class="mb-0 text-muted small">${fund.description}</p>
+                                </div>
                             `;
                             recommendedFundsList.appendChild(listItem);
                         });
@@ -233,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         investmentHorizonImpactText.textContent = strategyData.strategyExplanation.investmentHorizonImpact;
 
                         strategyDisplaySection.style.display = 'block'; // Show the strategy display section
-                        alert('Strategy generated successfully!');
+                         showToast('Strategy generated successfully!', 'success');
 
                         // Enable action buttons
                         downloadStrategyBtn.disabled = false;
@@ -241,17 +284,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         regenerateBtn.disabled = false;
 
                     } else {
-                        alert('Generated strategy data is empty.');
+                        showToast('Generated strategy data is empty.', 'error');
                     }
 
                 } else {
                     const errorData = await response.json();
                     console.error('Error generating strategy:', errorData);
-                    alert('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'));
+                    showToast('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'), 'error'); // Replaced alert
                 }
             } catch (error) {
                 console.error('Network error during strategy generation:', error);
-                alert('Could not connect to the server to generate strategy. Please check your internet connection.');
+                showToast('Could not connect to the server to generate strategy. Please check your internet connection.', 'error'); // Replaced alert
             } finally {
                 this.disabled = false;
                 this.textContent = 'Generate Strategy';
@@ -269,16 +312,99 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // (Add event listeners for downloadStrategyBtn and implementStrategyBtn here later)
     if (downloadStrategyBtn) {
-        downloadStrategyBtn.addEventListener('click', function() {
-            console.log('Download Strategy clicked');
-            // Logic for PDF download
+        downloadStrategyBtn.addEventListener('click', async function() {
+
+            console.log('Attempting PDF download...');
+            console.log('selectedGoalId:', selectedGoalId);
+            console.log('riskAppetite:', riskAppetite);
+            console.log('currentGeneratedStrategy:', currentGeneratedStrategy);
+
+            if (!selectedGoalId) {
+                showToast('error', 'Please select a goal first to generate a PDF.');
+                return;
+            }
+            if (!riskAppetite) {
+                showToast('error', 'Risk appetite is not set. Please generate a strategy first.');
+                return;
+            }
+
+            try {
+                // Send selectedGoalId and riskAppetite to the backend
+                const response = await fetch('/investment-strategy/download-pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        goalId: selectedGoalId,
+                        riskAppetite: riskAppetite,
+                        strategy: currentGeneratedStrategy
+                    })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'FinPlan_Investment_Strategy.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    showToast('Download successfully', 'success');
+                } else {
+                    const errorData = await response.json();
+                    console.error('Error downloading PDF:', errorData);
+                    showToast('error', `Failed to download PDF: ${errorData.message || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Network error during PDF download:', error);
+                showToast('error', 'Network error or unexpected issue during PDF download.');
+            }
         });
     }
 
     if (implementStrategyBtn) {
-        implementStrategyBtn.addEventListener('click', function() {
+        implementStrategyBtn.addEventListener('click', async function() {
             console.log('Implement Strategy clicked');
-            // Logic for saving/implementing strategy
+            console.log('selectedGoalId:', selectedGoalId);
+            console.log('currentGeneratedStrategy:', currentGeneratedStrategy);
+
+            if(!selectedGoalId || !currentGeneratedStrategy){
+                showToast('Please generate an investment strategy first.','error');
+                return;
+            }
+
+            try{
+                implementStrategyBtn.disabled = true;
+                implementStrategyBtn.textContent = 'Saving...';
+
+                const response = await fetch('/investment-strategy/save',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        goalId: selectedGoalId,
+                        strategy: currentGeneratedStrategy
+                    })
+                });
+
+                const data = await response.json();
+
+                if(data.status === 'success'){
+                    showToast('Investment strategy saved successfully!','success');
+                }else{
+                    showToast('Failed to save investment strategy. Unknown error.', 'error');
+                }
+            }catch (error){
+                console.error('Error saving strategy:',error);
+                showToast('An unexpected error occurred while saving the strategy.','error');
+            }finally{
+                implementStrategyBtn.disabled = false;
+                implementStrategyBtn.textContent = 'Implement Strategy';
+            }
         });
     }
 
@@ -350,118 +476,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (nextGoalsBtn) nextGoalsBtn.style.display = 'none';
     }
 
-
-    // // --- Existing Chart and Calculator Initializations (unchanged) ---
-    // const allocationCtx = document.getElementById('allocationChart') ? document.getElementById('allocationChart').getContext('2d') : null;
-    // if (allocationCtx) {
-    //     const allocationChart = new Chart(allocationCtx, {
-    //         type: 'pie',
-    //         data: {
-    //             labels: [
-    //                 'FTSE Bursa Malaysia KLCI ETF',
-    //                 'Malaysian Government Securities',
-    //                 'Malaysian REITs',
-    //                 'ASEAN Equity Funds',
-    //                 'Fixed Deposits'
-    //             ],
-    //             datasets: [{
-    //                 data: [25, 20, 15, 25, 15],
-    //                 backgroundColor: [
-    //                     '#4CAF50',
-    //                     '#2196F3',
-    //                     '#9C27B0',
-    //                     '#FF9800',
-    //                     '#607D8B'
-    //                 ],
-    //                 borderWidth: 0
-    //             }]
-    //         },
-    //         options: {
-    //             responsive: true,
-    //             maintainAspectRatio: false,
-    //             plugins: {
-    //                 legend: {
-    //                     display: false
-    //                 },
-    //                 tooltip: {
-    //                     callbacks: {
-    //                         label: function(context) {
-    //                             return context.label + ': ' + context.raw + '%';
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
-
-    // const riskReturnCtx = document.getElementById('riskReturnChart') ? document.getElementById('riskReturnChart').getContext('2d') : null;
-    // if (riskReturnCtx) {
-    //     const riskReturnChart = new Chart(riskReturnCtx, {
-    //         type: 'scatter',
-    //         data: {
-    //             datasets: [
-    //                 {
-    //                     label: 'Conservative',
-    //                     data: [{ x: 5, y: 3.5 }],
-    //                     backgroundColor: '#4CAF50',
-    //                     pointRadius: 10
-    //                 },
-    //                 {
-    //                     label: 'Moderate',
-    //                     data: [{ x: 10, y: 5.8 }],
-    //                     backgroundColor: '#FF9800',
-    //                     pointRadius: 10
-    //                 },
-    //                 {
-    //                     label: 'Aggressive',
-    //                     data: [{ x: 15, y: 7.5 }],
-    //                     backgroundColor: '#F44336',
-    //                     pointRadius: 10
-    //                 },
-    //                 {
-    //                     label: 'Your Strategy',
-    //                     data: [{ x: 10, y: 5.8 }],
-    //                     backgroundColor: '#6366f1',
-    //                     pointRadius: 12,
-    //                     pointStyle: 'star'
-    //                 }
-    //             ]
-    //         },
-    //         options: {
-    //             responsive: true,
-    //             maintainAspectRatio: false,
-    //             scales: {
-    //                 x: {
-    //                     title: {
-    //                         display: true,
-    //                         text: 'Risk (Volatility)'
-    //                     },
-    //                     min: 0,
-    //                     max: 20
-    //                 },
-    //                 y: {
-    //                     title: {
-    //                         display: true,
-    //                         text: 'Expected Return (%)'
-    //                     },
-    //                     min: 0,
-    //                     max: 10
-    //                 }
-    //             },
-    //             plugins: {
-    //                 tooltip: {
-    //                     callbacks: {
-    //                         label: function(context) {
-    //                             return context.dataset.label + ': ' + context.raw.y + '% return, ' + context.raw.x + ' risk';
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
-
     if (generateStrategyBtn) {
         generateStrategyBtn.addEventListener('click', function() {
             document.querySelector('.strategy-recommendation').scrollIntoView({ behavior: 'smooth' });
@@ -520,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    initializeAddGoalForm();
+    initializeAddGoalForm(showToast);
 });
 
 // You might want to export selectedGoalId or a getter function if other modules need it

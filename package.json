@@ -17,7 +17,9 @@
     "url": "https://github.com/shuheng0330/FinPlan/issues"
   },
   "homepage": "https://github.com/shuheng0330/FinPlan#readme",
-  "dependencies": {
+  "dependencies": {    
+    "openai": "^5.0.1",
+    "puppeteer": "^24.10.0"
     "bcryptjs": "^3.0.2",
     "connect-flash": "^0.1.1",
     "dotenv": "^16.5.0",
@@ -30,6 +32,8 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
-    "validator": "^13.15.15"
+    "validator": "^13.15.15",
+    "openai": "^5.0.1",
+    "puppeteer": "^24.10.0"
   }
 }

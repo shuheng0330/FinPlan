@@ -122,118 +122,102 @@ document.addEventListener('DOMContentLoaded', function() {
     // Edit Goal functionality
     const editButtons = document.querySelectorAll('[data-bs-target="#editGoalModal"]');
     editButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        const goalId = this.getAttribute('data-goal-id');
-        document.getElementById('editGoalId').value = goalId;
-        
-        // In a real application, you would fetch the goal data and populate the form
-        // For this demo, we'll pre-fill with sample data based on the goal ID
-        let goalData = {};
-        
-        switch(goalId) {
-          case '1': // Vacation
-            goalData = {
-              name: 'Vacation',
-              amount: 2500,
-              current: 1300,
-              targetDate: '2025-12-31',
-              startDate: '2023-01-15',
-              priority: 'low',
-              icon: 'vacation'
-            };
-            break;
-          case '2': // Home Renovation
-            goalData = {
-              name: 'Home Renovation',
-              amount: 35000,
-              current: 15750,
-              targetDate: '2025-12-31',
-              startDate: '2023-03-10',
-              priority: 'high',
-              icon: 'house'
-            };
-            break;
-          case '3': // Emergency Fund
-            goalData = {
-              name: 'Emergency Fund',
-              amount: 50000,
-              current: 50000,
-              targetDate: '2025-12-31',
-              startDate: '2022-02-05',
-              priority: 'high',
-              icon: 'emergency'
-            };
-            break;
-          case '4': // New Car
-            goalData = {
-              name: 'New Car',
-              amount: 25000,
-              current: 6250,
-              targetDate: '2025-12-31',
-              startDate: '2023-05-20',
-              priority: 'medium',
-              icon: 'car'
-            };
-            break;
-          case '5': // Education
-            goalData = {
-              name: 'Education',
-              amount: 35000,
-              current: 26250,
-              targetDate: '2025-12-31',
-              startDate: '2022-04-12',
-              priority: 'high',
-              icon: 'education'
-            };
-            break;
-          case '6': // Investments
-            goalData = {
-              name: 'Investments',
-              amount: 80000,
-              current: 52000,
-              targetDate: '2023-12-31',
-              startDate: '2021-06-03',
-              priority: 'medium',
-              icon: 'investment'
-            };
-            break;
+      button.addEventListener('click', async function () {
+      const goalId = this.getAttribute('data-goal-id');  // set its id when the modal is opened
+      console.log(goalId)
+      document.getElementById('editGoalId').value = goalId;
+
+    try {
+      const response = await fetch(`/goal-planning/${goalId}`);
+      if (!response.ok) {
+        throw new Error('Goal not found');
+      }
+
+      const result = await response.json();
+      const goalData = result.data.goal; // Adjust based on your API's response structure
+
+      // Populate form fields
+      document.getElementById('editGoalName').value = goalData.goalName;
+      document.getElementById('editGoalAmount').value = goalData.goalAmount;
+      document.getElementById('editCurrentAmount').value = goalData.currentAmount;
+      document.getElementById('editTargetDate').value = goalData.targetDate?.substring(0, 10); // Format as YYYY-MM-DD
+      document.getElementById('editStartDate').value = goalData.startDate?.substring(0, 10);
+      document.getElementById('editGoalPriority').value = goalData.goalPriority;
+      // Highlight selected icon
+      const iconSelector = document.querySelector('.edit-icon-selector');
+      iconSelector.querySelectorAll('.icon-option').forEach(opt => {
+        const iconType = opt.querySelector('img').getAttribute('data-icon');
+        if (iconType === goalData.icon) {
+          opt.classList.add('selected');
+        } else {
+          opt.classList.remove('selected');
         }
-        
-        // Populate form with goal data
-        document.getElementById('editGoalName').value = goalData.name;
-        document.getElementById('editGoalAmount').value = goalData.amount;
-        document.getElementById('editCurrentAmount').value = goalData.current;
-        document.getElementById('editTargetDate').value = goalData.targetDate;
-        document.getElementById('editStartDate').value = goalData.startDate;
-        document.getElementById('editGoalPriority').value = goalData.priority;
-        
-        // Set selected icon
-        const iconSelector = document.getElementById('editIconSelector');
-        iconSelector.querySelectorAll('.icon-option').forEach(opt => {
-          const iconType = opt.querySelector('img').getAttribute('data-icon');
-          if (iconType === goalData.icon) {
-            opt.classList.add('selected');
-          } else {
-            opt.classList.remove('selected');
-          }
-        });
       });
-    });
-    
-    
+    } catch (err) {
+      console.error('Failed to fetch goal data:', err);
+    }
+  });
+});
+       
     // Update Goal functionality
-    const updateGoalBtn = document.getElementById('updateGoalBtn');
-    updateGoalBtn.addEventListener('click', function() {
-      // Here you would normally update the data in a database
-      // For this demo, we'll just close the modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('editGoalModal'));
-      modal.hide();
-      
-      // Show success message
-      alert('Goal updated successfully!');
+   const updateGoalBtn = document.getElementById('updateGoalBtn');
+    if (updateGoalBtn) {
+    updateGoalBtn.addEventListener('click', async function () {
+        const editGoalId = document.getElementById('editGoalId').value;
+        const name = document.getElementById('editGoalName').value.trim();
+        const amount = parseFloat(document.getElementById('editGoalAmount').value);
+        const current = parseFloat(document.getElementById('editCurrentAmount').value);
+        const targetDate = document.getElementById('editTargetDate').value;
+        const startDate = document.getElementById('editStartDate').value;
+        const priority = document.getElementById('editGoalPriority').value;
+        const icon = document.querySelector('.edit-icon-selector .icon-option.selected img').dataset.icon;
+        console.log(priority);
+
+        if (name === '' || isNaN(amount) || isNaN(current) || !targetDate || !startDate || !icon) {
+            alert('Please fill in all required fields correctly.');
+            return;
+        }
+
+        const updatedGoal = {
+            goalName: name,
+            goalAmount: amount,
+            currentAmount: current,
+            targetDate,
+            startDate,
+            goalPriority: priority,
+            icon
+        };
+
+        try {
+            const response = await fetch(`/goal-planning/${editGoalId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(updatedGoal)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Goal updated:', result);
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editGoalModal'));
+                modal.hide();
+
+                alert('Goal updated successfully!');
+                window.location.reload(); // Optional: Refresh to see changes
+            } else {
+                const errorData = await response.json();
+                console.error('Error updating goal:', errorData);
+                alert('Update failed: ' + (errorData.message || 'Something went wrong.'));
+            }
+        } catch (error) {
+            console.error('Error during update:', error);
+            alert('Failed to update goal. Please try again later.');
+        }
     });
-    
-    // Delete Goal functionality
+}
     const deleteButtons = document.querySelectorAll('[data-bs-target="#deleteGoalModal"]');
     deleteButtons.forEach(button => {
       button.addEventListener('click', function() {
@@ -241,35 +225,55 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('deleteGoalId').value = goalId;
       });
     });
-    
+        
+
     // Confirm Delete functionality
     const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-    confirmDeleteBtn.addEventListener('click', function() {
+    confirmDeleteBtn.addEventListener('click', async function() {
       const goalId = document.getElementById('deleteGoalId').value;
-      
-      // Here you would normally delete the data from a database
-      // For this demo, we'll just close the modal
-      const modal = bootstrap.Modal.getInstance(document.getElementById('deleteGoalModal'));
-      modal.hide();
-      
-      // Show success message
-      alert('Goal deleted successfully!');
+      console.log(goalId);
+       try {
+        const response = await fetch(`/goal-planning/${goalId}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Goal deleted successfully:', result);
+            alert('Goal deleted successfully!');
+            window.location.reload(); // Refresh page to reflect deletion
+        } else {
+            const errorData = await response.json();
+            console.error('Error deleting goal:', errorData);
+            alert('Error deleting goal: ' + (errorData.message || 'Something went wrong.'));
+        }
+    } catch (error) {
+        console.error('Network error or unexpected issue:', error);
+        alert('Failed to delete goal. Please check your connection and try again.');
+    }
     });
 
     // Make goal cards clickable
     const goalCards2 = document.querySelectorAll('.goal-card');
-    goalCards2.forEach(card => {
-      card.addEventListener('click', function(e) {
-        // Don't navigate if clicking on the options menu or its children
-        if (e.target.closest('.goal-options')) {
-          return;
-        }
-        
-        // Navigate to the goal details page
-        window.location.href = '/goal-details';
-      });
-      
-      // Add pointer cursor to indicate clickable
-      card.style.cursor = 'pointer';
-    });
+
+goalCards2.forEach(card => {
+  card.addEventListener('click', function(e) {
+    // Don't navigate if clicking on the options menu or its children
+    if (e.target.closest('.goal-options')) {
+      return;
+    }
+
+    const goalId = card.getAttribute('data-goal-id');
+    if (goalId) {
+      window.location.href = `/goal-details/${goalId}`;
+    }
+  });
+
+  // Add pointer cursor to indicate clickable
+  card.style.cursor = 'pointer';
+});
   });
