@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
-    <title><%= title %></title>
+    <title>
+        <%= title %>
+    </title>
     <link rel="stylesheet" href="/css/login_register.css" />
 </head>
 
@@ -35,10 +38,10 @@
                 <hr>
             </div>
 
-            <button class="google-btn">
+            <a href="/users/auth/google" class="google-btn">
                 <img src="/svgs/google.jpg" height="15" width="15">
                 Sign in with Google
-            </button>
+            </a>
 
             <div class="signup">
                 Don't have an account? <a href="/register">Sign Up.</a>
@@ -46,7 +49,7 @@
 
             <div class="footer">
                 Copyright © <%= new Date().getFullYear() %> FinPlan Enterprises LTD.
-                <a href="#">Privacy Policy</a>
+                    <a href="#">Privacy Policy</a>
             </div>
         </div>
 
@@ -58,10 +61,8 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById("login-btn").addEventListener("click", function() {
-            window.location.href = "/dashboard";
-        });
-    </script>
+    <script src="/js/User/login.js"></script>
+
 </body>
+
 </html>
