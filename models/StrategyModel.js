@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const strategySchema = new mongoose.Schema(
     {
+        user: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+            required: [true, 'A goal must belong to a user']            
+        },
+
         goal: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Goal",

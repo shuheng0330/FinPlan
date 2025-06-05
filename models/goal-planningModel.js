@@ -38,7 +38,7 @@ const goalSchema = new mongoose.Schema(
             type: String,
             required: [true, 'A saving goal must have a priority level'],
             enum: {
-                values: ['High', 'Medium', 'Low'],
+                values: ['high', 'medium', 'low'],
                 message: 'Priority can be high, medium, or low'
             }
         },
@@ -56,11 +56,11 @@ const goalSchema = new mongoose.Schema(
             default: 'in-progress'
         },
         // You might consider adding a 'user' field if you have authentication
-        // user: {
-        //     type: mongoose.Schema.ObjectId,
-        //     ref: 'User',
-        //     required: [true, 'A goal must belong to a user']
-        // }
+        user: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+            required: [true, 'A goal must belong to a user']
+        }
     },
     {
         timestamps: true, // Automatically adds createdAt and updatedAt fields

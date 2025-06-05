@@ -18,10 +18,12 @@ const openai = new OpenAI({
 
 exports.renderStrategypage = async(req,res)=>{
     try{
-        const goals = await Goal.find();
+        const goals = await Goal.find({user: req.user._id});
 
         res.render("investment-strategy",{
             title:"FinPlan - Investment Strategy",
+            username: req.user.username,
+            userEmail: req.user.email,
             pageTitle: "Investment Strategy",
             goals: goals, // Pass to EJS
         });
@@ -29,6 +31,8 @@ exports.renderStrategypage = async(req,res)=>{
         console.error("Error fetching goals:", err);
         res.render("investment-strategy", {
             title: "FinPlan - Investment Strategy",
+            username: "Thong Shu Heng",
+            userEmail: "thongshuheng030@gmail.com",
             pageTitle: "Investment Strategy",
             goals: [], // Fallback to empty
     });
@@ -237,8 +241,8 @@ exports.downloadStrategyPdf = async (req, res) => {
         // Render EJS template to HTML string with chart data
         const templatePath = path.join(__dirname, '../views/strategy-pdf-template.ejs');
         const htmlContent = await ejs.renderFile(templatePath, {
-            username: "Thong Shu Heng", // Replace with actual user data if available
-            userEmail: "thongshuheng030@gmail.com", // Replace with actual user data
+            username: req.user.username, // Replace with actual user data if available
+            userEmail: req.user.email, // Replace with actual user data
             goalName: goal.goalName,
             riskAppetite: riskAppetite,
             strategy: generatedStrategy, // Use the passed strategy data
@@ -292,12 +296,12 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
         // Assuming user ID is available from authentication middleware (e.g., req.user.id)
         // const userId = req.user.id; // Or req.user._id, depending on your auth setup
 
-        // if (!userId) {
-        //     return res.status(401).json({
-        //         status: 'fail',
-        //         message: 'User not authenticated.'
-        //     });
-        // }
+        if (!req.user._id) {
+            return res.status(401).json({
+                status: 'fail',
+                message: 'User not authenticated.'
+            });
+        }
 
         if (!goalId || !strategy) {
             return res.status(400).json({
@@ -310,6 +314,7 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
         // to ensure it matches your SavedStrategy schema.
 
         const newSavedStrategy = await Strategy.create({
+            user: req.user._id,
             goal: goalId,
             assetAllocation: strategy.assetAllocation,
             recommendedFunds: strategy.recommendedFunds,

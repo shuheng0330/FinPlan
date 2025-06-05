@@ -382,6 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const response = await fetch('/investment-strategy/save',{
                     method: 'POST',
+                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                     },
