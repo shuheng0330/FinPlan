@@ -1,4 +1,5 @@
 const Goal = require('../models/goal-planningModel');
+const Strategy = require('../models/StrategyModel');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' }); // Load environment variables from .env file
 const puppeteer = require('puppeteer'); // Import puppeteer
@@ -283,6 +284,67 @@ exports.downloadStrategyPdf = async (req, res) => {
         res.status(500).json({
             status: 'error',
             message: 'Failed to generate PDF for investment strategy.',
+            error: err.message
+        });
+    }
+};
+
+
+exports.saveInvestmentStrategy = async (req, res, next) => {
+    try {
+        const { goalId, strategy } = req.body;
+        // Assuming user ID is available from authentication middleware (e.g., req.user.id)
+        // const userId = req.user.id; // Or req.user._id, depending on your auth setup
+
+        // if (!userId) {
+        //     return res.status(401).json({
+        //         status: 'fail',
+        //         message: 'User not authenticated.'
+        //     });
+        // }
+
+        if (!goalId || !strategy) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Goal ID and strategy data are required to save.'
+            });
+        }
+
+        // You might want to do more robust validation of the 'strategy' object here
+        // to ensure it matches your SavedStrategy schema.
+
+        const newSavedStrategy = await Strategy.create({
+            goal: goalId,
+            assetAllocation: strategy.assetAllocation,
+            recommendedFunds: strategy.recommendedFunds,
+            suggestedMonthlyInvestment: strategy.suggestedMonthlyInvestment,
+            expectedAnnualReturn: strategy.expectedAnnualReturn,
+            riskLevel: strategy.riskLevel,
+            investmentHorizon: strategy.investmentHorizon,
+            strategyExplanation: strategy.strategyExplanation,
+            chartImage: strategy.chartImage
+        });
+
+        res.status(201).json({
+            status: 'success',
+            message: 'Investment strategy saved successfully!',
+            data: {
+                Strategy: newSavedStrategy
+            }
+        });
+
+    } catch (err) {
+        console.error('Error saving investment strategy:', err);
+        // Handle duplicate key errors if you've added a unique index
+        if (err.code === 11000) {
+            return res.status(409).json({
+                status: 'fail',
+                message: 'This strategy for this goal has already been saved.'
+            });
+        }
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to save investment strategy.',
             error: err.message
         });
     }

@@ -366,9 +366,45 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (implementStrategyBtn) {
-        implementStrategyBtn.addEventListener('click', function() {
+        implementStrategyBtn.addEventListener('click', async function() {
             console.log('Implement Strategy clicked');
-            // Logic for saving/implementing strategy
+            console.log('selectedGoalId:', selectedGoalId);
+            console.log('currentGeneratedStrategy:', currentGeneratedStrategy);
+
+            if(!selectedGoalId || !currentGeneratedStrategy){
+                showToast('Please generate an investment strategy first.','error');
+                return;
+            }
+
+            try{
+                implementStrategyBtn.disabled = true;
+                implementStrategyBtn.textContent = 'Saving...';
+
+                const response = await fetch('/investment-strategy/save',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        goalId: selectedGoalId,
+                        strategy: currentGeneratedStrategy
+                    })
+                });
+
+                const data = await response.json();
+
+                if(data.status === 'success'){
+                    showToast('Investment strategy saved successfully!','success');
+                }else{
+                    showToast('Failed to save investment strategy. Unknown error.', 'error');
+                }
+            }catch (error){
+                console.error('Error saving strategy:',error);
+                showToast('An unexpected error occurred while saving the strategy.','error');
+            }finally{
+                implementStrategyBtn.disabled = false;
+                implementStrategyBtn.textContent = 'Implement Strategy';
+            }
         });
     }
 
