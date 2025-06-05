@@ -97,7 +97,6 @@
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-
     
     .priority-low {
       background-color: #e2e3e5;
@@ -123,12 +122,13 @@
       color: #000;
     }
     
-    .icon-selector {
+  .icon-selector,
+  .edit-icon-selector {
   display: grid;
   grid-template-columns: repeat(3, 1fr); 
   gap: 10px;
   margin-top: 10px;
-}
+  }
 
 .icon-option {
   display: flex;

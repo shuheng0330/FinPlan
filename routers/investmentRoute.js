@@ -5,5 +5,11 @@ const router = express.Router();
 
 
 // router.post('/',investmentController.createGoal);
+router.post('/generate', investmentController.generateInvestmentStrategy);
+
+router.post('/download-pdf', investmentController.downloadStrategyPdf); 
+
+router.post('/save',investmentController.saveInvestmentStrategy );
+
 
 module.exports = router;

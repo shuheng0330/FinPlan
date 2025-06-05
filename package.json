@@ -21,9 +21,16 @@
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+<<<<<<< HEAD
     "mongoose": "^8.15.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
+=======
+    "mongoose": "^8.15.0",
+    "nodemon": "^3.1.10",
+    "openai": "^5.0.1",
+    "puppeteer": "^24.10.0"
+>>>>>>> 7e9ffc6981239de0af3a2aaf0bd09979a199260c
   }
 }
