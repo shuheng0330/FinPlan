@@ -129,7 +129,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
           }
         }
         Ensure the asset allocation percentages sum up to 100%. Adjust the percentage for each asset class and provide suitable fund names based on the risk appetite and investment horizon.
-        Ensure numerical values are correctly formatted and strings are descriptive.
+        Ensure numerical values are correctly formatted and strings are descriptive. If possible, please explain the strategy generated with more detail and suit to the goal selected and risk appetite level
         Focus on Malaysian context for funds and financial advice.`;
 
         console.log('Sending prompt to AI model:', prompt);
