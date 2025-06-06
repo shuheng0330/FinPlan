@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const pastStrategiesContainer = document.getElementById('pastStrategiesContainer');
     const seeMoreStrategiesBtn = document.getElementById('seeMoreStrategiesBtn');
+    const hideStrategiesBtn = document.getElementById('hideStrategiesBtn');
     const noPastStrategiesMessage = document.getElementById('noPastStrategiesMessage');
     const modalElement = document.getElementById('strategyDetailModal');
     strategyDetailModal = new bootstrap.Modal(modalElement);
@@ -602,63 +603,87 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Function to fetch and display initial past strategies on page load
     async function fetchAndDisplayPastStrategies(fetchAll = false) {
+        console.log("Fetching strategies, fetchAll:", fetchAll);
+        //we using d-none, so that we can remove it
+        seeMoreStrategiesBtn.classList.add('d-none');
+        hideStrategiesBtn.classList.add('d-none');
+
         pastStrategiesContainer.innerHTML = ''; // Clear existing cards
         noPastStrategiesMessage.style.display = 'none'; // Hide no strategies message by default
-        seeMoreStrategiesBtn.style.display = 'none';
+        seeMoreStrategiesBtn.style.display = ''; // Initially hide "See More" button
+        hideStrategiesBtn.style.display = ''; // Initially hide "Hide Strategies" button
         isShowingAllStrategies = fetchAll;
 
-        try {
-            let url = `/investment-strategy/past-strategies`;
-            if(! fetchAll){
-                url += `?limit=${INITIAL_STRATEGY_LIMIT}`;
-            }
-
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.status === 'success' && data.data.strategies.length > 0) {
-                strategiesCache = data.data.strategies;
-
-                let strategiesToRender = strategiesCache;
-                if (!fetchAll && data.totalCount > INITIAL_STRATEGY_LIMIT) {
-                    // If not fetching all, and there are more than the initial limit,
-                    // slice the cache to show only the initial limit.
-                    strategiesToRender = strategiesCache.slice(0, INITIAL_STRATEGY_LIMIT);
-                    seeMoreStrategiesBtn.style.display = 'block'; // Show "See More" button
-                } else {
-                    // If fetching all, or if there are <= INITIAL_STRATEGY_LIMIT strategies, show all and hide button
-                    seeMoreStrategiesBtn.style.display = 'none';
-                }
-
-                strategiesToRender.forEach(strategy => {
-                    const card = createStrategyCard(strategy);
-                    pastStrategiesContainer.appendChild(card);
-                });
-            } else {
-                noPastStrategiesMessage.style.display = 'block'; // Show message if no strategies
-                noPastStrategiesMessage.textContent = 'No past strategies found.'
-            }
-        } catch (error) {
-            console.error('Error fetching past strategies:', error);
-            noPastStrategiesMessage.style.display = 'block'; // Show message on error
-            noPastStrategiesMessage.textContent = 'Failed to load past strategies. Please try again later.';
-            showToast('Failed to load past strategies.','error');
+    try {
+        let url = `/investment-strategy/past-strategies`;
+        if (!fetchAll) {
+            url += `?limit=${INITIAL_STRATEGY_LIMIT}`;
         }
-    }
+        console.log("Fetching from URL:", url); // Log the URL for the API request
 
-    // --- Event Listener for "See More" Button ---
-    seeMoreStrategiesBtn.addEventListener('click', function() {
-        seeMoreStrategiesBtn.disabled = true;
-        seeMoreStrategiesBtn.textContent = 'Loading all strategies...';
-        fetchAndDisplayPastStrategies(true)
-          .finally(()=>{
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("Data fetched:", data); // Log the response data
+
+        if (data.status === 'success' && data.data.strategies.length > 0) {
+            strategiesCache = data.data.strategies;
+
+            let strategiesToRender = strategiesCache;
+
+            if (!fetchAll && data.totalCount > INITIAL_STRATEGY_LIMIT) {
+                // If not fetching all, and there are more than the initial limit,
+                // slice the cache to show only the initial limit.
+                strategiesToRender = strategiesCache.slice(0, INITIAL_STRATEGY_LIMIT);
+                seeMoreStrategiesBtn.classList.remove('d-none'); // Show "See More" button
+                console.log("See More button should be shown");
+            } else if (fetchAll && data.totalCount > INITIAL_STRATEGY_LIMIT) {
+                // If fetching all, show all strategies
+                strategiesToRender = strategiesCache;
+                hideStrategiesBtn.classList.remove('d-none'); // Show "Hide Strategies" button
+                console.log("Hide Strategies button should be shown");
+            } else {
+                // Scenario: Either only a few strategies, no need for both buttons
+                strategiesToRender = strategiesCache;
+                console.log("Both buttons hidden");
+            }
+
+            strategiesToRender.forEach(strategy => {
+                const card = createStrategyCard(strategy);
+                pastStrategiesContainer.appendChild(card);
+            });
+        } else {
+            noPastStrategiesMessage.style.display = 'block'; // Show message if no strategies
+            noPastStrategiesMessage.textContent = 'No past strategies found.'
+        }
+    } catch (error) {
+        console.error('Error fetching past strategies:', error);
+        noPastStrategiesMessage.style.display = 'block'; // Show message on error
+        noPastStrategiesMessage.textContent = 'Failed to load past strategies. Please try again later.';
+        showToast('Failed to load past strategies.', 'error');
+    }
+}
+
+// Event Listener for "See More" Button
+seeMoreStrategiesBtn.addEventListener('click', function() {
+    seeMoreStrategiesBtn.disabled = true;
+    seeMoreStrategiesBtn.textContent = 'Loading all strategies...';
+    fetchAndDisplayPastStrategies(true)
+        .finally(() => {
             seeMoreStrategiesBtn.disabled = false;
             seeMoreStrategiesBtn.textContent = 'See More Strategies';
-          })
-        // showing all past strategies, or load more dynamically on the current page.
-        console.log('See More Strategies clicked. This would typically navigate to a full list.');
-        showToast('Feature under development: Redirecting to all strategies list.','success');
-    });
+        });
+});
+
+// Event Listener for "Hide Strategies" Button
+hideStrategiesBtn.addEventListener('click', function() {
+    hideStrategiesBtn.disabled = true;
+    hideStrategiesBtn.textContent = 'Hiding strategies...';
+    fetchAndDisplayPastStrategies(false) // Revert to showing initial 3
+        .finally(() => {
+            hideStrategiesBtn.disabled = false;
+            hideStrategiesBtn.textContent = 'Hide Strategies';
+        });
+});
 
 
 
