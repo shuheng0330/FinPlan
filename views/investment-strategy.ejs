@@ -197,6 +197,48 @@
     </div>
 </div>
 
+<section id="pastStrategiesSection" class="goal-selector">
+    <h2 class="h4 text-center mb-4">Your Past Investment Strategies</h2>
+    <div id="pastStrategiesContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col-12 text-center" id="noPastStrategiesMessage" style="display: none;">
+            <p class="text-muted">No past strategies found. Generate and implement one to see it here!</p>
+        </div>
+    </div>
+    <div class="text-center mt-4">
+        <button id="seeMoreStrategiesBtn" class="btn btn-outline-primary">See More Strategies</button>
+    </div>
+</section>
+
+<div class="modal fade" id="strategyDetailModal" tabindex="-1" aria-labelledby="strategyDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="strategyDetailModalLabel">Investment Strategy Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Goal:</strong> <span id="modalGoalName"></span></p>
+                <p><strong>Risk Level:</strong> <span id="modalRiskLevel"></span></p>
+                <p><strong>Investment Horizon:</strong> <span id="modalInvestmentHorizon"></span></p>
+                <p><strong>Expected Annual Return:</strong> <span id="modalExpectedAnnualReturn"></span>%</p>
+                <p><strong>Suggested Monthly Investment:</strong> RM<span id="modalSuggestedMonthlyInvestment"></span></p>
+
+                <h6 class="mt-4"><strong>Asset Allocation:</strong></h6>
+                <div id="modalAssetAllocationContainer" class="mb-3"></div>
+                <canvas id="modalAllocationChart" style="max-height: 250px;"></canvas> <h6 class="mt-4">Recommended Funds:</h6>
+                <ul id="modalRecommendedFundsList" class="list-group"></ul>
+
+                <h6 class="mt-4">Strategy Explanation:</h6>
+                <ul id="modalStrategyExplanationContainer" class="list-group mb-3">
+                </ul>
+              </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
   <!-- Strategy Comparison -->
   <div class="strategy-container">
     <h5 class="mb-3">Strategy Comparison</h5>

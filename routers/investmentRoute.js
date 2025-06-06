@@ -11,5 +11,7 @@ router.post('/download-pdf', investmentController.downloadStrategyPdf);
 
 router.post('/save',investmentController.saveInvestmentStrategy );
 
+router.get('/past-strategies', investmentController.getPastStrategies);
+
 
 module.exports = router;

@@ -8,6 +8,7 @@ const path = require('path');
 
 
 const { OpenAI } = require('openai');
+const { strategies } = require('passport');
 
 // Initialize the OpenAI client to use OpenRouter's API
 const openai = new OpenAI({
@@ -350,3 +351,47 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
         });
     }
 };
+
+exports.getPastStrategies = async(req,res,next)=>{
+    try{
+        const userId = req.user ? req.user._id : '60d0fe4f5311236168a10000';
+
+        if(! userId){
+            return res.status(401).json({
+                status: 'fail',
+                message: 'User not authenticated. Please log in to view past strategies'
+            });
+        }
+
+        let query = Strategy.find({user: userId})
+                                             .populate('goal')
+                                             .sort({createdAt: -1});
+        const totalStrategies = await Strategy.countDocuments({user: userId});
+        const limitParam = req.query.limit;
+        
+         if (limitParam && limitParam !== 'all') { // If limit is a number, apply it
+            const limit = parseInt(limitParam, 10);
+            if (!isNaN(limit) && limit > 0) {
+                query = query.limit(limit);
+            }
+        }
+
+        const pastStrategies = await query;
+        
+        res.status(200).json({
+            status: 'success',
+            results: pastStrategies.length,
+            totalCount: totalStrategies,
+            data: {
+                strategies: pastStrategies
+            }
+        });
+    }catch(err){
+        console.error('Error fetching past strategies:', err);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve past strategies',
+            error : err.message
+        });
+    }
+}
