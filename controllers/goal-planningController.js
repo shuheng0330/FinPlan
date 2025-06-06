@@ -2,11 +2,9 @@ const Goal = require('./../models/goal-planningModel');
 
 exports.getAllGoals = async (req, res) => {
   try {
-    const goals = await Goal.find();
+    const goals = await Goal.find({user: req.user._id});
     res.render("goal-planning", {
       title: "FinPlan - Goal Planning",
-      username: "Thong Shu Heng",
-      userEmail: "thongshuheng030@gmail.com",
       pageTitle: "Financial Goals",
       goals: goals
     });
@@ -14,8 +12,6 @@ exports.getAllGoals = async (req, res) => {
     console.error("Error fetching goals:", err);
     res.render("goal-planning", {
       title: "FinPlan - Goal Planning",
-      username: "Thong Shu Heng",
-      userEmail: "thongshuheng030@gmail.com",
       pageTitle: "Financial Goals",
       goals: [] // fallback
     });
@@ -26,10 +22,15 @@ exports.createGoal = async(req,res)=>{
         try {
         // Server-side validation
         const { goalName, goalAmount, currentAmount, targetDate, startDate, goalPriority, icon } = req.body;
+        console.log("goalPriority received:", req.body.goalPriority);
+
 
         // Mongoose Schema validation will handle most 'required' and 'min' checks.
         // We'll add custom logical checks here.
 
+        if (!req.user || !req.user._id){
+            return res.status(400).json({ message: 'User must be logged in to create new goal' });
+        }
         // Ensure date formats are valid before creating Date objects for comparison
         if (!targetDate || !startDate) {
             return res.status(400).json({ message: 'Start Date and Target Date are required.' });
@@ -72,9 +73,8 @@ exports.createGoal = async(req,res)=>{
             targetDate: parsedTargetDate, // Use parsed Date objects
             startDate: parsedStartDate,   // Use parsed Date objects
             goalPriority,
-            icon
-            // If you have user authentication, you'd typically set the userId here:
-            // user: req.user.id // Assuming req.user is populated by authentication middleware
+            icon,
+            user: req.user.id // Assuming req.user is populated by authentication middleware
         });
 
         // Save the goal to the database

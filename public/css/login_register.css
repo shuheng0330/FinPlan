@@ -142,16 +142,20 @@ body {
 }
 
 .google-btn {
-    display: flex;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
     background-color: #FAFAFA;
-    color: black;
-    padding: 10px;
+    border: 1px solid #dddcdc;
+    border-radius: 5px;
+    padding: 10px 20px;
     font-size: 14px;
-    border-radius: 8px;
-    border: solid 1px #dddcdc;
-    width: 100%;
+    font-family: inherit;
+    color: #444;
+    text-decoration: none;
+    /* Remove underline */
     cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .google-btn img {

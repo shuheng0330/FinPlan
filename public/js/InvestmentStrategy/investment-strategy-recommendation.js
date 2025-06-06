@@ -5,6 +5,13 @@ let riskAppetite = 'Moderate';
 let allocationChartInstance = null;
 let currentGeneratedStrategy = null;
 
+let modealAllocationChartInstance = null;
+let strategyDetailModal;
+
+const INITIAL_STRATEGY_LIMIT = 3;
+let strategiesCache = [];
+let isShowingAllStrategies = false;
+
 document.addEventListener('DOMContentLoaded', function() {
     const goalCards = document.querySelectorAll('.goal-card');
     const riskAppetiteSlider = document.getElementById('riskSlider');
@@ -32,6 +39,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const whyThisStrategyText = document.getElementById('whyThisStrategyText');
     const riskReturnAnalysisText = document.getElementById('riskReturnAnalysisText');
     const investmentHorizonImpactText = document.getElementById('investmentHorizonImpactText');
+
+    const pastStrategiesContainer = document.getElementById('pastStrategiesContainer');
+    const seeMoreStrategiesBtn = document.getElementById('seeMoreStrategiesBtn');
+    const hideStrategiesBtn = document.getElementById('hideStrategiesBtn');
+    const noPastStrategiesMessage = document.getElementById('noPastStrategiesMessage');
+    const modalElement = document.getElementById('strategyDetailModal');
+    strategyDetailModal = new bootstrap.Modal(modalElement);
 
     // Action Buttons
     const regenerateBtn = document.getElementById('regenerateBtn');
@@ -382,6 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const response = await fetch('/investment-strategy/save',{
                     method: 'POST',
+                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -394,6 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
 
                 if(data.status === 'success'){
+                    await fetchAndDisplayPastStrategies(false);
                     showToast('Investment strategy saved successfully!','success');
                 }else{
                     showToast('Failed to save investment strategy. Unknown error.', 'error');
@@ -407,6 +423,267 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    function drawChart(assetAllocation, canvasElement) {
+        if (!canvasElement) {
+            console.warn('Canvas element not found for chart drawing.');
+            return;
+        }
+
+        // Destroy existing chart instance if it exists on this canvas
+        let existingChartInstance = Chart.getChart(canvasElement);
+        if (existingChartInstance) {
+            existingChartInstance.destroy();
+        }
+
+        if (!assetAllocation || assetAllocation.length === 0) {
+            const ctx = canvasElement.getContext('2d');
+            ctx.clearRect(0, 0, canvasElement.width, canvasElement.height); // Clear canvas
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('No asset allocation data available.', canvasElement.width / 2, canvasElement.height / 2);
+            return;
+        }
+
+        const labels = assetAllocation.map(a => a.assetClass);
+        const percentages = assetAllocation.map(a => a.percentage);
+
+        const ctx = canvasElement.getContext('2d');
+        return new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: percentages,
+                    backgroundColor: [
+                        '#4CAF50', '#2196F3', '#FFC107', '#E91E63', '#9C27B0', '#00BCD4', '#FF9800'
+                    ],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.toFixed !== undefined) {
+                                    label += context.parsed.toFixed(2) + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+        // Function to create a past strategy card
+    // This creates the small card with Goal Name, Risk Level, Expected Return, and Investment Horizon
+    function createStrategyCard(strategy) {
+        const colDiv = document.createElement('div');
+        colDiv.className = 'col';
+
+        const card = document.createElement('div');
+        card.className = 'card h-100 shadow-sm past-strategy-card cursor-pointer bg-white'; // Add cursor-pointer for visual cue
+        card.dataset.strategy = JSON.stringify(strategy); // Store full strategy data in dataset
+
+        let goalName = strategy.goal && strategy.goal.goalName ? strategy.goal.goalName : 'N/A';
+        let formattedDate = new Date(strategy.createdAt).toLocaleDateString();
+
+        card.innerHTML = `
+            <div class="card-body">
+                <h5 class="card-title">${goalName}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Risk Level: <span class="badge bg-${getRiskBadgeClass(strategy.riskLevel)}">${strategy.riskLevel}</span></h6>
+                <p class="card-text">
+                    <strong>Expected Return:</strong> ${strategy.expectedAnnualReturn ? strategy.expectedAnnualReturn.toFixed(3) : 'N/A'}%<br>
+                    <strong>Investment Horizon:</strong> ${strategy.investmentHorizon || 'N/A'}<br>
+                    <small class="text-muted">Saved on: ${formattedDate}</small>
+                </p>
+            </div>
+        `;
+
+        card.addEventListener('click', function() {
+            const clickedStrategy = JSON.parse(this.dataset.strategy);
+            showStrategyDetailsModal(clickedStrategy);
+        });
+
+        colDiv.appendChild(card);
+        return colDiv;
+    }
+
+    // Helper to get Bootstrap badge class based on risk level
+    function getRiskBadgeClass(riskLevel) {
+        switch (riskLevel) {
+            case 'Conservative': return 'success';
+            case 'Moderate': return 'warning text-dark';
+            case 'Aggressive': return 'danger';
+            default: return 'secondary';
+        }
+    }
+
+    // Function to display strategy details in the modal (the "enlarged" view)
+    function showStrategyDetailsModal(strategy) {
+        document.getElementById('modalGoalName').textContent = strategy.goal && strategy.goal.goalName ? strategy.goal.goalName : 'N/A';
+        document.getElementById('modalRiskLevel').textContent = strategy.riskLevel || 'N/A';
+        document.getElementById('modalInvestmentHorizon').textContent = strategy.investmentHorizon || 'N/A';
+        document.getElementById('modalExpectedAnnualReturn').textContent = strategy.expectedAnnualReturn ? strategy.expectedAnnualReturn.toFixed(3) : 'N/A';
+        document.getElementById('modalSuggestedMonthlyInvestment').textContent = strategy.suggestedMonthlyInvestment ? strategy.suggestedMonthlyInvestment.toFixed(2) : 'N/A';
+
+        // Asset Allocation details and chart
+        const modalAssetAllocationContainer = document.getElementById('modalAssetAllocationContainer');
+        modalAssetAllocationContainer.innerHTML = ''; // Clear previous content
+        if (strategy.assetAllocation && strategy.assetAllocation.length > 0) {
+            strategy.assetAllocation.forEach(item => {
+                const p = document.createElement('p');
+                p.textContent = `${item.assetClass}: ${item.percentage}%`;
+                modalAssetAllocationContainer.appendChild(p);
+            });
+            // Draw chart for modal
+            const modalAllocationChartCanvas = document.getElementById('modalAllocationChart');
+            modealAllocationChartInstance = drawChart(strategy.assetAllocation, modalAllocationChartCanvas);
+            modalAllocationChartCanvas.style.display = 'block'; // Ensure canvas is visible
+        } else {
+            modalAssetAllocationContainer.textContent = 'No detailed asset allocation available.';
+            document.getElementById('modalAllocationChart').style.display = 'none'; // Hide canvas if no data
+        }
+
+        // Recommended Funds
+        const modalRecommendedFundsList = document.getElementById('modalRecommendedFundsList');
+        modalRecommendedFundsList.innerHTML = ''; // Clear previous content
+        if (strategy.recommendedFunds && strategy.recommendedFunds.length > 0) {
+            strategy.recommendedFunds.forEach(fund => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+            li.innerHTML = `
+                <div>
+                    <strong>${fund.fundName}</strong>
+                    <p class="text-muted mb-0">${fund.description || 'No description'}</p>
+                </div>
+            `;
+            modalRecommendedFundsList.appendChild(li);
+        });
+        } else {
+            modalRecommendedFundsList.innerHTML = '<li class="list-group-item text-muted">No recommended funds available.</li>';
+        }
+
+    // Strategy Explanation
+    const modalStrategyExplanationContainer = document.getElementById('modalStrategyExplanationContainer');
+    modalStrategyExplanationContainer.innerHTML = ''; // Clear previous content
+
+    // Helper function to add each explanation point
+    function addExplanationPoint(title, content) {
+        const li = document.createElement('li');
+        li.className = 'list-group-item'; // Add margin for spacing between explanation points
+        li.innerHTML = `
+        <div>
+            <strong>${title}</strong>
+            <p class="text-muted mb-0">${content || 'No explanation provided.'}</p>
+        </div>
+        `;
+        modalStrategyExplanationContainer.appendChild(li);
+    }
+
+    // Call the helper function for each explanation part
+    addExplanationPoint('Why This Strategy', strategy.strategyExplanation && strategy.strategyExplanation.whyThisStrategy);
+    addExplanationPoint('Risk vs. Return Analysis', strategy.strategyExplanation && strategy.strategyExplanation.riskReturnAnalysis);
+    addExplanationPoint('Investment Horizon Impact', strategy.strategyExplanation && strategy.strategyExplanation.investmentHorizonImpact);
+
+        strategyDetailModal.show(); // Show the Bootstrap modal
+    }
+
+      // Function to fetch and display initial past strategies on page load
+    async function fetchAndDisplayPastStrategies(fetchAll = false) {
+        console.log("Fetching strategies, fetchAll:", fetchAll);
+        //we using d-none, so that we can remove it
+        seeMoreStrategiesBtn.classList.add('d-none');
+        hideStrategiesBtn.classList.add('d-none');
+
+        pastStrategiesContainer.innerHTML = ''; // Clear existing cards
+        noPastStrategiesMessage.style.display = 'none'; // Hide no strategies message by default
+        seeMoreStrategiesBtn.style.display = ''; // Initially hide "See More" button
+        hideStrategiesBtn.style.display = ''; // Initially hide "Hide Strategies" button
+        isShowingAllStrategies = fetchAll;
+
+    try {
+        let url = `/investment-strategy/past-strategies`;
+        if (!fetchAll) {
+            url += `?limit=${INITIAL_STRATEGY_LIMIT}`;
+        }
+        console.log("Fetching from URL:", url); // Log the URL for the API request
+
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("Data fetched:", data); // Log the response data
+
+        if (data.status === 'success' && data.data.strategies.length > 0) {
+            strategiesCache = data.data.strategies;
+
+            let strategiesToRender = strategiesCache;
+
+            if (!fetchAll && data.totalCount > INITIAL_STRATEGY_LIMIT) {
+                // If not fetching all, and there are more than the initial limit,
+                // slice the cache to show only the initial limit.
+                strategiesToRender = strategiesCache.slice(0, INITIAL_STRATEGY_LIMIT);
+                seeMoreStrategiesBtn.classList.remove('d-none'); // Show "See More" button
+                console.log("See More button should be shown");
+            } else if (fetchAll && data.totalCount > INITIAL_STRATEGY_LIMIT) {
+                // If fetching all, show all strategies
+                strategiesToRender = strategiesCache;
+                hideStrategiesBtn.classList.remove('d-none'); // Show "Hide Strategies" button
+                console.log("Hide Strategies button should be shown");
+            } else {
+                // Scenario: Either only a few strategies, no need for both buttons
+                strategiesToRender = strategiesCache;
+                console.log("Both buttons hidden");
+            }
+
+            strategiesToRender.forEach(strategy => {
+                const card = createStrategyCard(strategy);
+                pastStrategiesContainer.appendChild(card);
+            });
+        } else {
+            noPastStrategiesMessage.style.display = 'block'; // Show message if no strategies
+            noPastStrategiesMessage.textContent = 'No past strategies found.'
+        }
+    } catch (error) {
+        console.error('Error fetching past strategies:', error);
+        noPastStrategiesMessage.style.display = 'block'; // Show message on error
+        noPastStrategiesMessage.textContent = 'Failed to load past strategies. Please try again later.';
+        showToast('Failed to load past strategies.', 'error');
+    }
+}
+
+// Event Listener for "See More" Button
+seeMoreStrategiesBtn.addEventListener('click', function() {
+    seeMoreStrategiesBtn.disabled = true;
+    seeMoreStrategiesBtn.textContent = 'Loading all strategies...';
+    fetchAndDisplayPastStrategies(true)
+        .finally(() => {
+            seeMoreStrategiesBtn.disabled = false;
+            seeMoreStrategiesBtn.textContent = 'See More Strategies';
+        });
+});
+
+// Event Listener for "Hide Strategies" Button
+hideStrategiesBtn.addEventListener('click', function() {
+    hideStrategiesBtn.disabled = true;
+    hideStrategiesBtn.textContent = 'Hiding strategies...';
+    fetchAndDisplayPastStrategies(false) // Revert to showing initial 3
+        .finally(() => {
+            hideStrategiesBtn.disabled = false;
+            hideStrategiesBtn.textContent = 'Hide Strategies';
+        });
+});
 
 
 
@@ -535,7 +812,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     initializeAddGoalForm(showToast);
+    fetchAndDisplayPastStrategies(false);
 });
 
 // You might want to export selectedGoalId or a getter function if other modules need it
-export { selectedGoalId, riskAppetite };
+export { selectedGoalId, riskAppetite, currentGeneratedStrategy };
