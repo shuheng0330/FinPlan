@@ -289,6 +289,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         riskReturnAnalysisText.textContent = strategyData.strategyExplanation.riskReturnAnalysis;
                         investmentHorizonImpactText.textContent = strategyData.strategyExplanation.investmentHorizonImpact;
 
+                        displayStrategyComparison(strategyData);
+
                         strategyDisplaySection.style.display = 'block'; // Show the strategy display section
                          showToast('Strategy generated successfully!', 'success');
 
@@ -684,6 +686,112 @@ hideStrategiesBtn.addEventListener('click', function() {
             hideStrategiesBtn.textContent = 'Hide Strategies';
         });
 });
+
+
+function displayStrategyComparison(strategyData) {
+    const strategyComparisonContainer = document.getElementById('strategyComparisonContainer');
+    
+    if (!strategyComparisonContainer) {
+        console.warn('Strategy comparison container not found');
+        return;
+    }
+
+    if (!strategyData.strategyComparison) {
+        console.warn('No strategy comparison data available');
+        strategyComparisonContainer.style.display = 'none';
+        return;
+    }
+
+    const comparison = strategyData.strategyComparison;
+    const currentRiskLevel = strategyData.riskLevel;
+
+    // Clear existing content
+    strategyComparisonContainer.innerHTML = '';
+
+    // Create the comparison HTML
+    const comparisonHTML = `
+        <div class="strategy-comparison-section bg-white">
+    <h4 class="mb-4">Strategy Comparison</h4>
+    <div class="row">
+        ${Object.entries(comparison).map(([riskLevel, data]) => {
+
+            const stocks = data[0].Stocks;
+            const bonds = data[1].Bonds;
+            const cash = data[2].Cash;
+            const expectedReturns = data[3].Expectedreturns;
+            const isRecommended = riskLevel === currentRiskLevel;
+            const borderLeftStyle = riskLevel === 'Conservative' ? 'border-left: 5px solid #4CAF50 !important;' : 
+                                  riskLevel === 'Moderate' ? 'border-left: 5px solid #FF9800 !important;' : 'border-left: 5px solid #F44336 !important;';
+            const badgeClass = riskLevel === 'Conservative' ? 'bg-success' : 
+                                  riskLevel === 'Moderate' ? 'bg-warning text-dark' : 'bg-danger';
+            
+            console.log('Border Left Style for ', riskLevel, ': ', borderLeftStyle); // Debugging log
+            console.log(stocks);
+
+            return `
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 border-0 bg-white shadow-sm" style="${borderLeftStyle} ${isRecommended ? 'border-left-width: 8px !important; box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;' : ''}">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-transparent pb-0">
+                            <h5 class="mb-3">${riskLevel}</h5>
+                            <div class="mb-3">
+                                ${isRecommended ? '<span class="badge bg-primary">Recommended</span>' : ''}
+                                <span class="badge ${badgeClass} ms-1">
+                                    ${riskLevel === 'Conservative' ? 'Low Risk' : 
+                                      riskLevel === 'Moderate' ? 'Medium Risk' : 'High Risk'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body pt-2">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Stocks</span>
+                                    <strong>${stocks}%</strong>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" style="width: ${stocks}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Bonds</span>
+                                    <strong>${bonds}%</strong>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: ${bonds}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Cash</span>
+                                    <strong>${cash}%</strong>
+                                </div>
+                                <div class="progress mb-2" style="height: 8px;">
+                                    <div class="progress-bar bg-warning" style="width: ${cash}%"></div>
+                                </div>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="text-center">
+                                <div class="text-muted small">Expected Return</div>
+                                <div class="h4 mb-0 text-${riskLevel === 'Conservative' ? 'success' : 
+                                      riskLevel === 'Moderate' ? 'warning' : 'danger'}">
+                                    ${expectedReturns}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('')}
+    </div>
+</div>`;
+
+    strategyComparisonContainer.innerHTML = comparisonHTML;
+    strategyComparisonContainer.style.display = 'block';
+}
 
 
 

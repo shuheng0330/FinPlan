@@ -128,6 +128,27 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             "whyThisStrategy": "Explain why this strategy is suitable.",
             "riskReturnAnalysis": "Analyze the risk vs. return.",
             "investmentHorizonImpact": "Explain the impact of the investment horizon."
+
+          For the strategy comparison, could u show me the percentage of assest for different risk appetide in json format
+           "strategyComparison": {
+            "Conservative": [
+                { "Stocks": 0 },
+                { "Bonds": 0 },
+                { "Cash": 0 },
+                { "Expectedreturns": 0 }
+            ],
+            "Moderate": [
+                { "Stocks": 0 },
+                { "Bonds": 0 },
+                { "Cash": 0 },
+                { "Expectedreturns": 0 }
+            ],
+            "Aggressive": [
+                { "Stocks": 0 },
+                { "Bonds": 0 },
+                { "Cash": 0 },
+                { "Expectedreturns": 0 }
+            ]
           }
         }
         Ensure the asset allocation percentages sum up to 100%. Adjust the percentage for each asset class and provide suitable fund names based on the risk appetite and investment horizon.
@@ -169,6 +190,26 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
                     "whyThisStrategy": "This strategy balances your goal with your ${riskAppetite} risk appetite, aiming for optimal growth while managing potential volatility.",
                     "riskReturnAnalysis": "A ${riskAppetite} allocation typically offers higher potential returns in exchange for higher volatility. Bonds provide stability, while equities drive growth.",
                     "investmentHorizonImpact": "With a ${investmentHorizonYears}-year horizon, there's sufficient time for market fluctuations to smooth out, making growth-oriented assets more viable even for moderate risk."
+                },
+                "strategyComparison": {
+                    "Conservative": {
+                        "stocks": 25,
+                        "bonds": 45,
+                        "cash": 30,
+                        "expectedReturn": 4.0
+                    },
+                    "Moderate": {
+                       "stocks": 50,
+                       "bonds": 35,
+                       "cash": 15,
+                       "expectedReturn": 6.0
+                    },
+                    "Aggressive": {
+                       "stocks": 70,
+                       "bonds": 25,
+                       "cash": 5,
+                       "expectedReturn": 8.0
+                    }
                 }
             }`;
         }
