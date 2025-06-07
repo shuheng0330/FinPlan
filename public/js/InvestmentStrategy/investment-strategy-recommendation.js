@@ -290,6 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         investmentHorizonImpactText.textContent = strategyData.strategyExplanation.investmentHorizonImpact;
 
                         displayStrategyComparison(strategyData);
+                        updateComparisonTable(strategyData, riskAppetite);
 
                         strategyDisplaySection.style.display = 'block'; // Show the strategy display section
                          showToast('Strategy generated successfully!', 'success');
@@ -718,7 +719,8 @@ function displayStrategyComparison(strategyData) {
             const stocks = data[0].Stocks;
             const bonds = data[1].Bonds;
             const cash = data[2].Cash;
-            const expectedReturns = data[3].Expectedreturns;
+            const other = data[3].Other;
+            const expectedReturns = data[4].Expectedreturns;
             const isRecommended = riskLevel === currentRiskLevel;
             const borderLeftStyle = riskLevel === 'Conservative' ? 'border-left: 5px solid #4CAF50 !important;' : 
                                   riskLevel === 'Moderate' ? 'border-left: 5px solid #FF9800 !important;' : 'border-left: 5px solid #F44336 !important;';
@@ -747,9 +749,7 @@ function displayStrategyComparison(strategyData) {
                                     <span class="text-muted">Stocks</span>
                                     <strong>${stocks}%</strong>
                                 </div>
-                                <div class="progress mb-2" style="height: 8px;">
-                                    <div class="progress-bar bg-primary" style="width: ${stocks}%"></div>
-                                </div>
+                                
                             </div>
                             
                             <div class="mb-3">
@@ -757,9 +757,7 @@ function displayStrategyComparison(strategyData) {
                                     <span class="text-muted">Bonds</span>
                                     <strong>${bonds}%</strong>
                                 </div>
-                                <div class="progress mb-2" style="height: 8px;">
-                                    <div class="progress-bar bg-success" style="width: ${bonds}%"></div>
-                                </div>
+                                
                             </div>
                             
                             <div class="mb-3">
@@ -767,9 +765,15 @@ function displayStrategyComparison(strategyData) {
                                     <span class="text-muted">Cash</span>
                                     <strong>${cash}%</strong>
                                 </div>
-                                <div class="progress mb-2" style="height: 8px;">
-                                    <div class="progress-bar bg-warning" style="width: ${cash}%"></div>
+                                
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Other</span>
+                                    <strong>${other}%</strong>
                                 </div>
+                                
                             </div>
                             
                             <hr>
@@ -792,6 +796,64 @@ function displayStrategyComparison(strategyData) {
     strategyComparisonContainer.innerHTML = comparisonHTML;
     strategyComparisonContainer.style.display = 'block';
 }
+
+
+function updateComparisonTable(strategyComparison, currentRiskLevel) {
+    const tableBody = document.querySelector('.comparison-table tbody');
+    console.log("strategyComparison:", strategyComparison);  // Log to check the structure of strategyComparison
+    
+    if (!tableBody || !strategyComparison) {
+        console.error('Comparison table or strategy data not found');
+        return;
+    }
+
+    // Clear existing rows
+    tableBody.innerHTML = '';
+
+    // Define the order of strategies
+    const strategies = ['Conservative', 'Moderate', 'Aggressive'];
+
+    strategies.forEach(strategyType => {
+        // Ensure we're accessing strategyComparison for each risk level
+        const strategyDataArray = strategyComparison.strategyComparison[strategyType];  // Access the array for each strategy
+
+        // Ensure that strategyDataArray has data
+        console.log(`Checking strategyData for ${strategyType}:`, strategyDataArray);
+
+        if (strategyDataArray && strategyDataArray.length > 0) {
+            // Combine the objects in the array into a single object
+            const strategyData = strategyDataArray.reduce((acc, currentValue) => {
+                return { ...acc, ...currentValue };
+            }, {});  // Reduce array to a single object
+
+            const row = document.createElement('tr');
+            
+            // Highlight the current user's selected risk level
+            if (strategyType === currentRiskLevel) {
+                row.classList.add('highlight');
+            }
+
+            // Log strategy data to ensure we're accessing it correctly
+            console.log("Data for strategyType:", strategyType);
+            console.log("Volatility:", strategyData.Volatility);
+            console.log("BestFor:", strategyData.BestFor);
+
+            // Create the row content with the data
+            row.innerHTML = `
+                <td>${strategyType}</td>
+                <td>${strategyData.Expectedreturns || 0}%</td>  <!-- Expected Return -->
+                <td>${strategyData.Volatility || 'N/A'}</td>    <!-- Volatility -->
+                <td>${strategyData.BestFor || 'N/A'}</td>        <!-- Best For -->
+            `;
+            
+            tableBody.appendChild(row);
+        } else {
+            console.log(`No data found for strategy: ${strategyType}`);
+        }
+    });
+}
+
+
 
 
 

@@ -26,7 +26,8 @@ exports.renderStrategypage = async(req,res)=>{
             username: req.user.username,
             userEmail: req.user.email,
             pageTitle: "Investment Strategy",
-            goals: goals, // Pass to EJS
+            goals: goals, 
+            strategy: null,
         });
     } catch (err) {
         console.error("Error fetching goals:", err);
@@ -35,7 +36,8 @@ exports.renderStrategypage = async(req,res)=>{
             username: "Thong Shu Heng",
             userEmail: "thongshuheng030@gmail.com",
             pageTitle: "Investment Strategy",
-            goals: [], // Fallback to empty
+            goals: [], 
+            strategy: [],
     });
   }
 };
@@ -130,24 +132,34 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             "investmentHorizonImpact": "Explain the impact of the investment horizon."
 
           For the strategy comparison, could u show me the percentage of assest for different risk appetide in json format
+          The total percentage of stocks, bonds, cash and others must be sum up to 100%
            "strategyComparison": {
             "Conservative": [
                 { "Stocks": 0 },
                 { "Bonds": 0 },
                 { "Cash": 0 },
-                { "Expectedreturns": 0 }
+                { "Other": 0 },
+                { "Expectedreturns": 0 },
+                { "Volatility" : "level like high,medium or low" },
+                { "BestFor" : "Example like Short-term goals (1-2 years)" }
             ],
             "Moderate": [
                 { "Stocks": 0 },
                 { "Bonds": 0 },
                 { "Cash": 0 },
-                { "Expectedreturns": 0 }
+                { "Other": 0 },
+                { "Expectedreturns": 0 },
+                { "Volatility" : level like high,medium or low},
+                { "BestFor" : "Example like Short-term goals (1-2 years)" }
             ],
             "Aggressive": [
                 { "Stocks": 0 },
                 { "Bonds": 0 },
                 { "Cash": 0 },
-                { "Expectedreturns": 0 }
+                { "Other": 0 },
+                { "Expectedreturns": 0 },
+                { "Volatility" : level like high,medium or low},
+                { "BestFor" : "Example like Short-term goals (1-2 years)" }
             ]
           }
         }
@@ -196,19 +208,25 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
                         "stocks": 25,
                         "bonds": 45,
                         "cash": 30,
-                        "expectedReturn": 4.0
+                        "expectedReturn": 4.0,
+                        "Volatility" : "high",
+                        "BestFor" : "Short-term goals (1-2 years)"
                     },
                     "Moderate": {
                        "stocks": 50,
                        "bonds": 35,
                        "cash": 15,
-                       "expectedReturn": 6.0
+                       "expectedReturn": 6.0,
+                       "Volatility" : "medium",
+                       "BestFor" : "Medium-term goals (2-5 years)"
                     },
                     "Aggressive": {
                        "stocks": 70,
                        "bonds": 25,
                        "cash": 5,
-                       "expectedReturn": 8.0
+                       "expectedReturn": 8.0,
+                       "Volatility" : "low",
+                       "BestFor" : "Long-term goals (5+ years)"
                     }
                 }
             }`;

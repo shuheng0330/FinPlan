@@ -242,61 +242,48 @@
 
   <!-- Strategy Comparison -->
   <div class="strategy-container">
-    <!-- <h5 class="mb-3">Strategy Comparison</h5>
-    
-    <div class="row">
-      <div class="col-md-4">
-        <div class="strategy-card" style="border-left-color: #4CAF50;">
-          <div class="strategy-card-header">
-            <div class="strategy-card-title">Conservative</div>
-            <span class="risk-level-badge risk-low">Low Risk</span>
-          </div>
-        </div>
-      </div>
-    </div>  -->
     <div class="mt-4">
       <div id="strategyComparisonContainer" style="display: none;">
-         <!-- Strategy comparison will be dynamically populated here -->
       </div>
     </div>
 
     
     <div class="mt-4">
-      <table class="comparison-table">
+    <table class="comparison-table" >
         <thead>
-          <tr>
-            <th>Strategy</th>
-            <th>Expected Return</th>
-            <th>Risk Level</th>
-            <th>Volatility</th>
-            <th>Best For</th>
-          </tr>
+            <tr>
+                <th>Strategy</th>
+                <th>Expected Return</th>
+                <th>Volatility</th>
+                <th>Best For</th>
+            </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Conservative</td>
-            <td>3.5%</td>
-            <td>Low</td>
-            <td>Low</td>
-            <td>Short-term goals (1-2 years)</td>
-          </tr>
-          <tr class="highlight">
-            <td>Moderate</td>
-            <td>5.8%</td>
-            <td>Medium</td>
-            <td>Medium</td>
-            <td>Medium-term goals (2-5 years)</td>
-          </tr>
-          <tr>
-            <td>Aggressive</td>
-            <td>7.5%</td>
-            <td>High</td>
-            <td>High</td>
-            <td>Long-term goals (5+ years)</td>
-          </tr>
+            <% if (strategy && strategy.strategyComparison) { %>
+                <% 
+                const strategies = ['Conservative', 'Moderate', 'Aggressive'];
+                const currentRiskLevel = strategy.riskLevel || 'Moderate';
+                %>
+                <% strategies.forEach(function(strategyType) { %>
+                    <% const strategyData = strategy.strategyComparison[strategyType]; %>
+                    <% if (strategyData) { %>
+                        <tr <%= strategyType === currentRiskLevel ? 'class="highlight"' : '' %>>
+                            <td><%= strategyType %></td>
+                            <td><%= strategyData.Expectedreturns || 0 %>%</td>
+                            <td><%= strategyData.Volatility || 'N/A' %></td>
+                            <td><%= strategyData.BestFor || 'N/A' %></td>
+                        </tr>
+                    <% } %>
+                <% }); %>
+            <% } else { %>
+                <!-- Fallback to default data if no strategy comparison is available -->
+                <tr>
+                    <td>No strategy generated yet</td>
+            <% } %>
         </tbody>
-      </table>
-    </div>
+    </table>
+</div>
+
   </div>
 
   <!-- Interactive Tools -->
