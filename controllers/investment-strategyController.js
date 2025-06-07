@@ -118,8 +118,8 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             // Add other asset classes as needed
           ],
           "recommendedFunds": [
-            { "fundName": "Fund Name 1", "description": "Short description of Fund 1" },
-            { "fundName": "Fund Name 2", "description": "Short description of Fund 2" }
+            { "fundName": "Fund Name 1", "description": "Short description of Fund 1", "RiskLevel" : "Medium-Low" , "MinimumInvestment" : "RM1000" (please always mention RM) , "Liquidity" : "High" , "Fees" : "1.3%" (Don't include p.a) },
+            { "fundName": "Fund Name 2", "description": "Short description of Fund 2", "RiskLevel" : "Medium-Low" , "MinimumInvestment" : "RM1000" (please always mention RM), "Liquidity" : "High" , "Fees" : "1.3%" }
             // ... more funds
           ],
           "suggestedMonthlyInvestment": 0, // In RM (float, 2 decimal places)
@@ -130,6 +130,9 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             "whyThisStrategy": "Explain why this strategy is suitable.",
             "riskReturnAnalysis": "Analyze the risk vs. return.",
             "investmentHorizonImpact": "Explain the impact of the investment horizon."
+
+          "Recommendation" : "Give and explain the recommendation based on goal and risk appetite. e.g. Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape."
+
 
           For the strategy comparison, could u show me the percentage of assest for different risk appetide in json format
           The total percentage of stocks, bonds, cash and others must be sum up to 100%

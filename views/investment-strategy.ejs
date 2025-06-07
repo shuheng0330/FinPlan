@@ -521,83 +521,49 @@
     </div>
   </div>
 
-  <!-- Comparison Tool Modal -->
-  <div class="modal fade" id="comparisonToolModal" tabindex="-1" aria-labelledby="comparisonToolModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header" style="background-color: #fef5eb;">
-          <h5 class="modal-title" id="comparisonToolModalLabel">Investment Option Comparison</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
+<!-- Comparison Tool Modal -->
+<div class="modal fade" id="comparisonToolModal" tabindex="-1" aria-labelledby="comparisonToolModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #fef5eb;">
+        <h5 class="modal-title" id="comparisonToolModalLabel">
+          Investment Option Comparison
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
           <div class="table-responsive">
             <table class="table table-bordered">
               <thead>
                 <tr>
                   <th>Investment Option</th>
-                  <th>Expected Return</th>
                   <th>Risk Level</th>
                   <th>Minimum Investment</th>
                   <th>Liquidity</th>
                   <th>Fees</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>CIMB-Principal KLCI-Linked Fund</td>
-                  <td>6-8%</td>
-                  <td>Medium-High</td>
-                  <td>RM1,000</td>
-                  <td>High</td>
-                  <td>1.50%</td>
-                </tr>
-                <tr>
-                  <td>Maybank Malaysian Government Bond Fund</td>
-                  <td>3-4%</td>
-                  <td>Low-Medium</td>
-                  <td>RM1,000</td>
-                  <td>Medium</td>
-                  <td>1.00%</td>
-                </tr>
-                <tr>
-                  <td>Islamic Fixed Deposit</td>
-                  <td>2.5-3.5%</td>
-                  <td>Very Low</td>
-                  <td>RM1,000</td>
-                  <td>Low</td>
-                  <td>0%</td>
-                </tr>
-                <tr>
-                  <td>Amanah Saham Bumiputera (ASB)</td>
-                  <td>5-7%</td>
-                  <td>Low</td>
-                  <td>RM10</td>
-                  <td>High</td>
-                  <td>0%</td>
-                </tr>
-                <tr>
-                  <td>StashAway (Moderate Portfolio)</td>
-                  <td>4-6%</td>
-                  <td>Medium</td>
-                  <td>RM0</td>
-                  <td>High</td>
-                  <td>0.8%</td>
-                </tr>
+              <tbody id="comparisonTableBody">
+                <!-- Table rows will be dynamically populated by JavaScript -->
               </tbody>
             </table>
           </div>
-          
-          <div class="mt-4">
-            <h6>Recommendation for Your Goal</h6>
-            <p>Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape.</p>
+          <!-- The "No investment options available" message should now be handled by JS -->
+          <div id="noInvestmentOptionsMessage" class="text-center py-4" style="display: none;">
+            <p class="text-muted">No investment options available to compare.</p>
           </div>
+        
+        <div id="recommendationSection" class="mt-4" style="display: none;">
+            <h6>Recommendation for Your Goal</h6>
+            <p id="recommendationText"></p>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Risk Analyzer Modal -->
   <div class="modal fade" id="riskAnalyzerModal" tabindex="-1" aria-labelledby="riskAnalyzerModalLabel" aria-hidden="true">

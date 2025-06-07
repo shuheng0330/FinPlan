@@ -46,6 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const noPastStrategiesMessage = document.getElementById('noPastStrategiesMessage');
     const modalElement = document.getElementById('strategyDetailModal');
     strategyDetailModal = new bootstrap.Modal(modalElement);
+    const comparisonToolModalElement = document.getElementById('comparisonToolModal');
+    const comparisonModal = new bootstrap.Modal(comparisonToolModalElement);
+
 
     // Action Buttons
     const regenerateBtn = document.getElementById('regenerateBtn');
@@ -291,6 +294,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                         displayStrategyComparison(strategyData);
                         updateComparisonTable(strategyData, riskAppetite);
+                        comparisonToolModalElement.addEventListener('shown.bs.modal', function () {
+                        // Now that the modal is open, call your function to update its content
+                            updateComparisonOption(strategyData);
+                        }, { once: true }); // The { once: true } option ensures the listener runs only once
+
 
                         strategyDisplaySection.style.display = 'block'; // Show the strategy display section
                          showToast('Strategy generated successfully!', 'success');
@@ -851,6 +859,56 @@ function updateComparisonTable(strategyComparison, currentRiskLevel) {
             console.log(`No data found for strategy: ${strategyType}`);
         }
     });
+}
+
+function updateComparisonOption(strategy) {
+    // Removed the `!comparisonModal.classList.contains('show')` check here
+    // because this function should be called *after* the modal is shown.
+    // The previous error was a symptom of calling it *before* it's open.
+    // Assuming this function is called via `shown.bs.modal` event, the modal IS open.
+
+    const tableBody = document.querySelector('#comparisonToolModal #comparisonTableBody'); // Target by ID
+    const recommendationSection = document.querySelector('#comparisonToolModal #recommendationSection'); // Target by ID
+    const recommendationText = document.querySelector('#comparisonToolModal #recommendationText'); // Target by ID
+    const noOptionsMessage = document.querySelector('#comparisonToolModal #noInvestmentOptionsMessage'); // Target by ID
+
+    if (!tableBody) {
+        console.error('Comparison table body not found in modal. Make sure tbody has id="comparisonTableBody" and is always rendered.');
+        return;
+    }
+
+    // Clear existing rows and ensure sections are hidden initially
+    tableBody.innerHTML = '';
+    recommendationSection.style.display = 'none';
+    recommendationText.textContent = '';
+    noOptionsMessage.style.display = 'none';
+
+    // Check if recommendedFunds exists and has data
+    if (strategy && strategy.recommendedFunds && strategy.recommendedFunds.length > 0) {
+        strategy.recommendedFunds.forEach(function(investment) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${investment.fundName || 'N/A'}</td>
+                <td>${investment.RiskLevel || 'N/A'}</td>
+                <td>${investment.MinimumInvestment || 'N/A'}</td>
+                <td>${investment.Liquidity || 'N/A'}</td>
+                <td>${investment.Fees || 'N/A'}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+        // Table itself will be visible because it's always in HTML
+    } else {
+        // If no recommended funds, show the "no options" message
+        noOptionsMessage.style.display = 'block';
+    }
+
+    // Populate Recommendation
+    if (strategy && strategy.Recommendation) {
+        // Only show the recommendation section if there's content
+        recommendationSection.style.display = 'block';
+        recommendationText.textContent = strategy.Recommendation;
+    }
+    // If no recommendation, it remains hidden by default
 }
 
 
