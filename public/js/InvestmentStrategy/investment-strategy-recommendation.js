@@ -56,6 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const regenerateBtn = document.getElementById('regenerateBtn');
     const downloadStrategyBtn = document.getElementById('downloadStrategyBtn');
     const implementStrategyBtn = document.getElementById('implementStrategyBtn');
+    document.getElementById('dynamicRiskLevel').textContent = 'N/A';
+    document.getElementById('riskReturnAnalysistext').textContent = 'No detailed analysis available.';
+    document.getElementById('recommendedStrategyText').textContent = 'No specific recommendation available.';
 
     // --- Helper function to show toast messages ---
     function showToast(message, type = 'success') {
@@ -597,7 +600,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         text: 'Expected Return (%)'
                     },
                     min: 0,
-                    max: 10
+                    max: 20
                 }
             },
             plugins: {
@@ -770,7 +773,6 @@ hideStrategiesBtn.addEventListener('click', function() {
 function updateRiskAnalyzerModal(strategy) {
     if (!strategy) {
         console.warn('No strategy provided to updateRiskAnalyzerModal.');
-        // Optionally, clear modal content or show a "no data" message
         document.getElementById('dynamicRiskLevel').textContent = 'N/A';
         document.getElementById('riskReturnAnalysistext').textContent = 'No detailed analysis available.';
         document.getElementById('recommendedStrategyText').textContent = 'No specific recommendation available.';
@@ -1020,9 +1022,7 @@ function updateComparisonOption(strategy) {
             `;
             tableBody.appendChild(row);
         });
-        // Table itself will be visible because it's always in HTML
     } else {
-        // If no recommended funds, show the "no options" message
         noOptionsMessage.style.display = 'block';
     }
 
