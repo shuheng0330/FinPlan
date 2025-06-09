@@ -4,6 +4,7 @@ let selectedGoalId = null; // Variable to store the ID of the selected goal
 let riskAppetite = 'Moderate';
 let allocationChartInstance = null;
 let currentGeneratedStrategy = null;
+let riskReturnChartInstance = null; // To store the Chart.js instance
 
 let modealAllocationChartInstance = null;
 let strategyDetailModal;
@@ -46,11 +47,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const noPastStrategiesMessage = document.getElementById('noPastStrategiesMessage');
     const modalElement = document.getElementById('strategyDetailModal');
     strategyDetailModal = new bootstrap.Modal(modalElement);
+    const comparisonToolModalElement = document.getElementById('comparisonToolModal');
+    const comparisonModal = new bootstrap.Modal(comparisonToolModalElement);
+    const riskAnalyzerModalElement = document.getElementById('riskAnalyzerModal');
+
 
     // Action Buttons
     const regenerateBtn = document.getElementById('regenerateBtn');
     const downloadStrategyBtn = document.getElementById('downloadStrategyBtn');
     const implementStrategyBtn = document.getElementById('implementStrategyBtn');
+    document.getElementById('dynamicRiskLevel').textContent = 'N/A';
+    document.getElementById('riskReturnAnalysistext').textContent = 'No detailed analysis available.';
+    document.getElementById('recommendedStrategyText').textContent = 'No specific recommendation available.';
 
     // --- Helper function to show toast messages ---
     function showToast(message, type = 'success') {
@@ -288,6 +296,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         whyThisStrategyText.textContent = strategyData.strategyExplanation.whyThisStrategy;
                         riskReturnAnalysisText.textContent = strategyData.strategyExplanation.riskReturnAnalysis;
                         investmentHorizonImpactText.textContent = strategyData.strategyExplanation.investmentHorizonImpact;
+
+                        displayStrategyComparison(strategyData);
+                        updateComparisonTable(strategyData, riskAppetite);
+                        comparisonToolModalElement.addEventListener('shown.bs.modal', function () {
+                        // Now that the modal is open, call your function to update its content
+                            updateComparisonOption(strategyData);
+                        }, { once: true }); // The { once: true } option ensures the listener runs only once
+
+                        riskAnalyzerModalElement.addEventListener('shown.bs.modal', function () {
+                            updateRiskAnalyzerModal(strategyData);
+                        },{ once: true});
+
 
                         strategyDisplaySection.style.display = 'block'; // Show the strategy display section
                          showToast('Strategy generated successfully!', 'success');
@@ -531,6 +551,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    const riskReturnCtx = document.getElementById('riskReturnChart').getContext('2d');
+    riskReturnChartInstance = new Chart(riskReturnCtx, { // Assign to the global instance
+        type: 'scatter',
+        data: {
+            datasets: [
+                {
+                    label: 'Conservative',
+                    data: [{ x: 5, y: 3.5 }],
+                    backgroundColor: '#4CAF50',
+                    pointRadius: 10
+                },
+                {
+                    label: 'Moderate',
+                    data: [{ x: 10, y: 5.8 }],
+                    backgroundColor: '#FF9800',
+                    pointRadius: 10
+                },
+                {
+                    label: 'Aggressive',
+                    data: [{ x: 15, y: 7.5 }],
+                    backgroundColor: '#F44336',
+                    pointRadius: 10
+                },
+                {
+                    label: 'Your Strategy',
+                    data: [{ x: 0, y: 0 }], // Initial placeholder data, will be updated
+                    backgroundColor: '#6366f1',
+                    pointRadius: 12,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Risk (Volatility)'
+                    },
+                    min: 0,
+                    max: 20
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Expected Return (%)'
+                    },
+                    min: 0,
+                    max: 20
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw.y + '% return, ' + context.raw.x + ' risk';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
     // Function to display strategy details in the modal (the "enlarged" view)
     function showStrategyDetailsModal(strategy) {
         document.getElementById('modalGoalName').textContent = strategy.goal && strategy.goal.goalName ? strategy.goal.goalName : 'N/A';
@@ -684,6 +768,274 @@ hideStrategiesBtn.addEventListener('click', function() {
             hideStrategiesBtn.textContent = 'Hide Strategies';
         });
 });
+
+
+function updateRiskAnalyzerModal(strategy) {
+    if (!strategy) {
+        console.warn('No strategy provided to updateRiskAnalyzerModal.');
+        document.getElementById('dynamicRiskLevel').textContent = 'N/A';
+        document.getElementById('riskReturnAnalysistext').textContent = 'No detailed analysis available.';
+        document.getElementById('recommendedStrategyText').textContent = 'No specific recommendation available.';
+        
+        // Clear "Your Strategy" point from chart if no strategy is present
+        if (riskReturnChartInstance) {
+            riskReturnChartInstance.data.datasets[3].data = [];
+            riskReturnChartInstance.update();
+        }
+        return;
+    }
+
+    console.log("Risk vs analysis: ",strategy.strategyExplanation.riskReturnAnalysis);
+
+    // Update text content
+    const riskLevelText = strategy.riskLevel || 'N/A';
+    document.getElementById('dynamicRiskLevel').textContent = riskLevelText;
+    document.getElementById('riskReturnAnalysistext').textContent = strategy.strategyExplanation?.riskReturnAnalysis || 'No detailed risk-return analysis available for this strategy.';
+    document.getElementById('recommendedStrategyText').textContent = strategy.strategyExplanation?.whyThisStrategy || 'No specific recommendation explanation available for this strategy.';
+
+    // Update chart data
+    if (riskReturnChartInstance) {
+        let riskXValue = 0; // Default if riskLevel is not found
+        // Map risk levels to X-axis values as defined in your chart data
+        switch (strategy.riskLevel) {
+            case 'Conservative':
+                riskXValue = 5;
+                break;
+            case 'Moderate':
+                riskXValue = 10;
+                break;
+            case 'Aggressive':
+                riskXValue = 15;
+                break;
+            default:
+                riskXValue = 0; // Handle unknown risk levels
+        }
+
+        const expectedReturnYValue = (strategy.expectedAnnualReturn *100).toFixed(2) || 0; // Default to 0 if not available
+
+        // Update the 'Your Strategy' dataset
+        riskReturnChartInstance.data.datasets[3].data = [{ x: riskXValue, y: expectedReturnYValue }];
+        
+        // Ensure "Your Strategy" label is accurate
+        riskReturnChartInstance.data.datasets[3].label = `Your Strategy (${strategy.riskLevel})`;
+
+        riskReturnChartInstance.update(); // Re-render the chart with updated data
+    }
+}
+
+function displayStrategyComparison(strategyData) {
+    const strategyComparisonContainer = document.getElementById('strategyComparisonContainer');
+    
+    if (!strategyComparisonContainer) {
+        console.warn('Strategy comparison container not found');
+        return;
+    }
+
+    if (!strategyData.strategyComparison) {
+        console.warn('No strategy comparison data available');
+        strategyComparisonContainer.style.display = 'none';
+        return;
+    }
+
+    const comparison = strategyData.strategyComparison;
+    const currentRiskLevel = strategyData.riskLevel;
+
+    // Clear existing content
+    strategyComparisonContainer.innerHTML = '';
+
+    // Create the comparison HTML
+    const comparisonHTML = `
+        <div class="strategy-comparison-section bg-white">
+    <h4 class="mb-4">Strategy Comparison</h4>
+    <div class="row">
+        ${Object.entries(comparison).map(([riskLevel, data]) => {
+
+            const stocks = data[0].Stocks;
+            const bonds = data[1].Bonds;
+            const cash = data[2].Cash; 
+            const other = data[3].Other;
+            const expectedReturns = (data[4].Expectedreturns *100 ).toFixed(2);
+            const isRecommended = riskLevel === currentRiskLevel;
+            const borderLeftStyle = riskLevel === 'Conservative' ? 'border-left: 5px solid #4CAF50 !important;' : 
+                                  riskLevel === 'Moderate' ? 'border-left: 5px solid #FF9800 !important;' : 'border-left: 5px solid #F44336 !important;';
+            const badgeClass = riskLevel === 'Conservative' ? 'bg-success' : 
+                                  riskLevel === 'Moderate' ? 'bg-warning text-dark' : 'bg-danger';
+            
+            console.log('Border Left Style for ', riskLevel, ': ', borderLeftStyle); // Debugging log
+            console.log(stocks);
+
+            return `
+                <div class="col-md-4 mb-3">
+                    <div class="card h-100 border-0 bg-white shadow-sm" style="${borderLeftStyle} ${isRecommended ? 'border-left-width: 8px !important; box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;' : ''}">
+                        <div class="card-header d-flex justify-content-between align-items-center bg-transparent pb-0">
+                            <h5 class="mb-3">${riskLevel}</h5>
+                            <div class="mb-3">
+                                ${isRecommended ? '<span class="badge bg-primary">Recommended</span>' : ''}
+                                <span class="badge ${badgeClass} ms-1">
+                                    ${riskLevel === 'Conservative' ? 'Low Risk' : 
+                                      riskLevel === 'Moderate' ? 'Medium Risk' : 'High Risk'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body pt-2">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Stocks</span>
+                                    <strong>${stocks}%</strong>
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Bonds</span>
+                                    <strong>${bonds}%</strong>
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Cash</span>
+                                    <strong>${cash}%</strong>
+                                </div>
+                                
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted">Other</span>
+                                    <strong>${other}%</strong>
+                                </div>
+                                
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="text-center">
+                                <div class="text-muted small">Expected Return</div>
+                                <div class="h4 mb-0 text-${riskLevel === 'Conservative' ? 'success' : 
+                                      riskLevel === 'Moderate' ? 'warning' : 'danger'}">
+                                    ${expectedReturns}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('')}
+    </div>
+</div>`;
+
+    strategyComparisonContainer.innerHTML = comparisonHTML;
+    strategyComparisonContainer.style.display = 'block';
+}
+
+
+function updateComparisonTable(strategyComparison, currentRiskLevel) {
+    const tableBody = document.querySelector('.comparison-table tbody');
+    console.log("strategyComparison:", strategyComparison);  // Log to check the structure of strategyComparison
+    
+    if (!tableBody || !strategyComparison) {
+        console.error('Comparison table or strategy data not found');
+        return;
+    }
+
+    // Clear existing rows
+    tableBody.innerHTML = '';
+
+    // Define the order of strategies
+    const strategies = ['Conservative', 'Moderate', 'Aggressive'];
+
+    strategies.forEach(strategyType => {
+        // Ensure we're accessing strategyComparison for each risk level
+        const strategyDataArray = strategyComparison.strategyComparison[strategyType];  // Access the array for each strategy
+
+        // Ensure that strategyDataArray has data
+        console.log(`Checking strategyData for ${strategyType}:`, strategyDataArray);
+
+        if (strategyDataArray && strategyDataArray.length > 0) {
+            // Combine the objects in the array into a single object
+            const strategyData = strategyDataArray.reduce((acc, currentValue) => {
+                return { ...acc, ...currentValue };
+            }, {});  // Reduce array to a single object
+
+            const row = document.createElement('tr');
+            
+            // Highlight the current user's selected risk level
+            if (strategyType === currentRiskLevel) {
+                row.classList.add('highlight');
+            }
+
+            // Log strategy data to ensure we're accessing it correctly
+            console.log("Data for strategyType:", strategyType);
+            console.log("Volatility:", strategyData.Volatility);
+            console.log("BestFor:", strategyData.BestFor);
+
+            // Create the row content with the data
+            row.innerHTML = `
+                <td>${strategyType}</td>
+                <td>${(strategyData.Expectedreturns *100 ).toFixed(2) || 0}%</td>  <!-- Expected Return -->
+                <td>${strategyData.Volatility || 'N/A'}</td>    <!-- Volatility -->
+                <td>${strategyData.BestFor || 'N/A'}</td>        <!-- Best For -->
+            `;
+            
+            tableBody.appendChild(row);
+        } else {
+            console.log(`No data found for strategy: ${strategyType}`);
+        }
+    });
+}
+
+function updateComparisonOption(strategy) {
+    // Removed the `!comparisonModal.classList.contains('show')` check here
+    // because this function should be called *after* the modal is shown.
+    // The previous error was a symptom of calling it *before* it's open.
+    // Assuming this function is called via `shown.bs.modal` event, the modal IS open.
+
+    const tableBody = document.querySelector('#comparisonToolModal #comparisonTableBody'); // Target by ID
+    const recommendationSection = document.querySelector('#comparisonToolModal #recommendationSection'); // Target by ID
+    const recommendationText = document.querySelector('#comparisonToolModal #recommendationText'); // Target by ID
+    const noOptionsMessage = document.querySelector('#comparisonToolModal #noInvestmentOptionsMessage'); // Target by ID
+
+    if (!tableBody) {
+        console.error('Comparison table body not found in modal. Make sure tbody has id="comparisonTableBody" and is always rendered.');
+        return;
+    }
+
+    // Clear existing rows and ensure sections are hidden initially
+    tableBody.innerHTML = '';
+    recommendationSection.style.display = 'none';
+    recommendationText.textContent = '';
+    noOptionsMessage.style.display = 'none';
+
+    // Check if recommendedFunds exists and has data
+    if (strategy && strategy.recommendedFunds && strategy.recommendedFunds.length > 0) {
+        strategy.recommendedFunds.forEach(function(investment) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${investment.fundName || 'N/A'}</td>
+                <td>${investment.RiskLevel || 'N/A'}</td>
+                <td>${investment.MinimumInvestment || 'N/A'}</td>
+                <td>${investment.Liquidity || 'N/A'}</td>
+                <td>${investment.Fees || 'N/A'}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    } else {
+        noOptionsMessage.style.display = 'block';
+    }
+
+    // Populate Recommendation
+    if (strategy && strategy.Recommendation) {
+        // Only show the recommendation section if there's content
+        recommendationSection.style.display = 'block';
+        recommendationText.textContent = strategy.Recommendation;
+    }
+    // If no recommendation, it remains hidden by default
+}
+
+
 
 
 

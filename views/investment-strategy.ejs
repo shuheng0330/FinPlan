@@ -242,139 +242,48 @@
 
   <!-- Strategy Comparison -->
   <div class="strategy-container">
-    <h5 class="mb-3">Strategy Comparison</h5>
-    
-    <div class="row">
-      <div class="col-md-4">
-        <div class="strategy-card" style="border-left-color: #4CAF50;">
-          <div class="strategy-card-header">
-            <div class="strategy-card-title">Conservative</div>
-            <span class="risk-level-badge risk-low">Low Risk</span>
-          </div>
-          
-          <div class="strategy-card-content">
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Stocks</div>
-              <div class="strategy-card-value">25%</div>
-            </div>
-            
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Bonds</div>
-              <div class="strategy-card-value">45%</div>
-            </div>
-            
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Cash</div>
-              <div class="strategy-card-value">30%</div>
-            </div>
-            
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Expected Return</div>
-              <div class="strategy-card-value">3.5%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-md-4">
-        <div class="strategy-card" style="border-left-color: #FF9800;">
-          <div class="strategy-card-header">
-            <div class="strategy-card-title">Moderate (Recommended)</div>
-            <span class="risk-level-badge risk-medium">Medium Risk</span>
-          </div>
-          
-          <div class="strategy-card-content">
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Stocks</div>
-              <div class="strategy-card-value">50%</div>
-            </div>
-            
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Bonds</div>
-              <div class="strategy-card-value">35%</div>
-            </div>
-            
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Cash</div>
-              <div class="strategy-card-value">15%</div>
-            </div>
-            
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Expected Return</div>
-              <div class="strategy-card-value">5.8%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-md-4">
-        <div class="strategy-card" style="border-left-color: #F44336;">
-          <div class="strategy-card-header">
-            <div class="strategy-card-title">Aggressive</div>
-            <span class="risk-level-badge risk-high">High Risk</span>
-          </div>
-          
-          <div class="strategy-card-content">
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Stocks</div>
-              <div class="strategy-card-value">70%</div>
-            </div>
-            
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Bonds</div>
-              <div class="strategy-card-value">25%</div>
-            </div>
-            
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Cash</div>
-              <div class="strategy-card-value">5%</div>
-            </div>
-            
-            <div class="strategy-card-item">
-              <div class="strategy-card-label">Expected Return</div>
-              <div class="strategy-card-value">7.5%</div>
-            </div>
-          </div>
-        </div>
+    <div class="mt-4">
+      <div id="strategyComparisonContainer" style="display: none;">
       </div>
     </div>
+
     
     <div class="mt-4">
-      <table class="comparison-table">
+    <table class="comparison-table" >
         <thead>
-          <tr>
-            <th>Strategy</th>
-            <th>Expected Return</th>
-            <th>Risk Level</th>
-            <th>Volatility</th>
-            <th>Best For</th>
-          </tr>
+            <tr>
+                <th>Strategy</th>
+                <th>Expected Return</th>
+                <th>Volatility</th>
+                <th>Best For</th>
+            </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Conservative</td>
-            <td>3.5%</td>
-            <td>Low</td>
-            <td>Low</td>
-            <td>Short-term goals (1-2 years)</td>
-          </tr>
-          <tr class="highlight">
-            <td>Moderate</td>
-            <td>5.8%</td>
-            <td>Medium</td>
-            <td>Medium</td>
-            <td>Medium-term goals (2-5 years)</td>
-          </tr>
-          <tr>
-            <td>Aggressive</td>
-            <td>7.5%</td>
-            <td>High</td>
-            <td>High</td>
-            <td>Long-term goals (5+ years)</td>
-          </tr>
+            <% if (strategy && strategy.strategyComparison) { %>
+                <% 
+                const strategies = ['Conservative', 'Moderate', 'Aggressive'];
+                const currentRiskLevel = strategy.riskLevel || 'Moderate';
+                %>
+                <% strategies.forEach(function(strategyType) { %>
+                    <% const strategyData = strategy.strategyComparison[strategyType]; %>
+                    <% if (strategyData) { %>
+                        <tr <%= strategyType === currentRiskLevel ? 'class="highlight"' : '' %>>
+                            <td><%= strategyType %></td>
+                            <td><%= strategyData.Expectedreturns || 0 %>%</td>
+                            <td><%= strategyData.Volatility || 'N/A' %></td>
+                            <td><%= strategyData.BestFor || 'N/A' %></td>
+                        </tr>
+                    <% } %>
+                <% }); %>
+            <% } else { %>
+                <!-- Fallback to default data if no strategy comparison is available -->
+                <tr>
+                    <td>No strategy generated yet</td>
+            <% } %>
         </tbody>
-      </table>
-    </div>
+    </table>
+</div>
+
   </div>
 
   <!-- Interactive Tools -->
@@ -612,118 +521,84 @@
     </div>
   </div>
 
-  <!-- Comparison Tool Modal -->
-  <div class="modal fade" id="comparisonToolModal" tabindex="-1" aria-labelledby="comparisonToolModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header" style="background-color: #fef5eb;">
-          <h5 class="modal-title" id="comparisonToolModalLabel">Investment Option Comparison</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
+<!-- Comparison Tool Modal -->
+<div class="modal fade" id="comparisonToolModal" tabindex="-1" aria-labelledby="comparisonToolModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #fef5eb;">
+        <h5 class="modal-title" id="comparisonToolModalLabel">
+          Investment Option Comparison
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
           <div class="table-responsive">
             <table class="table table-bordered">
               <thead>
                 <tr>
                   <th>Investment Option</th>
-                  <th>Expected Return</th>
                   <th>Risk Level</th>
                   <th>Minimum Investment</th>
                   <th>Liquidity</th>
                   <th>Fees</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <td>CIMB-Principal KLCI-Linked Fund</td>
-                  <td>6-8%</td>
-                  <td>Medium-High</td>
-                  <td>RM1,000</td>
-                  <td>High</td>
-                  <td>1.50%</td>
-                </tr>
-                <tr>
-                  <td>Maybank Malaysian Government Bond Fund</td>
-                  <td>3-4%</td>
-                  <td>Low-Medium</td>
-                  <td>RM1,000</td>
-                  <td>Medium</td>
-                  <td>1.00%</td>
-                </tr>
-                <tr>
-                  <td>Islamic Fixed Deposit</td>
-                  <td>2.5-3.5%</td>
-                  <td>Very Low</td>
-                  <td>RM1,000</td>
-                  <td>Low</td>
-                  <td>0%</td>
-                </tr>
-                <tr>
-                  <td>Amanah Saham Bumiputera (ASB)</td>
-                  <td>5-7%</td>
-                  <td>Low</td>
-                  <td>RM10</td>
-                  <td>High</td>
-                  <td>0%</td>
-                </tr>
-                <tr>
-                  <td>StashAway (Moderate Portfolio)</td>
-                  <td>4-6%</td>
-                  <td>Medium</td>
-                  <td>RM0</td>
-                  <td>High</td>
-                  <td>0.8%</td>
-                </tr>
+              <tbody id="comparisonTableBody">
+                <!-- Table rows will be dynamically populated by JavaScript -->
               </tbody>
             </table>
           </div>
-          
-          <div class="mt-4">
-            <h6>Recommendation for Your Goal</h6>
-            <p>Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape.</p>
+          <!-- The "No investment options available" message should now be handled by JS -->
+          <div id="noInvestmentOptionsMessage" class="text-center py-4" >
+            <p class="text-muted">No investment options available to compare.</p>
           </div>
+        
+        <div id="recommendationSection" class="mt-4" style="display: none;">
+            <h6>Recommendation for Your Goal</h6>
+            <p id="recommendationText"></p>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Risk Analyzer Modal -->
-  <div class="modal fade" id="riskAnalyzerModal" tabindex="-1" aria-labelledby="riskAnalyzerModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header" style="background-color: #fef5eb;">
-          <h5 class="modal-title" id="riskAnalyzerModalLabel">Risk vs. Return Analyzer</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6">
-              <canvas id="riskReturnChart" height="300"></canvas>
-            </div>
+<div class="modal fade" id="riskAnalyzerModal" tabindex="-1" aria-labelledby="riskAnalyzerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #fef5eb;">
+        <h5 class="modal-title" id="riskAnalyzerModalLabel">Risk vs. Return Analyzer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <canvas id="riskReturnChart" height="300"></canvas>
+          </div>
+          
+          <div class="col-md-6">
+            <h6>Risk-Return Analysis</h6>
+            <p>This chart shows the relationship between risk (volatility) and potential returns for different investment strategies. Higher potential returns typically come with higher risk.</p>
             
-            <div class="col-md-6">
-              <h6>Risk-Return Analysis</h6>
-              <p>This chart shows the relationship between risk (volatility) and potential returns for different investment strategies. Higher potential returns typically come with higher risk.</p>
+            <div class="mt-4">
+              <h6 id="yourRiskProfileText">Your Risk Profile: <span id="dynamicRiskLevel">Moderate</span></h6>
+              <p id="riskReturnAnalysistext">Based on your responses, you have a moderate risk tolerance. This means you're willing to accept some market fluctuations in exchange for growth potential, but you also value stability.</p>
               
-              <div class="mt-4">
-                <h6>Your Risk Profile: Moderate</h6>
-                <p>Based on your responses, you have a moderate risk tolerance. This means you're willing to accept some market fluctuations in exchange for growth potential, but you also value stability.</p>
-                
-                <h6 class="mt-3">Recommended Strategy</h6>
-                <p>The recommended balanced strategy (50% stocks, 35% bonds/cash) aligns with your moderate risk profile and 2-year time horizon. This provides a good balance between growth potential and capital preservation.</p>
-              </div>
+              <h6 class="mt-3">Recommended Strategy</h6>
+              <p id="recommendedStrategyText">The recommended balanced strategy (50% stocks, 35% bonds/cash) aligns with your moderate risk profile and 2-year time horizon. This provides a good balance between growth potential and capital preservation.</p>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Footer -->
   <%- include('partials/footer') %>

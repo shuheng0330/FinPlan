@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const goalPlanningController = require('../controllers/goal-planningController');
 const investmentController = require('../controllers/investment-strategyController');
+const dashboardController = require('../controllers/dashboardController');
 
 
 router.get('/', (req, res) => {
@@ -13,14 +14,7 @@ router.get('/register', (req, res) => {
 });
 
 
-router.get('/dashboard', (req, res) => {
-  if (!req.isAuthenticated()) return res.redirect('/');
-  res.render('dashboard', {
-    title: 'FinPlan - Dashboard',
-    pageTitle: "Dashboard",
-    user: req.user
-  });
-});
+router.get('/dashboard',dashboardController.renderDashboardPage);
 
 router.get('/profile', (req, res) => {
   if (!req.isAuthenticated()) return res.redirect('/');
