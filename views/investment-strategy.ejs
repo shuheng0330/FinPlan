@@ -566,39 +566,39 @@
 </div>
 
   <!-- Risk Analyzer Modal -->
-  <div class="modal fade" id="riskAnalyzerModal" tabindex="-1" aria-labelledby="riskAnalyzerModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header" style="background-color: #fef5eb;">
-          <h5 class="modal-title" id="riskAnalyzerModalLabel">Risk vs. Return Analyzer</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-6">
-              <canvas id="riskReturnChart" height="300"></canvas>
-            </div>
+<div class="modal fade" id="riskAnalyzerModal" tabindex="-1" aria-labelledby="riskAnalyzerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #fef5eb;">
+        <h5 class="modal-title" id="riskAnalyzerModalLabel">Risk vs. Return Analyzer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <canvas id="riskReturnChart" height="300"></canvas>
+          </div>
+          
+          <div class="col-md-6">
+            <h6>Risk-Return Analysis</h6>
+            <p>This chart shows the relationship between risk (volatility) and potential returns for different investment strategies. Higher potential returns typically come with higher risk.</p>
             
-            <div class="col-md-6">
-              <h6>Risk-Return Analysis</h6>
-              <p>This chart shows the relationship between risk (volatility) and potential returns for different investment strategies. Higher potential returns typically come with higher risk.</p>
+            <div class="mt-4">
+              <h6 id="yourRiskProfileText">Your Risk Profile: <span id="dynamicRiskLevel">Moderate</span></h6>
+              <p id="riskReturnAnalysistext">Based on your responses, you have a moderate risk tolerance. This means you're willing to accept some market fluctuations in exchange for growth potential, but you also value stability.</p>
               
-              <div class="mt-4">
-                <h6>Your Risk Profile: Moderate</h6>
-                <p>Based on your responses, you have a moderate risk tolerance. This means you're willing to accept some market fluctuations in exchange for growth potential, but you also value stability.</p>
-                
-                <h6 class="mt-3">Recommended Strategy</h6>
-                <p>The recommended balanced strategy (50% stocks, 35% bonds/cash) aligns with your moderate risk profile and 2-year time horizon. This provides a good balance between growth potential and capital preservation.</p>
-              </div>
+              <h6 class="mt-3">Recommended Strategy</h6>
+              <p id="recommendedStrategyText">The recommended balanced strategy (50% stocks, 35% bonds/cash) aligns with your moderate risk profile and 2-year time horizon. This provides a good balance between growth potential and capital preservation.</p>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Footer -->
   <%- include('partials/footer') %>

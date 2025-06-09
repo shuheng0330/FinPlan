@@ -4,6 +4,7 @@ let selectedGoalId = null; // Variable to store the ID of the selected goal
 let riskAppetite = 'Moderate';
 let allocationChartInstance = null;
 let currentGeneratedStrategy = null;
+let riskReturnChartInstance = null; // To store the Chart.js instance
 
 let modealAllocationChartInstance = null;
 let strategyDetailModal;
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
     strategyDetailModal = new bootstrap.Modal(modalElement);
     const comparisonToolModalElement = document.getElementById('comparisonToolModal');
     const comparisonModal = new bootstrap.Modal(comparisonToolModalElement);
+    const riskAnalyzerModalElement = document.getElementById('riskAnalyzerModal');
 
 
     // Action Buttons
@@ -299,6 +301,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             updateComparisonOption(strategyData);
                         }, { once: true }); // The { once: true } option ensures the listener runs only once
 
+                        riskAnalyzerModalElement.addEventListener('shown.bs.modal', function () {
+                            updateRiskAnalyzerModal(strategyData);
+                        },{ once: true});
+
 
                         strategyDisplaySection.style.display = 'block'; // Show the strategy display section
                          showToast('Strategy generated successfully!', 'success');
@@ -542,6 +548,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    const riskReturnCtx = document.getElementById('riskReturnChart').getContext('2d');
+    riskReturnChartInstance = new Chart(riskReturnCtx, { // Assign to the global instance
+        type: 'scatter',
+        data: {
+            datasets: [
+                {
+                    label: 'Conservative',
+                    data: [{ x: 5, y: 3.5 }],
+                    backgroundColor: '#4CAF50',
+                    pointRadius: 10
+                },
+                {
+                    label: 'Moderate',
+                    data: [{ x: 10, y: 5.8 }],
+                    backgroundColor: '#FF9800',
+                    pointRadius: 10
+                },
+                {
+                    label: 'Aggressive',
+                    data: [{ x: 15, y: 7.5 }],
+                    backgroundColor: '#F44336',
+                    pointRadius: 10
+                },
+                {
+                    label: 'Your Strategy',
+                    data: [{ x: 0, y: 0 }], // Initial placeholder data, will be updated
+                    backgroundColor: '#6366f1',
+                    pointRadius: 12,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Risk (Volatility)'
+                    },
+                    min: 0,
+                    max: 20
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Expected Return (%)'
+                    },
+                    min: 0,
+                    max: 10
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.raw.y + '% return, ' + context.raw.x + ' risk';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
     // Function to display strategy details in the modal (the "enlarged" view)
     function showStrategyDetailsModal(strategy) {
         document.getElementById('modalGoalName').textContent = strategy.goal && strategy.goal.goalName ? strategy.goal.goalName : 'N/A';
@@ -697,6 +767,60 @@ hideStrategiesBtn.addEventListener('click', function() {
 });
 
 
+function updateRiskAnalyzerModal(strategy) {
+    if (!strategy) {
+        console.warn('No strategy provided to updateRiskAnalyzerModal.');
+        // Optionally, clear modal content or show a "no data" message
+        document.getElementById('dynamicRiskLevel').textContent = 'N/A';
+        document.getElementById('riskReturnAnalysistext').textContent = 'No detailed analysis available.';
+        document.getElementById('recommendedStrategyText').textContent = 'No specific recommendation available.';
+        
+        // Clear "Your Strategy" point from chart if no strategy is present
+        if (riskReturnChartInstance) {
+            riskReturnChartInstance.data.datasets[3].data = [];
+            riskReturnChartInstance.update();
+        }
+        return;
+    }
+
+    console.log("Risk vs analysis: ",strategy.strategyExplanation.riskReturnAnalysis);
+
+    // Update text content
+    const riskLevelText = strategy.riskLevel || 'N/A';
+    document.getElementById('dynamicRiskLevel').textContent = riskLevelText;
+    document.getElementById('riskReturnAnalysistext').textContent = strategy.strategyExplanation?.riskReturnAnalysis || 'No detailed risk-return analysis available for this strategy.';
+    document.getElementById('recommendedStrategyText').textContent = strategy.strategyExplanation?.whyThisStrategy || 'No specific recommendation explanation available for this strategy.';
+
+    // Update chart data
+    if (riskReturnChartInstance) {
+        let riskXValue = 0; // Default if riskLevel is not found
+        // Map risk levels to X-axis values as defined in your chart data
+        switch (strategy.riskLevel) {
+            case 'Conservative':
+                riskXValue = 5;
+                break;
+            case 'Moderate':
+                riskXValue = 10;
+                break;
+            case 'Aggressive':
+                riskXValue = 15;
+                break;
+            default:
+                riskXValue = 0; // Handle unknown risk levels
+        }
+
+        const expectedReturnYValue = (strategy.expectedAnnualReturn *100).toFixed(2) || 0; // Default to 0 if not available
+
+        // Update the 'Your Strategy' dataset
+        riskReturnChartInstance.data.datasets[3].data = [{ x: riskXValue, y: expectedReturnYValue }];
+        
+        // Ensure "Your Strategy" label is accurate
+        riskReturnChartInstance.data.datasets[3].label = `Your Strategy (${strategy.riskLevel})`;
+
+        riskReturnChartInstance.update(); // Re-render the chart with updated data
+    }
+}
+
 function displayStrategyComparison(strategyData) {
     const strategyComparisonContainer = document.getElementById('strategyComparisonContainer');
     
@@ -726,9 +850,9 @@ function displayStrategyComparison(strategyData) {
 
             const stocks = data[0].Stocks;
             const bonds = data[1].Bonds;
-            const cash = data[2].Cash;
+            const cash = data[2].Cash; 
             const other = data[3].Other;
-            const expectedReturns = data[4].Expectedreturns;
+            const expectedReturns = (data[4].Expectedreturns *100 ).toFixed(2);
             const isRecommended = riskLevel === currentRiskLevel;
             const borderLeftStyle = riskLevel === 'Conservative' ? 'border-left: 5px solid #4CAF50 !important;' : 
                                   riskLevel === 'Moderate' ? 'border-left: 5px solid #FF9800 !important;' : 'border-left: 5px solid #F44336 !important;';
@@ -849,7 +973,7 @@ function updateComparisonTable(strategyComparison, currentRiskLevel) {
             // Create the row content with the data
             row.innerHTML = `
                 <td>${strategyType}</td>
-                <td>${strategyData.Expectedreturns || 0}%</td>  <!-- Expected Return -->
+                <td>${(strategyData.Expectedreturns *100 ).toFixed(2) || 0}%</td>  <!-- Expected Return -->
                 <td>${strategyData.Volatility || 'N/A'}</td>    <!-- Volatility -->
                 <td>${strategyData.BestFor || 'N/A'}</td>        <!-- Best For -->
             `;

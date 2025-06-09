@@ -133,7 +133,6 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
 
           "Recommendation" : "Give and explain the recommendation based on goal and risk appetite. e.g. Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape."
 
-
           For the strategy comparison, could u show me the percentage of assest for different risk appetide in json format
           The total percentage of stocks, bonds, cash and others must be sum up to 100%
            "strategyComparison": {
@@ -142,7 +141,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
                 { "Bonds": 0 },
                 { "Cash": 0 },
                 { "Other": 0 },
-                { "Expectedreturns": 0 },
+                { "Expectedreturns": 0 // As a decimal, e.g., 0.08 for 8% },
                 { "Volatility" : "level like high,medium or low" },
                 { "BestFor" : "Example like Short-term goals (1-2 years)" }
             ],
@@ -151,7 +150,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
                 { "Bonds": 0 },
                 { "Cash": 0 },
                 { "Other": 0 },
-                { "Expectedreturns": 0 },
+                { "Expectedreturns": 0 // As a decimal, e.g., 0.08 for 8% },
                 { "Volatility" : level like high,medium or low},
                 { "BestFor" : "Example like Short-term goals (1-2 years)" }
             ],
@@ -160,7 +159,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
                 { "Bonds": 0 },
                 { "Cash": 0 },
                 { "Other": 0 },
-                { "Expectedreturns": 0 },
+                { "Expectedreturns": 0 // As a decimal, e.g., 0.08 for 8% },
                 { "Volatility" : level like high,medium or low},
                 { "BestFor" : "Example like Short-term goals (1-2 years)" }
             ]
