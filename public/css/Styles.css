@@ -25,15 +25,6 @@
     --radius-xl: 1rem;
 }
 
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--background-primary);
-    overflow-x: hidden;
-    color: var(--text-primary);
-    line-height: 1.6;
-}
-
-/* Sidebar Styles */
 #sidebar {
     min-height: 100vh;
     background: linear-gradient(135deg, #faf1e6 0%, #f3e8d3 100%);
@@ -54,6 +45,14 @@ body {
     background-color: var(--background-secondary);
     color: var(--primary-color);
     transform: translateX(4px);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-primary);
+    overflow-x: hidden;
+    color: var(--text-primary);
+    line-height: 1.6;
 }
 
 .container-fluid {
