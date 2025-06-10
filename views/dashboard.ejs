@@ -41,46 +41,66 @@
     </div>
   
     <!-- Investment Strategy -->
-    <div class="col-md-6 mb-3">
-      <section id="strategy">
-        <div class="card p-3 h-100" style="background-color: #fef5eb;">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="fw-semibold mb-0">Investment Strategy Overview</h5>
-            <a href="/investment-strategy" class="btn btn-sm btn-outline-secondary">See more →</a>
-          </div>
-          <hr style="width:50%;margin-top: -3px">
-    
-          <div class="row">
-            <!-- Aggressive Growth -->
-            <div class="col-md-6 mb-3">
+<div class="col-md-6 mb-3">
+  <section id="strategy">
+    <div class="card p-3 h-100" style="background-color: #fef5eb;">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="fw-semibold mb-0">Investment Strategy Overview</h5>
+        <a href="/investment-strategy" class="btn btn-sm btn-outline-secondary">See more →</a>
+      </div>
+      <hr style="width:50%;margin-top: -3px">
+
+      <div class="row">
+        <% if (pastStrategies && pastStrategies.length > 0) { %>
+          <% // Display up to 2 past strategies to fit the dashboard's summary view %>
+          <% pastStrategies.slice(0, 2).forEach(function(strategy,index) { %>
+            <div class="col-md-6 mb-2">
               <div class="p-3 bg-white rounded shadow-sm h-100">
-                <h6 class="fw-bold">Aggressive Growth</h6>
-                <span class="badge rounded-pill text-bg-danger mb-2">High Risk</span>
-                <p class="fw-bold mb-1">
-                  <span class="text-success">+5%</span>
-                  <span class="fw-normal regularText">this month</span>
+                <h6 class="fw-bold">
+                  <% if (strategy.goal && strategy.goal.goalName) { %>
+                    <%= strategy.goal.goalName %>
+                  <% } else { %>
+                    Strategy (<%= strategy.riskLevel %>)
+                  <% } %>
+                </h6>
+                <% 
+                  let badgeColor = '';
+                  if (strategy.riskLevel === 'Aggressive') { 
+                    badgeColor = 'danger'; // High Risk - Red
+                  } else if (strategy.riskLevel === 'Moderate') {
+                    badgeColor = 'warning'; // Moderate Risk - Orange
+                  } else if (strategy.riskLevel === 'Conservative') {
+                    badgeColor = 'success'; // Low Risk - Green
+                  }
+                %>
+                <span class="badge rounded-pill text-bg-<%= badgeColor %> mb-2"><%= strategy.riskLevel %> Risk</span>
+                <p class="small" style="opacity: 80%;">
+                  <Strong>Estimated return:</Strong> <%= strategy.expectedAnnualReturn ?strategy.expectedAnnualReturn.toFixed(3) + '%' : 'N/A' %> annually
                 </p>
-                <p class="small" style="opacity: 80%;">Estimated return: 6% annually</p>
+
+                <p class="small" style="opacity: 80%;">
+                  <Strong>Investment Horizon:</Strong> <%= strategy.investmentHorizon ?strategy.investmentHorizon: 'N/A' %> 
+                </p>
+
+                <p class="small" style="opacity: 80%;">
+                  <Strong>Saved on:</Strong> <%= strategy.createdAt ? strategy.createdAt.toLocaleDateString() : 'N/A' %> 
+                </p>
+                <script>
+                console.log('Strategy <%= index + 1 %> (Risk Level):', '<%= strategy.riskLevel %>');
+                console.log('Strategy <%= index + 1 %> (Badge Color):', `<%= badgeColor %>`); // Check the generated color
+            </script>
               </div>
             </div>
-    
-            <!-- Conservative Bonds -->
-            <div class="col-md-6 mb-3">
-              <div class="p-3 bg-white rounded shadow-sm h-100">
-                <h6 class="fw-bold">Conservative Bonds</h6>
-                <span class="badge rounded-pill text-bg-success mb-2">Low Risk</span>
-                <p class="fw-bold mb-1">
-                  <span class="text-success">+3%</span>
-                  <span class="fw-normal regularText">this month</span>
-                </p>
-                <p class="small" style="opacity: 80%;">Estimated return: 2% annually</p>
-              </div>
-            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="col-12">
+            <p class="text-muted text-center">No past strategies to display. Generate and implement one!</p>
           </div>
-        </div>
-      </section>
+        <% } %>
+      </div>
     </div>
-  </div>
+  </section>
+</div>
 
   <!-- market insights -->
   <section id="insights" class="mb-4">

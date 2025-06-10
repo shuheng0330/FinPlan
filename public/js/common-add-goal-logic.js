@@ -89,7 +89,7 @@ function initializeAddGoalForm(showToastCallback){
                 targetDate,
                 startDate,
                 goalPriority,
-                icon: selectedIcon
+                icon: selectedIcon,
             };
 
             console.log('Attempting to send goal data:', goalData);
@@ -97,6 +97,7 @@ function initializeAddGoalForm(showToastCallback){
             try {
                 const response = await fetch('/goal-planning', {
                     method: 'POST',
+                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
@@ -114,7 +115,8 @@ function initializeAddGoalForm(showToastCallback){
                         modal.hide();
                     }
 
-                    showToast('Goal added successfully!',success);
+                    // showToast('Goal added successfully!','success');
+                    alert('Goal added successfully!');
                     window.location.reload(); // Reloads the page
 
                     addGoalForm.reset();

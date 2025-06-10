@@ -8,6 +8,7 @@ const path = require('path');
 
 
 const { OpenAI } = require('openai');
+const { strategies } = require('passport');
 
 // Initialize the OpenAI client to use OpenRouter's API
 const openai = new OpenAI({
@@ -18,14 +19,15 @@ const openai = new OpenAI({
 
 exports.renderStrategypage = async(req,res)=>{
     try{
-        const goals = await Goal.find();
+        const goals = await Goal.find({user: req.user._id});
 
         res.render("investment-strategy",{
             title:"FinPlan - Investment Strategy",
-            username: "Thong Shu Heng",
-            userEmail: "thongshuheng030@gmail.com",
+            username: req.user.username,
+            userEmail: req.user.email,
             pageTitle: "Investment Strategy",
-            goals: goals, // Pass to EJS
+            goals: goals, 
+            strategy: null,
         });
     } catch (err) {
         console.error("Error fetching goals:", err);
@@ -34,7 +36,8 @@ exports.renderStrategypage = async(req,res)=>{
             username: "Thong Shu Heng",
             userEmail: "thongshuheng030@gmail.com",
             pageTitle: "Investment Strategy",
-            goals: [], // Fallback to empty
+            goals: [], 
+            strategy: [],
     });
   }
 };
@@ -115,8 +118,8 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             // Add other asset classes as needed
           ],
           "recommendedFunds": [
-            { "fundName": "Fund Name 1", "description": "Short description of Fund 1" },
-            { "fundName": "Fund Name 2", "description": "Short description of Fund 2" }
+            { "fundName": "Fund Name 1", "description": "Short description of Fund 1", "RiskLevel" : "Medium-Low" , "MinimumInvestment" : "RM1000" (please always mention RM) , "Liquidity" : "High" , "Fees" : "1.3%" (Don't include p.a) },
+            { "fundName": "Fund Name 2", "description": "Short description of Fund 2", "RiskLevel" : "Medium-Low" , "MinimumInvestment" : "RM1000" (please always mention RM), "Liquidity" : "High" , "Fees" : "1.3%" }
             // ... more funds
           ],
           "suggestedMonthlyInvestment": 0, // In RM (float, 2 decimal places)
@@ -127,6 +130,39 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             "whyThisStrategy": "Explain why this strategy is suitable.",
             "riskReturnAnalysis": "Analyze the risk vs. return.",
             "investmentHorizonImpact": "Explain the impact of the investment horizon."
+
+          "Recommendation" : "Give and explain the recommendation based on goal and risk appetite. e.g. Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape."
+
+          For the strategy comparison, could u show me the percentage of assest for different risk appetide in json format
+          The total percentage of stocks, bonds, cash and others must be sum up to 100%
+           "strategyComparison": {
+            "Conservative": [
+                { "Stocks": 0 },
+                { "Bonds": 0 },
+                { "Cash": 0 },
+                { "Other": 0 },
+                { "Expectedreturns": 0 // As a decimal, e.g., 0.08 for 8% },
+                { "Volatility" : "level like high,medium or low" },
+                { "BestFor" : "Example like Short-term goals (1-2 years)" }
+            ],
+            "Moderate": [
+                { "Stocks": 0 },
+                { "Bonds": 0 },
+                { "Cash": 0 },
+                { "Other": 0 },
+                { "Expectedreturns": 0 // As a decimal, e.g., 0.08 for 8% },
+                { "Volatility" : level like high,medium or low},
+                { "BestFor" : "Example like Short-term goals (1-2 years)" }
+            ],
+            "Aggressive": [
+                { "Stocks": 0 },
+                { "Bonds": 0 },
+                { "Cash": 0 },
+                { "Other": 0 },
+                { "Expectedreturns": 0 // As a decimal, e.g., 0.08 for 8% },
+                { "Volatility" : level like high,medium or low},
+                { "BestFor" : "Example like Short-term goals (1-2 years)" }
+            ]
           }
         }
         Ensure the asset allocation percentages sum up to 100%. Adjust the percentage for each asset class and provide suitable fund names based on the risk appetite and investment horizon.
@@ -168,6 +204,32 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
                     "whyThisStrategy": "This strategy balances your goal with your ${riskAppetite} risk appetite, aiming for optimal growth while managing potential volatility.",
                     "riskReturnAnalysis": "A ${riskAppetite} allocation typically offers higher potential returns in exchange for higher volatility. Bonds provide stability, while equities drive growth.",
                     "investmentHorizonImpact": "With a ${investmentHorizonYears}-year horizon, there's sufficient time for market fluctuations to smooth out, making growth-oriented assets more viable even for moderate risk."
+                },
+                "strategyComparison": {
+                    "Conservative": {
+                        "stocks": 25,
+                        "bonds": 45,
+                        "cash": 30,
+                        "expectedReturn": 4.0,
+                        "Volatility" : "high",
+                        "BestFor" : "Short-term goals (1-2 years)"
+                    },
+                    "Moderate": {
+                       "stocks": 50,
+                       "bonds": 35,
+                       "cash": 15,
+                       "expectedReturn": 6.0,
+                       "Volatility" : "medium",
+                       "BestFor" : "Medium-term goals (2-5 years)"
+                    },
+                    "Aggressive": {
+                       "stocks": 70,
+                       "bonds": 25,
+                       "cash": 5,
+                       "expectedReturn": 8.0,
+                       "Volatility" : "low",
+                       "BestFor" : "Long-term goals (5+ years)"
+                    }
                 }
             }`;
         }
@@ -241,8 +303,8 @@ exports.downloadStrategyPdf = async (req, res) => {
         // Render EJS template to HTML string with chart data
         const templatePath = path.join(__dirname, '../views/strategy-pdf-template.ejs');
         const htmlContent = await ejs.renderFile(templatePath, {
-            username: "Thong Shu Heng", // Replace with actual user data if available
-            userEmail: "thongshuheng030@gmail.com", // Replace with actual user data
+            username: req.user.username, // Replace with actual user data if available
+            userEmail: req.user.email, // Replace with actual user data
             goalName: goal.goalName,
             riskAppetite: riskAppetite,
             strategy: generatedStrategy, // Use the passed strategy data
@@ -296,12 +358,12 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
         // Assuming user ID is available from authentication middleware (e.g., req.user.id)
         // const userId = req.user.id; // Or req.user._id, depending on your auth setup
 
-        // if (!userId) {
-        //     return res.status(401).json({
-        //         status: 'fail',
-        //         message: 'User not authenticated.'
-        //     });
-        // }
+        if (!req.user._id) {
+            return res.status(401).json({
+                status: 'fail',
+                message: 'User not authenticated.'
+            });
+        }
 
         if (!goalId || !strategy) {
             return res.status(400).json({
@@ -314,6 +376,7 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
         // to ensure it matches your SavedStrategy schema.
 
         const newSavedStrategy = await Strategy.create({
+            user: req.user._id,
             goal: goalId,
             assetAllocation: strategy.assetAllocation,
             recommendedFunds: strategy.recommendedFunds,
@@ -349,3 +412,47 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
         });
     }
 };
+
+exports.getPastStrategies = async(req,res,next)=>{
+    try{
+        const userId = req.user ? req.user._id : '60d0fe4f5311236168a10000';
+
+        if(! userId){
+            return res.status(401).json({
+                status: 'fail',
+                message: 'User not authenticated. Please log in to view past strategies'
+            });
+        }
+
+        let query = Strategy.find({user: userId})
+                                             .populate('goal')
+                                             .sort({createdAt: -1});
+        const totalStrategies = await Strategy.countDocuments({user: userId});
+        const limitParam = req.query.limit;
+        
+         if (limitParam && limitParam !== 'all') { // If limit is a number, apply it
+            const limit = parseInt(limitParam, 10);
+            if (!isNaN(limit) && limit > 0) {
+                query = query.limit(limit);
+            }
+        }
+
+        const pastStrategies = await query;
+        
+        res.status(200).json({
+            status: 'success',
+            results: pastStrategies.length,
+            totalCount: totalStrategies,
+            data: {
+                strategies: pastStrategies
+            }
+        });
+    }catch(err){
+        console.error('Error fetching past strategies:', err);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to retrieve past strategies',
+            error : err.message
+        });
+    }
+}

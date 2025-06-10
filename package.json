@@ -19,18 +19,19 @@
   "homepage": "https://github.com/shuheng0330/FinPlan#readme",
   "dependencies": {
     "dotenv": "^16.5.0",
+    "openai": "^5.0.1",
+    "puppeteer": "^24.10.0",
+    "bcryptjs": "^3.0.2",
+    "connect-flash": "^0.1.1",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
-<<<<<<< HEAD
-    "mongoose": "^8.15.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
-=======
+    "express-session": "^1.18.1",
     "mongoose": "^8.15.0",
+    "multer": "^2.0.0",
     "nodemon": "^3.1.10",
-    "openai": "^5.0.1",
-    "puppeteer": "^24.10.0"
->>>>>>> 7e9ffc6981239de0af3a2aaf0bd09979a199260c
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "passport-local": "^1.0.0",
+    "validator": "^13.15.15"
   }
 }
