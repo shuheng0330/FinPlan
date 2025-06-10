@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (generateStrategyBtn) {
         generateStrategyBtn.addEventListener('click', async function() {
             if (!selectedGoalId) {
-                alert('Please select a goal first!');
+                window.toast.warning('Please select a goal first!');
                 return;
             }
 
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
                         strategyDisplaySection.style.display = 'block'; // Show the strategy display section
-                         showToast('Strategy generated successfully!', 'success');
+                         window.toast.success('Strategy generated successfully!');
 
                         // Enable action buttons
                         downloadStrategyBtn.disabled = false;
@@ -318,17 +318,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         regenerateBtn.disabled = false;
 
                     } else {
-                        showToast('Generated strategy data is empty.', 'error');
+                        window.toast.error('Generated strategy data is empty.', 'error');
                     }
 
                 } else {
                     const errorData = await response.json();
                     console.error('Error generating strategy:', errorData);
-                    showToast('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'), 'error'); // Replaced alert
+                    showindow.toast.error('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'), 'error'); // Replaced alert
                 }
             } catch (error) {
                 console.error('Network error during strategy generation:', error);
-                showToast('Could not connect to the server to generate strategy. Please check your internet connection.', 'error'); // Replaced alert
+                window.toast.error('Could not connect to the server to generate strategy. Please check your internet connection.', 'error'); // Replaced alert
             } finally {
                 this.disabled = false;
                 this.textContent = 'Generate Strategy';
@@ -354,11 +354,11 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('currentGeneratedStrategy:', currentGeneratedStrategy);
 
             if (!selectedGoalId) {
-                showToast('error', 'Please select a goal first to generate a PDF.');
+                window.toast.error('Please select a goal first to generate a PDF.', 'error');
                 return;
             }
             if (!riskAppetite) {
-                showToast('error', 'Risk appetite is not set. Please generate a strategy first.');
+                window.toast.error('Risk appetite is not set. Please generate a strategy first.', 'error');
                 return;
             }
 
@@ -386,15 +386,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     a.click();
                     document.body.removeChild(a);
                     window.URL.revokeObjectURL(url);
-                    showToast('Download successfully', 'success');
+                    window.toast.success('Download successfully');
                 } else {
                     const errorData = await response.json();
                     console.error('Error downloading PDF:', errorData);
-                    showToast('error', `Failed to download PDF: ${errorData.message || 'Unknown error'}`);
+                    window.toast.error(`Failed to download PDF: ${errorData.message || 'Unknown error'}`, 'error');
                 }
             } catch (error) {
                 console.error('Network error during PDF download:', error);
-                showToast('error', 'Network error or unexpected issue during PDF download.');
+                window.toast.error('Network error or unexpected issue during PDF download.', 'error');
             }
         });
     }
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('currentGeneratedStrategy:', currentGeneratedStrategy);
 
             if(!selectedGoalId || !currentGeneratedStrategy){
-                showToast('Please generate an investment strategy first.','error');
+                window.toast.warning('Please generate an investment strategy first.','error');
                 return;
             }
 
@@ -430,13 +430,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if(data.status === 'success'){
                     await fetchAndDisplayPastStrategies(false);
-                    showToast('Investment strategy saved successfully!','success');
+                    window.toast.success('Investment strategy saved successfully!');
                 }else{
-                    showToast('Failed to save investment strategy. Unknown error.', 'error');
+                    window.toast.error('Failed to save investment strategy. Unknown error.', 'error');
                 }
             }catch (error){
                 console.error('Error saving strategy:',error);
-                showToast('An unexpected error occurred while saving the strategy.','error');
+                window.toast.error('An unexpected error occurred while saving the strategy.','error');
             }finally{
                 implementStrategyBtn.disabled = false;
                 implementStrategyBtn.textContent = 'Implement Strategy';
@@ -743,7 +743,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error fetching past strategies:', error);
         noPastStrategiesMessage.style.display = 'block'; // Show message on error
         noPastStrategiesMessage.textContent = 'Failed to load past strategies. Please try again later.';
-        showToast('Failed to load past strategies.', 'error');
+        window.toast.error('Failed to load past strategies.', 'error');
     }
 }
 
@@ -1125,22 +1125,22 @@ function updateComparisonOption(strategy) {
             const investmentPeriod = parseInt(investmentPeriodInput.value);
 
             if (isNaN(initialInvestment) || initialInvestment < 0) {
-                alert('Please enter a valid non-negative Initial Investment.');
+                window.toast.warning('Please enter a valid non-negative Initial Investment.');
                 initialInvestmentInput.focus();
                 return;
             }
             if (isNaN(monthlyContribution) || monthlyContribution < 0) {
-                alert('Please enter a valid non-negative Monthly Contribution.');
+                window.toast.warning('Please enter a valid non-negative Monthly Contribution.');
                 monthlyContributionInput.focus();
                 return;
             }
             if (isNaN(annualReturn) || annualReturn < 0) {
-                alert('Please enter a valid non-negative Annual Return (percentage).');
+                window.toast.warning('Please enter a valid non-negative Annual Return (percentage).');
                 annualReturnInput.focus();
                 return;
             }
             if (isNaN(investmentPeriod) || investmentPeriod <= 0) {
-                alert('Please enter a valid positive Investment Period (in years).');
+                window.toast.warning('Please enter a valid positive Investment Period (in years).');
                 investmentPeriodInput.focus();
                 return;
             }
@@ -1168,4 +1168,5 @@ function updateComparisonOption(strategy) {
 });
 
 // You might want to export selectedGoalId or a getter function if other modules need it
-export { selectedGoalId, riskAppetite, currentGeneratedStrategy };
+export { currentGeneratedStrategy, riskAppetite, selectedGoalId };
+

@@ -33,27 +33,23 @@ function initializeAddGoalForm(showToastCallback){
 
             if (goalName === '') {
                 document.getElementById('goalName').focus();
-                if (showToastCallback) showToastCallback('Goal name cannot be empty.', 'error');
-                else alert('Goal name cannot be empty.');
+                window.toast.warning('Goal name cannot be empty.');
                 return;
             }
             if (isNaN(goalAmount) || goalAmount <= 0) {
-                if (showToastCallback) showToastCallback('Please enter a valid positive Goal Amount.', 'error');
-                else alert('Please enter a valid positive Goal Amount.');
+                window.toast.warning('Please enter a valid positive Goal Amount.');
 
                 document.getElementById('goalAmount').focus();
                 return;
             }
             if (isNaN(currentAmount) || currentAmount < 0) {
-                if (showToastCallback) showToastCallback('Please enter a valid non-negative Current Amount.', 'error');
-                else alert('Please enter a valid non-negative Current Amount.');
+                window.toast.warning('Please enter a valid non-negative Current Amount.');
 
                 document.getElementById('currentAmount').focus();
                 return;
             }
             if (currentAmount > goalAmount) {
-                if (showToastCallback) showToastCallback('Current amount cannot be greater than goal amount.', 'error');
-                else alert('Current amount cannot be greater than goal amount.');
+                window.toast.warning('Current amount cannot be greater than goal amount.');
 
                 document.getElementById('currentAmount').focus();
                 return;
@@ -63,21 +59,18 @@ function initializeAddGoalForm(showToastCallback){
             const parsedTargetDate = new Date(targetDate);
 
             if (isNaN(parsedStartDate.getTime()) || isNaN(parsedTargetDate.getTime())) {
-                if (showToastCallback) showToastCallback('Please select a Start or target Date.', 'error');
-                else alert('Please select a Start or target Date.');
+                window.toast.warning('Please select a Start or target Date.');
 
                 return;
             }
             if (parsedStartDate > parsedTargetDate) {
-                if (showToastCallback) showToastCallback('Start Date must be before Target Date.', 'error');
-                else alert('Start Date must be before Target Date.');
+                window.toast.warning('Start Date must be before Target Date.');
 
                 document.getElementById('startDate').focus();
                 return;
             }
             if (!selectedIcon) {
-                if (showToastCallback) showToastCallback('Please select an icon for your goal.', 'error');
-                else alert('Please select an icon for your goal.');
+                window.toast.warning('Please select an icon for your goal.');
                 
                 return;
             }
@@ -115,16 +108,10 @@ function initializeAddGoalForm(showToastCallback){
                         modal.hide();
                     }
 
-                if(showToastCallback) {
-                    showToastCallback('Goal added successfully!','success');
-                    // Add a delay before reloading the page
-                    setTimeout(() => {
-                        window.location.reload(); 
-                    }, 500); // Delay for 1.5 seconds (1500 milliseconds)
-                } else {
-                    alert('Goal added successfully!');
-                    window.location.reload();
-                }
+                    // showToast('Goal added successfully!','success');
+                    window.toast.success('Goal added successfully!');
+                    window.location.reload(); // Reloads the page
+
                     addGoalForm.reset();
                     iconOptions.forEach(opt => opt.classList.remove('selected'));
                     // This block will now work correctly as initiallySelectedIconOption is defined
@@ -138,11 +125,11 @@ function initializeAddGoalForm(showToastCallback){
                 } else {
                     const errorData = await response.json();
                     console.error('Error saving goal:', errorData);
-                    alert('Error saving goal: ' + (errorData.errors || 'Something went wrong. Please check your inputs.'));
+                    window.toast.error('Error saving goal: ' + (errorData.errors || 'Something went wrong. Please check your inputs.'));
                 }
             } catch (error) {
                 console.error('Network error or unexpected issue:', error);
-                alert('Failed to connect to the server. Please check your internet connection or try again later.');
+                window.toast.error('Failed to connect to the server. Please check your internet connection or try again later.');
             }
         });
     }

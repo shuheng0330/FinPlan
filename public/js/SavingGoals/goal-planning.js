@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(priority);
 
         if (name === '' || isNaN(amount) || isNaN(current) || !targetDate || !startDate || !icon) {
-            alert('Please fill in all required fields correctly.');
+            window.toast.warning("Validation Error", "Please fill in all required fields correctly.")
             return;
         }
 
@@ -226,16 +226,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editGoalModal'));
                 modal.hide();
 
-                alert('Goal updated successfully!');
+                window.toast.success("Success!", "Goal updated successfully!")
                 window.location.reload(); // Optional: Refresh to see changes
             } else {
                 const errorData = await response.json();
                 console.error('Error updating goal:', errorData);
-                alert('Update failed: ' + (errorData.message || 'Something went wrong.'));
+                window.toast.error('Update failed: ' + (errorData.message || 'Something went wrong.'));
             }
         } catch (error) {
             console.error('Error during update:', error);
-            alert('Failed to update goal. Please try again later.');
+             window.toast.error('Failed to update goal. Please try again later.');
         }
     });
 }
@@ -265,16 +265,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (response.ok) {
             const result = await response.json();
             console.log('Goal deleted successfully:', result);
-            alert('Goal deleted successfully!');
+            window.toast.success("Deleted!", "Goal deleted successfully!")
             window.location.reload(); // Refresh page to reflect deletion
         } else {
             const errorData = await response.json();
             console.error('Error deleting goal:', errorData);
-            alert('Error deleting goal: ' + (errorData.message || 'Something went wrong.'));
+            window.toast.error("Delete Failed", errorData.message || "Something went wrong.")
         }
     } catch (error) {
         console.error('Network error or unexpected issue:', error);
-        alert('Failed to delete goal. Please check your connection and try again.');
+        window.toast.error("Delete Failed", errorData.message || "Something went wrong.")
     }
     });
 
