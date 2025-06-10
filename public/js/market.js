@@ -52,69 +52,291 @@ const cache = {
 // Dynamic watchlist (initial stocks)
 let watchlist = ['AAPL', 'NVDA', 'TSLA', 'AMZN', 'GOOGL'];
 
-// Main Data Fetching Functions
+function getDatesForTimeRange(timeRange) {
+    const today = new Date();
+    let startDate = new Date();
 
-async function fetchIndexData(timeRange = '30d') {
-  try {
-    showLoading('indices');
-    if (cache.indices && Date.now() - cache.lastUpdated < 300000) {
-      return cache.indices;
+    switch (timeRange) {
+        case '1d': // Today 
+              startDate.setDate(today.getDate());
+            break;
+        case '7d': // Last 7 days
+            startDate.setDate(today.getDate() - 7);
+            break;
+        case '30d': // Last 30 days
+        case '1m': // Last month (often equivalent to 30d for simplicity)
+            startDate.setDate(today.getDate() - 30);
+            break;
+        case '3m': // Last 3 months
+            startDate.setMonth(today.getMonth() - 3);
+            break;
+        case '6m': // Last 6 months
+            startDate.setMonth(today.getMonth() - 6);
+            break;
+        case '1y': // Last 1 year
+            startDate.setFullYear(today.getFullYear() - 1);
+            break;
+        case '3y': // Last 3 years
+            startDate.setFullYear(today.getFullYear() - 3);
+            break;
+        case '5y': // Last 5 years
+            startDate.setFullYear(today.getFullYear() - 5);
+            break;
+        case 'ytd': // Year to date
+            startDate = new Date(today.getFullYear(), 0, 1); // January 1st of current year
+            break;
+        default: // Default to 30 days if unrecognized
+            startDate.setDate(today.getDate() - 30);
+            break;
     }
-    const symbols = ['AAPL', 'NVDA', 'TSLA'];
-    const response = await fetch(
-      `${API_CONFIG.fmp.baseUrl}quote/${symbols.join(',')}?apikey=${API_CONFIG.fmp.key}`
-    );
-    if (!response.ok) throw new Error('Network response was not ok');
-    const data = await response.json();
-    const formattedData = data.map(stock => ({
-      symbol: stock.symbol,
-      name: stock.name,
-      price: stock.price.toFixed(2),
-      change: stock.change.toFixed(2),
-      changePercent: stock.changesPercentage.toFixed(2)
-    }));
-    cache.indices = formattedData;
-    cache.lastUpdated = Date.now();
-    hideLoading('indices');
-    return formattedData;
-  } catch (error) {
-    console.error('Error fetching index data:', error);
-    showError('indices');
-    return [];
-  }
+
+    // Ensure startDate is not in the future and handles edge cases for month/year calculations
+    if (startDate > today) {
+        startDate = today;
+    }
+
+    const formatDate = (date) => date.toISOString().split('T')[0];
+
+    return {
+        startDate: formatDate(startDate),
+        endDate: formatDate(today) // End date is always today
+    };
+}
+
+// Main Data Fetching Functions
+async function fetchIndexData(timeRange = '30d') {
+    try {
+        console.log(`DEBUG: fetchIndexData started for timeRange: ${timeRange}`);
+        showLoading('indices');
+
+        // IMPORTANT: For dynamic range, cache needs to be specific to (symbol, timeRange) pair,
+        // or disabled for this demo, as 'cache.indices' alone isn't enough.
+        // For now, assume caching is off or you've handled invalidation per API call.
+        // You might want to remove or comment out these cache checks for testing:
+        // if (cache.indices && Date.now() - cache.lastUpdated < 300000) {
+        //   console.log('DEBUG: fetchIndexData returning from cache');
+        //   return cache.indices;
+        // }
+
+        const symbols = ['AAPL', 'NVDA', 'TSLA']; // These are your fixed index symbols
+        const indicesData = [];
+        const { startDate, endDate } = getDatesForTimeRange(timeRange);
+
+        for (const symbol of symbols) {
+            let currentPrice = null;
+            let startPeriodPrice = null;
+            let companyName = symbol; // Default, will try to get full name from quote
+            let marketCap = 'N/A';
+            let volume = 'N/A';
+            let yearHigh = 'N/A';
+            let yearLow = 'N/A';
+            let currentQuoteData = null; // To store the full quote object if fetched successfully
+
+            // --- 1. Fetch current quote data (for latest price, name, marketCap, volume) ---
+            try {
+                const quoteUrl = `${API_CONFIG.fmp.baseUrl}quote/${symbol}?apikey=${API_CONFIG.fmp.key}`;
+                console.log(`DEBUG: Fetching current quote for ${symbol} from: ${quoteUrl}`);
+                const quoteResponse = await fetch(quoteUrl);
+                if (!quoteResponse.ok) throw new Error(`Quote network response not ok for ${symbol}: ${quoteResponse.status}`);
+                const quoteJson = await quoteResponse.json();
+
+                if (quoteJson && quoteJson.length > 0) {
+                    currentQuoteData = quoteJson[0]; // Store the full quote object
+                    currentPrice = currentQuoteData.price;
+                    companyName = currentQuoteData.name || symbol;
+                    marketCap = (currentQuoteData.marketCap / 1_000_000_000_000).toFixed(3) + 'B'; // Format to trillions
+                    volume = (currentQuoteData.volume / 1_000_000).toFixed(1) + 'M'; // Format to millions
+                    yearHigh = currentQuoteData.yearHigh.toFixed(2);
+                    yearLow = currentQuoteData.yearLow.toFixed(2);
+                } else {
+                    console.warn(`DEBUG: No current quote data found for ${symbol}.`);
+                }
+            } catch (quoteError) {
+                console.error(`DEBUG: Error fetching current quote for ${symbol}:`, quoteError);
+                // Continue to historical fetch even if current quote fails, as it's optional for historical change
+            }
+
+            // --- 2. Fetch historical data for the period ---
+            try {
+                // For '1d' range, if we have current quote data, we can use its daily change
+                if (timeRange === '1d' && currentQuoteData !== null) {
+                    // Approximate start of day price using current price and daily change from quote
+                    startPeriodPrice = currentPrice - (currentQuoteData.change || 0);
+                    if (startPeriodPrice === 0) startPeriodPrice = currentPrice; // Avoid division by zero
+                } else {
+                    const historyUrl = `${API_CONFIG.fmp.baseUrl}historical-price-full/${symbol}?from=${startDate}&to=${endDate}&apikey=${API_CONFIG.fmp.key}`;
+                    console.log(`DEBUG: Fetching historical data for ${symbol} from: ${historyUrl}`);
+                    const historyResponse = await fetch(historyUrl);
+                    if (!historyResponse.ok) throw new Error(`Historical network response not ok for ${symbol}: ${historyResponse.status}`);
+                    const historyJson = await historyResponse.json();
+
+                    if (historyJson && historyJson.historical && historyJson.historical.length > 0) {
+                        // FMP historical-price-full returns data in reverse chronological order (most recent first)
+                        // So, historical[0] is the latest, and historical[length-1] is the oldest within the range.
+                        const oldestEntryInPeriod = historyJson.historical[historyJson.historical.length - 1];
+                        startPeriodPrice = oldestEntryInPeriod.close;
+
+                        // If currentPrice wasn't fetched from quote, use the latest historical close
+                        if (currentPrice === null) {
+                            currentPrice = historyJson.historical[0].close;
+                        }
+                    } else {
+                        console.warn(`DEBUG: No historical data found for ${symbol} for range ${startDate} to ${endDate}.`);
+                    }
+                }
+            } catch (historyError) {
+                console.error(`DEBUG: Error fetching historical data for ${symbol}:`, historyError);
+            }
+
+            // --- Calculate Change and Percentage Change over the period ---
+            let change = 'N/A';
+            let changePercent = 'N/A';
+
+            if (currentPrice !== null && startPeriodPrice !== null && startPeriodPrice !== 0) {
+                change = (currentPrice - startPeriodPrice).toFixed(2);
+                changePercent = ((parseFloat(change) / startPeriodPrice) * 100).toFixed(2);
+            } else if (currentPrice !== null && timeRange === '1d' && currentQuoteData !== null) {
+                 // Fallback to daily change from quote if historical data isn't providing a good start price for '1d'
+                 change = (currentQuoteData.change || 0).toFixed(2);
+                 changePercent = (currentQuoteData.changesPercentage || 0).toFixed(2);
+            }
+
+
+            indicesData.push({
+                symbol: symbol,
+                name: companyName,
+                price: currentPrice !== null ? currentPrice.toFixed(2) : 'N/A',
+                change: change,
+                changePercent: changePercent,
+                marketCap: marketCap,
+                volume: volume,
+                yearHigh: yearHigh,
+                yearLow: yearLow
+            });
+        }
+
+        // You might consider caching 'indicesData' based on timeRange here, e.g., cache.indices[timeRange] = indicesData;
+        hideLoading('indices');
+        console.log('DEBUG: fetchIndexData returning formatted data:', indicesData);
+        return indicesData;
+
+    } catch (error) {
+        console.error('DEBUG: Error in fetchIndexData catch block:', error);
+        showError('indices');
+        return []; // Always return an empty array on error to prevent further TypeError
+    }
 }
 
 async function fetchStockData(symbols = watchlist, timeRange = '30d') {
-  try {
-    showLoading('stocks');
-    if (cache.stocks && Date.now() - cache.lastUpdated < 300000) {
-      return cache.stocks;
+    try {
+        console.log(`DEBUG: fetchStockData started for timeRange: ${timeRange}`);
+        showLoading('stocks');
+
+        // IMPORTANT: Assume caching is off or properly invalidated for this demo
+        // if (cache.stocks && Date.now() - cache.lastUpdated < 300000) {
+        //   console.log('DEBUG: fetchStockData returning from cache');
+        //   return cache.stocks;
+        // }
+
+        const stocksData = [];
+        const { startDate, endDate } = getDatesForTimeRange(timeRange);
+
+        for (const symbol of symbols) {
+            let currentPrice = null;
+            let startPeriodPrice = null;
+            let companyName = symbol;
+            let marketCap = 'N/A';
+            let volume = 'N/A';
+            let yearHigh = 'N/A';
+            let yearLow = 'N/A';
+            let currentQuoteData = null; // To store the full quote object if fetched successfully
+
+            // --- 1. Fetch current quote data (for latest price, name, marketCap, volume) ---
+            try {
+                const quoteUrl = `${API_CONFIG.fmp.baseUrl}quote/${symbol}?apikey=${API_CONFIG.fmp.key}`;
+                console.log(`DEBUG: Fetching current quote for ${symbol} from: ${quoteUrl}`);
+                const quoteResponse = await fetch(quoteUrl);
+                if (!quoteResponse.ok) throw new Error(`Quote network response not ok for ${symbol}: ${quoteResponse.status}`);
+                const quoteJson = await quoteResponse.json();
+
+                if (quoteJson && quoteJson.length > 0) {
+                    currentQuoteData = quoteJson[0]; // Store the full quote object
+                    currentPrice = currentQuoteData.price;
+                    companyName = currentQuoteData.name || symbol;
+                    marketCap = (currentQuoteData.marketCap / 1_000_000_000_000).toFixed(3) + 'B';
+                    volume = (currentQuoteData.volume / 1_000_000).toFixed(1) + 'M';
+                    yearHigh = currentQuoteData.yearHigh.toFixed(2);
+                    yearLow = currentQuoteData.yearLow.toFixed(2);
+                } else {
+                    console.warn(`DEBUG: No current quote data found for ${symbol}.`);
+                }
+            } catch (quoteError) {
+                console.error(`DEBUG: Error fetching current quote for ${symbol}:`, quoteError);
+            }
+
+            // --- 2. Fetch historical data for the period ---
+            try {
+                if (timeRange === '1d' && currentQuoteData !== null) {
+                    startPeriodPrice = currentPrice - (currentQuoteData.change || 0);
+                    if (startPeriodPrice === 0) startPeriodPrice = currentPrice;
+                } else {
+                    const historyUrl = `${API_CONFIG.fmp.baseUrl}historical-price-full/${symbol}?from=${startDate}&to=${endDate}&apikey=${API_CONFIG.fmp.key}`;
+                    console.log(`DEBUG: Fetching historical data for ${symbol} from: ${historyUrl}`);
+                    const historyResponse = await fetch(historyUrl);
+                    if (!historyResponse.ok) throw new Error(`Historical network response not ok for ${symbol}: ${historyResponse.status}`);
+                    const historyJson = await historyResponse.json();
+
+                    if (historyJson && historyJson.historical && historyJson.historical.length > 0) {
+                        const oldestEntryInPeriod = historyJson.historical[historyJson.historical.length - 1];
+                        startPeriodPrice = oldestEntryInPeriod.close;
+
+                        if (currentPrice === null) {
+                            currentPrice = historyJson.historical[0].close;
+                        }
+                    } else {
+                        console.warn(`DEBUG: No historical data found for ${symbol} for range ${startDate} to ${endDate}.`);
+                    }
+                }
+            } catch (historyError) {
+                console.error(`DEBUG: Error fetching historical data for ${symbol}:`, historyError);
+            }
+
+            // --- Calculate Change and Percentage Change over the period ---
+            let change = 'N/A';
+            let changePercent = 'N/A';
+
+            if (currentPrice !== null && startPeriodPrice !== null && startPeriodPrice !== 0) {
+                change = (currentPrice - startPeriodPrice).toFixed(2);
+                changePercent = ((parseFloat(change) / startPeriodPrice) * 100).toFixed(2);
+            } else if (currentPrice !== null && timeRange === '1d' && currentQuoteData !== null) {
+                 change = (currentQuoteData.change || 0).toFixed(2);
+                 changePercent = (currentQuoteData.changesPercentage || 0).toFixed(2);
+            }
+
+            stocksData.push({
+                symbol: symbol,
+                name: companyName,
+                price: currentPrice !== null ? currentPrice.toFixed(2) : 'N/A',
+                change: change,
+                changePercent: changePercent,
+                marketCap: marketCap,
+                volume: volume,
+                yearHigh: yearHigh,
+                yearLow: yearLow
+            });
+        }
+
+        // Cache 'stocksData' based on timeRange if needed later
+        // e.g., cache.stocks[timeRange] = stocksData;
+        hideLoading('stocks');
+        console.log('DEBUG: fetchStockData returning formatted data:', stocksData);
+        return stocksData;
+
+    } catch (error) {
+        console.error('DEBUG: Error in fetchStockData catch block:', error);
+        showError('stocks');
+        return [];
     }
-    const response = await fetch(
-      `${API_CONFIG.fmp.baseUrl}quote/${symbols.join(',')}?apikey=${API_CONFIG.fmp.key}`
-    );
-    if (!response.ok) throw new Error('Network response was not ok');
-    const data = await response.json();
-    const formattedData = data.map(stock => ({
-      symbol: stock.symbol,
-      name: stock.name,
-      price: stock.price.toFixed(2),
-      change: stock.change.toFixed(2),
-      changePercent: stock.changesPercentage.toFixed(2),
-      marketCap: (stock.marketCap / 1000000000).toFixed(2) + 'B',
-      volume: (stock.volume / 1000000).toFixed(1) + 'M',
-      yearHigh: stock.yearHigh.toFixed(2),
-      yearLow: stock.yearLow.toFixed(2)
-    }));
-    cache.stocks = formattedData;
-    cache.lastUpdated = Date.now();
-    hideLoading('stocks');
-    return formattedData;
-  } catch (error) {
-    console.error('Error fetching stock data:', error);
-    showError('stocks');
-    return [];
-  }
 }
 
 async function fetchMarketNews() {
@@ -342,8 +564,7 @@ async function initDashboard(timeRange = '30d') {
   updateNewsSection(news);
   const ratings = await fetchAnalystRatings(['AAPL', 'NVDA', 'TSLA']);
   updateAnalystRatings(ratings);
-  const earnings = await fetchEarningsCalendar(['AMZN', 'WMT', 'GOOGL']);
-  updateEarningsCalendar(earnings);
+
 }
 
 // Event Listeners
@@ -391,6 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!watchlist.includes(symbol)) {
               watchlist.push(symbol);
             }
+            cache.stocks = null;
             // Refresh the stock table
             fetchStockData(watchlist).then(stocks => updateStockTable(stocks));
             // Remove dropdown
