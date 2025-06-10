@@ -15,232 +15,280 @@
       href="https://fonts.googleapis.com/css2?family=Creepster&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Matemasie&family=New+Amsterdam&display=swap"
       rel="stylesheet"
     />
-    
+    <!-- Add Lucide Icons for better visual elements -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   </head>
 
   <body class="fade-in d-flex">
-<!-- Sidebar -->
-<%- include('partials/sidebar') %>
+    <%- include('partials/sidebar') %>
 
-    <!-- Main Content -->
     <div class="container-fluid p-4">
       <%- include('partials/header') %>
 
-        <!-- ROI Calculator -->
-        <section id="insights" class="mb-4">
-          <div class="card p-3" style="background-color: #fef5eb;">
-            <div class="row">
-              <!-- Input Form -->
-              <div class="col-md-6 mb-3">
+      <!-- Enhanced ROI Calculator Section -->
+      <section id="roi-calculator" class="mb-5">
+        <div class="section-header mb-4">
+          <h2 class="section-title">
+            <i data-lucide="calculator" class="section-icon"></i>
+            ROI Calculator
+          </h2>
+          <p class="section-subtitle">Calculate your return on investment with precision</p>
+        </div>
+        
+        <div class="enhanced-card">
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="input-section">
+                <h4 class="input-section-title">Investment Details</h4>
                 <form id="roiForm">
-                  <div class="mb-3">
-                    <label for="initialInvestment" class="form-label">Initial Investment ($)</label>
-                    <input type="number" class="form-control" id="initialInvestment" />
-                  </div>
-        
-                  <div class="mb-3">
-                    <label for="finalValue" class="form-label">Final Value ($)</label>
-                    <input type="number" class="form-control" id="finalValue" required />
-                  </div>
-        
-                  <div class="mb-3">
-                    <label for="investmentPeriod" class="form-label">Investment Period (years)</label>
-                    <div class="d-flex align-items-center gap-2">
-                      <input
-                        type="range"
-                        id="investmentPeriodRange"
-                        min="1"
-                        max="50"
-                        value="1"
-                        class="form-range"
-                      />
-                      <input
-                        type="number"
-                        id="sliderValue"
-                        class="form-control"
-                        min="1"
-                        max="50"
-                        value="1"
-                        style="width: 70px; background-color: white;"
-                      />
+                  <div class="enhanced-input-group">
+                    <label for="initialInvestment" class="enhanced-label">
+                      <i data-lucide="dollar-sign" class="input-icon"></i>
+                      Initial Investment
+                    </label>
+                    <div class="currency-input-wrapper">
+                      <span class="currency-symbol">$</span>
+                      <input type="number" class="form-control enhanced-input" id="initialInvestment" placeholder="10,000" />
                     </div>
                   </div>
-        
-                  <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn btn-primary">Calculate ROI</button>
+
+                  <div class="enhanced-input-group">
+                    <label for="finalValue" class="enhanced-label">
+                      <i data-lucide="trending-up" class="input-icon"></i>
+                      Final Value
+                    </label>
+                    <div class="currency-input-wrapper">
+                      <span class="currency-symbol">$</span>
+                      <input type="number" class="form-control enhanced-input" id="finalValue" placeholder="15,000" required />
+                    </div>
+                  </div>
+
+                  <div class="enhanced-input-group">
+                    <label for="investmentPeriod" class="enhanced-label">
+                      <i data-lucide="calendar" class="input-icon"></i>
+                      Investment Period (years)
+                    </label>
+                    <div class="slider-wrapper">
+                      <div class="d-flex align-items-center gap-3">
+                        <input
+                          type="range"
+                          id="investmentPeriodRange"
+                          min="1"
+                          max="50"
+                          value="1"
+                          class="enhanced-slider"
+                        />
+                        <div class="slider-value-display">
+                          <input
+                            type="number"
+                            id="sliderValue"
+                            class="form-control slider-input"
+                            min="1"
+                            max="50"
+                            value="1"
+                          />
+                          <span class="slider-unit">years</span>
+                        </div>
+                      </div>
+                      <div class="slider-labels">
+                        <span>1 year</span>
+                        <span>50 years</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="calculate-button-wrapper">
+                    <button type="submit" class="btn enhanced-calculate-btn">
+                      <i data-lucide="calculator" class="btn-icon"></i>
+                      Calculate ROI
+                    </button>
                   </div>
                 </form>
               </div>
-        
-              <!-- ROI Result -->
-              <div class="col-md-6 mb-3">
-                <section id="goals">
-                  <div class="card p-3 h-100" style="background-color: #fff;">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <h5 class="ROIheader text-center w-100">Total Gain on Investment</h5>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="results-section">
+                <h4 class="results-title">
+                  <i data-lucide="bar-chart-3" class="section-icon"></i>
+                  Results
+                </h4>
+                <div class="results-card">
+                  <div class="result-item">
+                    <div class="result-header">
+                      <i data-lucide="arrow-up-right" class="result-icon gain"></i>
+                      <h5 class="result-label">Total Gain on Investment</h5>
                     </div>
-                    <div class="card-body text-center">
-                      <h1 id="roiValue">$500000</h1>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <h5 class="ROIheader text-center w-100">ROI (%)</h5>
-                    </div>
-                    <div class="card-body text-center">
-                      <h1 id="roiPercentage">0%</h1>
+                    <div class="result-value-wrapper">
+                      <h1 id="roiValue" class="result-value gain-value">$500,000</h1>
                     </div>
                   </div>
-                </section>
+                  
+                  <div class="result-divider"></div>
+                  
+                  <div class="result-item">
+                    <div class="result-header">
+                      <i data-lucide="percent" class="result-icon percentage"></i>
+                      <h5 class="result-label">ROI Percentage</h5>
+                    </div>
+                    <div class="result-value-wrapper">
+                      <h1 id="roiPercentage" class="result-value percentage-value">0%</h1>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </section>
-        
-        
-        
-        
-        <hr style="width: 100%;margin-top: 50px;">
+        </div>
+      </section>
 
-         <!-- Investment Comparison -->
-         <section id="insights" class="mb-4" style="margin-top: 30px;">
-          <h3 style="padding-bottom: 20px;">Investment Comparison</h3>
-          <div class="card p-3" style="background-color: #fef5eb;">
-            
-            <!-- Search Investment -->
-            <div class="mb-3">
-              <label for="initialInvestment" class="form-label">Search for Investment</label>
-              <div class="input-group">
-                <input type="text" class="form-control" id="investmentSearch" />
-                <button class="btn btn-primary"  type="button" id="searchButton">Search</button>
+      <div class="section-divider"></div>
+
+      <!-- Enhanced Investment Comparison Section -->
+      <section id="investment-comparison" class="mb-5">
+        <div class="section-header mb-4">
+          <h2 class="section-title">
+            <i data-lucide="trending-up" class="section-icon"></i>
+            Investment Comparison
+          </h2>
+          <p class="section-subtitle">Search and compare different investment options</p>
+        </div>
+        
+        <div class="enhanced-card">
+          <div class="search-section">
+            <div class="enhanced-input-group search-container">
+              <label for="stockSymbol" class="enhanced-label">
+                <i data-lucide="search" class="input-icon"></i>
+                Search for Investment
+              </label>
+              <div class="input-group enhanced-search-group">
+                <input type="text" id="stockSymbol" class="form-control enhanced-search-input" placeholder="Search by stock symbol (e.g., AAPL, TSLA)" autocomplete="off" />
+                <button class="btn enhanced-search-btn" id="searchButton">
+                  <i data-lucide="search" class="btn-icon"></i>
+                  Search
+                </button>
+              </div>
+              <div id="stockHints" class="stock-hints"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-divider"></div>
+
+        <div id="selectedStocksSection" class="d-none">
+          <div class="section-header mb-4">
+            <h4 class="subsection-title">
+              <i data-lucide="bookmark" class="section-icon"></i>
+              Selected Investments
+            </h4>
+          </div>
+          <div class="row" id="selectedStocksContainer"></div>
+          <div class="content-divider"></div>
+        </div>
+
+        <div id="chartsContainer" class="row d-none">
+          <div class="section-header mb-4">
+            <h4 class="subsection-title">
+              <i data-lucide="bar-chart-2" class="section-icon"></i>
+              Investment Analysis
+            </h4>
+          </div>
+          <div class="col-lg-6 mb-4"> 
+            <div class="chart-card">
+              <div class="chart-header">
+                <h5 class="chart-title">Risk Analysis</h5>
+                <p class="chart-subtitle">Beta values compared to market</p>
+              </div>
+              <div class="chart-container">
+                <canvas id="RiskChart"></canvas>
               </div>
             </div>
-
-          <div class="row">
-            <!-- Tesla, Inc -->
-            <div class="col-md-3 mb-3">
-              <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
-                <div class="d-flex align-items-center mb-2">
-                  <img src="/svgs/tesla-svgrepo-com.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                  <span class="fw-semibold">Tesla, Inc</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mt-auto">
-                  <p class="mb-0 fw-bold">$1234.79</p>
-                  <span class="badge rounded-pill p-2" style="background-color: #c8f5cf; color: #155724;">11.01%</span>
-                </div>
-                <a href="#insights" style="margin-top: 20px;" class="btn btn-sm btn-outline-secondary">Select</a>
+          </div>
+          <div class="col-lg-6 mb-4"> 
+            <div class="chart-card">
+              <div class="chart-header">
+                <h5 class="chart-title">Return Analysis</h5>
+                <p class="chart-subtitle">Daily return percentages</p>
+              </div>
+              <div class="chart-container">
+                <canvas id="ReturnChart"></canvas>
               </div>
             </div>
-      
-            <!-- Nvidia, Inc -->
-            <div class="col-md-3 mb-3">
-                <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
-                  <div class="d-flex align-items-center mb-2">
-                    <img src="/svgs/nvidia-svgrepo-com.svg" alt="Nvidia logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                    <span class="fw-semibold">Nvidia, Inc</span>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center mt-auto">
-                    <p class="mb-0 fw-bold">$1234.79</p>
-                    <span class="badge rounded-pill p-2" style="background-color: #c8f5cf; color: #155724;">11.01%</span>
-                  </div>
-                  <a href="#insights" style="margin-top: 20px;" class="btn btn-sm btn-outline-secondary">Select</a>
-                </div>
-            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Enhanced Popup Modal -->
+      <div id="popupCard" class="enhanced-popup">
+        <div class="enhanced-popup-content">
+          <button id="closePopupBtn" class="enhanced-close-btn">
+            <i data-lucide="x"></i>
+          </button>
           
+          <div class="popup-header">
+            <div class="company-logo-wrapper">
+              <img id="companyLogo" src="/placeholder.svg" alt="Company Logo" class="enhanced-company-logo">
+            </div>
+            <div class="company-basic-info">
+              <h2 class="enhanced-company-name" id="companyName"></h2>
+              <div class="stock-price-section">
+                <span class="enhanced-stock-price" id="stockPrice">-</span>
+                <span class="enhanced-stock-change" id="stockChange">-</span>
+              </div>
+            </div>
           </div>
 
-          <hr style="width: 95%;margin-left: 25px; margin-top: 30px;">
+          <div class="company-description-section">
+            <p class="enhanced-company-description" id="companyDescription"></p>
+          </div>
 
-          <!-- Selected Investment -->
-          <h5 >Selected</h5>
+          <div class="stock-data-tables">
+            <div class="table-wrapper">
+              <h5 class="table-title">Market Data</h5>
+              <table class="enhanced-table" id="table1">
+                <tr><th>Sector</th><td id="sector"></td></tr>
+                <tr><th>Previous Close</th><td id="previousClose"></td></tr>
+                <tr><th>Open</th><td id="stockOpen"></td></tr>
+                <tr><th>High</th><td id="stockHigh"></td></tr>
+                <tr><th>Low</th><td id="stockLow"></td></tr>
+                <tr><th>Volume</th><td id="stockVolume"></td></tr>
+                <tr><th>52-Week High</th><td id="stock52WeekHigh"></td></tr>
+                <tr><th>52-Week Low</th><td id="stock52WeekLow"></td></tr>
+              </table>
+            </div>
+            
+            <div class="table-wrapper">
+              <h5 class="table-title">Financial Metrics</h5>
+              <table class="enhanced-table" id="table2">
+                <tr><th>Market Cap</th><td id="marketCap"></td></tr>
+                <tr><th>Book Value</th><td id="bookValue"></td></tr>
+                <tr><th>EPS</th><td id="eps"></td></tr>
+                <tr><th>Beta</th><td id="beta"></td></tr>
+                <tr><th>EBITDA</th><td id="ebitda"></td></tr>
+                <tr><th>P/E Ratio</th><td id="peRatio"></td></tr>
+                <tr><th>Dividend Yield</th><td id="dividendYield"></td></tr>
+                <tr><th>200 DMA</th><td id="dayMovingAverage"></td></tr>
+              </table>
+            </div>
+          </div>
 
-          <div class="row">
-            <!-- McD, Inc -->
-            <div class="col-md-3 mb-3">
-              <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
-                <div class="d-flex align-items-center mb-2">
-                  <img src="/svgs/mcdonalds-icon.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                  <span class="fw-semibold">McDonald, Inc</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mt-auto">
-                  <p class="mb-0 fw-bold">$1234.79</p>
-                  <span class="badge rounded-pill p-2" style="background-color: #c8f5cf; color: #155724;">11.01%</span>
-                </div>
-                <a href="#insights" style="margin-top: 20px;" class="btn btn-sm btn-outline-secondary">Remove</a>
-              </div>
-            </div>
-      
-            <!-- Tesla, Inc -->
-            <div class="col-md-3 mb-3">
-                <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
-                  <div class="d-flex align-items-center mb-2">
-                    <img src="/svgs/trace.svg" alt="Apple logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                    <span class="fw-semibold">Apple, Inc</span>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center mt-auto">
-                    <p class="mb-0 fw-bold">$1234.79</p>
-                    <span class="badge rounded-pill p-2" style="background-color: #c8f5cf; color: #155724;">11.01%</span>
-                  </div>
-                  <a href="#insights" style="margin-top: 20px;" class="btn btn-sm btn-outline-secondary">Remove</a>
-                </div>
-              </div>
-
-              <!-- Amazon -->
-        <div class="col-md-3 mb-3">
-            <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
-              <div class="d-flex align-items-center mb-2">
-                <img src="/svgs/trace (1).svg" alt="Amazon logo" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                <span class="fw-semibold">Amazon, Inc</span>
-              </div>
-              <div class="d-flex justify-content-between align-items-center mt-auto">
-                <p class="mb-0 fw-bold">$134.79</p>
-                <span class="badge rounded-pill p-2" style="background-color: #c8f5cf; color: #155724;">5.21%</span>
-              </div>
-              <a href="#insights" style="margin-top: 20px;" class="btn btn-sm btn-outline-secondary">Remove</a>
-            </div>
-        </div>
-    
-        <!-- Google, Inc -->
-        <div class="col-md-3 mb-3">
-          <div class="p-3 bg-white rounded shadow-sm h-100 d-flex flex-column justify-content-between">
-            <div class="d-flex align-items-center mb-2">
-              <img src="/svgs/google-icon-logo-svgrepo-com.svg" alt="Google logo brand" class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-              <span class="fw-semibold">Google, Inc</span>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mt-auto">
-              <p class="mb-0 fw-bold">$1234.79</p>
-              <span class="badge rounded-pill p-2" style="background-color: #c8f5cf; color: #155724;">11.01%</span>
-            </div>
-            <a href="#insights" style="margin-top: 20px;" class="btn btn-sm btn-outline-secondary">Remove</a>
+          <div class="popup-actions">
+            <button class="btn enhanced-add-btn" id="addInvestmentButton" onclick="AddInvestment()">
+              <i data-lucide="plus" class="btn-icon"></i>
+              Add Investment
+            </button>
           </div>
         </div>
-        <hr style="width: 95%;margin-left: 25px; margin-top: 30px;">
+      </div>
 
-        <div class="riskNreturnChart">
-          <div class= "RiskChart">
-            <canvas id="RiskChart" width="600" height="450"></canvas>
-          </div>
-           <div class="ReturnChart">
-            <canvas id="ReturnChart" width="400" height="250"></canvas>
-           </div>
-
-        </div>
-         
-
-
-          </div>
-        </section>
-        
-
-        
-      
-          <!-- Footer -->
-          <%- include('partials/footer') %>
+      <%- include('partials/footer') %>
     </div>
-    
 
-    <!-- Script to sync slider and input -->
     <script src="/js/ROI/script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src = "/js/ROI/riskchart.js"></script>
-    <script src="/js/ROI/returnchart.js"></script>
+    <script>
+      // Initialize Lucide icons
+      lucide.createIcons();
+    </script>
   </body>
 </html>
