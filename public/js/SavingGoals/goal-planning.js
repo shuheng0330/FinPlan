@@ -4,7 +4,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Filter functionality
     const filterDropdowns = document.querySelectorAll('.filter-dropdown');
     const goalCards = document.querySelectorAll('[data-category], [data-progress], [data-priority]');
+
+    // Toast elements
+    const successToast = document.getElementById('successToast');
+    const successToastBody = document.getElementById('successToastBody');
+    const errorToast = document.getElementById('errorToast');
+    const errorToastBody = document.getElementById('errorToastBody');
+
+    // Bootstrap Toast instances
+    const bsSuccessToast = new bootstrap.Toast(successToast, { autohide: true, delay: 5000 });
+    const bsErrorToast = new bootstrap.Toast(errorToast, { autohide: true, delay: 7000 });
     
+    // --- Helper function to show toast messages ---
+    function showToast(message, type = 'success') {
+        if (type === 'success') {
+            successToastBody.textContent = message;
+            bsSuccessToast.show();
+        } else {
+            errorToastBody.textContent = message;
+            bsErrorToast.show();
+        }
+    }
+
     // Current active filters
     let activeFilters = {
       category: [],
@@ -117,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    initializeAddGoalForm();
+    initializeAddGoalForm(showToast);
     
     // Edit Goal functionality
     const editButtons = document.querySelectorAll('[data-bs-target="#editGoalModal"]');

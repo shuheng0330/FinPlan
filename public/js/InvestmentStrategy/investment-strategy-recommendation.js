@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <h5 class="card-title">${goalName}</h5>
                 <h6 class="card-subtitle mb-2 text-muted">Risk Level: <span class="badge bg-${getRiskBadgeClass(strategy.riskLevel)}">${strategy.riskLevel}</span></h6>
                 <p class="card-text">
-                    <strong>Expected Return:</strong> ${strategy.expectedAnnualReturn ? strategy.expectedAnnualReturn.toFixed(3) : 'N/A'}%<br>
+                    <strong>Expected Return:</strong> ${strategy.expectedAnnualReturn ? (strategy.expectedAnnualReturn *100).toFixed(2) : 'N/A'}%<br>
                     <strong>Investment Horizon:</strong> ${strategy.investmentHorizon || 'N/A'}<br>
                     <small class="text-muted">Saved on: ${formattedDate}</small>
                 </p>
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('modalGoalName').textContent = strategy.goal && strategy.goal.goalName ? strategy.goal.goalName : 'N/A';
         document.getElementById('modalRiskLevel').textContent = strategy.riskLevel || 'N/A';
         document.getElementById('modalInvestmentHorizon').textContent = strategy.investmentHorizon || 'N/A';
-        document.getElementById('modalExpectedAnnualReturn').textContent = strategy.expectedAnnualReturn ? strategy.expectedAnnualReturn.toFixed(3) : 'N/A';
+        document.getElementById('modalExpectedAnnualReturn').textContent = strategy.expectedAnnualReturn ? (strategy.expectedAnnualReturn *100).toFixed(2) : 'N/A';
         document.getElementById('modalSuggestedMonthlyInvestment').textContent = strategy.suggestedMonthlyInvestment ? strategy.suggestedMonthlyInvestment.toFixed(2) : 'N/A';
 
         // Asset Allocation details and chart

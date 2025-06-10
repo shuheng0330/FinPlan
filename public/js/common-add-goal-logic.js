@@ -115,10 +115,16 @@ function initializeAddGoalForm(showToastCallback){
                         modal.hide();
                     }
 
-                    // showToast('Goal added successfully!','success');
+                if(showToastCallback) {
+                    showToastCallback('Goal added successfully!','success');
+                    // Add a delay before reloading the page
+                    setTimeout(() => {
+                        window.location.reload(); 
+                    }, 500); // Delay for 1.5 seconds (1500 milliseconds)
+                } else {
                     alert('Goal added successfully!');
-                    window.location.reload(); // Reloads the page
-
+                    window.location.reload();
+                }
                     addGoalForm.reset();
                     iconOptions.forEach(opt => opt.classList.remove('selected'));
                     // This block will now work correctly as initiallySelectedIconOption is defined
