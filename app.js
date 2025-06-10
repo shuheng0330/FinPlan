@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const Goal = require("./models/goal-planningModel");
 const path = require('path');
@@ -6,6 +7,9 @@ const User = require('./models/userModel');
 const passport = require('passport');
 const flash = require('connect-flash');
 require('./config/passport');
+
+
+
 
 const app = express();
 
@@ -16,6 +20,7 @@ const viewRouter = require('./routers/viewRoute');
 const userRouter = require('./routers/userRoute');
 const dashboardRouter = require('./routers/dashboardRoute');
 const authRoutes = require('./routers/authRoutes');
+const marketRouter = require('./routers/marketRouter')
 
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-default-secret',
@@ -58,5 +63,6 @@ app.use('/',viewRouter);
 app.use('/users', userRouter);
 app.use('/', dashboardRouter);
 app.use('/users', authRoutes);
+app.use('/market', marketRouter); 
 
 module.exports = app;
