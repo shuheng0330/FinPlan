@@ -49,7 +49,7 @@ saveTransactionBtn.addEventListener('click', function () {
 
   const goalHeader = document.querySelector('.goal-header[data-goal-id]');
   if (!goalHeader) {
-    alert('No goal ID found.');
+    window.toast.error('No goal ID found.');
     return;
   }
   const goalId = goalHeader.getAttribute('data-goal-id');
@@ -87,7 +87,7 @@ saveTransactionBtn.addEventListener('click', function () {
   })
   .catch(error => {
     console.error(error);
-    alert('An error occurred while saving the transaction:\n' + error.message);
+    window.toast.error('An error occurred while saving the transaction:\n' + error.message);
   });
 
   });
@@ -165,7 +165,7 @@ saveTransactionBtn.addEventListener('click', function () {
       })
       .catch(err => {
         console.error(err);
-        alert('Error deleting transaction.');
+        window.toast.error('Error deleting transaction.');
       });
   }
 });
