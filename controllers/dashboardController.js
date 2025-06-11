@@ -19,7 +19,7 @@ exports.renderDashboardPage = async (req, res) => {
       // Get 2 nearest goals by targetDate
       nearestGoals = await Goal.find({ user: userId })
         .sort({ targetDate: 1 }) // Ascending: soonest deadline first
-        .limit(2);
+        .limit(3);
     }
 
     res.render('dashboard', {
