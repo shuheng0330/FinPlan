@@ -1,30 +1,57 @@
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary-color: #64748b;
+    --success-color: #059669;
+    --warning-color: #d97706;
+    --danger-color: #dc2626;
+    --background-primary: #f8fafc;
+    --background-secondary: #ffffff;
+    --background-accent: #fef5eb;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border-color1: #e0e0e0;
+    --border-color2: #6366f1;
+    --border-accent: #fed7aa;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+}    
+    
+    
     .strategy-container {
-      background-color: #ffffff;
+      background-color: var(--background-secondary);
       border-radius: 12px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: var(--shadow-sm);
     }
     
     .strategy-header {
-      background-color: #fef5eb;
+      background-color: var(--background-accent);
       border-radius: 12px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: var(--shadow-sm);
     }
     
     .goal-selector {
-      background-color: #ffffff;
+      background-color: var(--background-secondary);
       border-radius: 12px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: var(--shadow-sm);
     }
     
     .goal-card {
-      background-color: #ffffff;
-      border: 1px solid #e0e0e0;
+      background-color: var(--background-secondary);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 15px;
       margin-bottom: 15px;
@@ -33,12 +60,12 @@
     }
     
     .goal-card:hover {
-      border-color: #6366f1;
+      border-color: var(--border-color2);
       box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
     }
     
     .goal-card.selected {
-      border-color: #6366f1;
+      border-color: var(--border-color2);
       background-color: #f5f5ff;
       box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
     }
@@ -405,3 +432,107 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
+
+    /* Enhanced Toast Styles */
+.toast-container {
+  max-width: 350px;
+}
+
+.toast {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.toast-success {
+  background-color: #d1e7dd;
+  border-left: 4px solid #198754;
+}
+
+.toast-error {
+  background-color: #f8d7da;
+  border-left: 4px solid #dc3545;
+}
+
+.toast-warning {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+}
+
+.toast-info {
+  background-color: #d1ecf1;
+  border-left: 4px solid #0dcaf0;
+}
+
+.toast-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 0.75rem;
+}
+
+.toast-body {
+  padding: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.toast-icon {
+  font-size: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+.toast-success .toast-icon {
+  color: #198754;
+}
+
+.toast-error .toast-icon {
+  color: #dc3545;
+}
+
+.toast-warning .toast-icon {
+  color: #ffc107;
+}
+
+.toast-info .toast-icon {
+  color: #0dcaf0;
+}
+
+/* Animation for toast entrance */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast.show {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .toast-container {
+    position: fixed !important;
+    top: 1rem !important;
+    left: 1rem !important;
+    right: 1rem !important;
+    max-width: none !important;
+  }
+}
+
+/* In your /css/dashboard.css file */
+
+/* Apply transition for smooth animation */
+#pastStrategiesContainer .card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Hover effect */
+#pastStrategiesContainer .card:hover {
+    transform: translateY(-5px); /* Lifts the card slightly upwards */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Adds a more pronounced shadow */
+    cursor: pointer; /* Changes cursor to a pointer to indicate interactivity */
+}

@@ -38,7 +38,7 @@ const goalSchema = new mongoose.Schema(
             type: String,
             required: [true, 'A saving goal must have a priority level'],
             enum: {
-                values: ['high', 'medium', 'low'],
+                values: ['High', 'Medium', 'Low'],
                 message: 'Priority can be high, medium, or low'
             }
         },

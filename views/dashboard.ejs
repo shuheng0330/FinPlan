@@ -6,6 +6,7 @@
   <title><%= title %></title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/Styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Matemasie&family=New+Amsterdam&display=swap" rel="stylesheet">
@@ -18,33 +19,47 @@
   <%- include('partials/header') %>
 
   <div class="row mb-4">
-    <div class="col-md-6 mb-3">
-      <section id="goals">
-        <div class="card p-3 h-100" style="background-color: #fef5eb;">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="fw-semibold mb-0">Financial Goals</h5>
-            <a href="/goal-planning" class="btn btn-sm btn-outline-secondary">See more →</a>
+<!-- Financial Goals -->
+<div class="col-md-6 mb-3">
+  <section id="goals">
+    <div class="card p-3 h-100" style="background-color: #fef5eb;">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="fw-semibold mb-0">Financial Goals</h5>
+        <a href="/goal-planning" class="btn btn-sm btn-outline-secondary">See more →</a>
+      </div>
+      <hr style="width:50%;margin-top: -3px">
+
+      <% if (nearestGoals && nearestGoals.length > 0) { %>
+        <% nearestGoals.forEach(goal => { 
+             const progress = ((goal.currentAmount / goal.goalAmount) * 100).toFixed(0);
+        %>
+          <p class="mb-1 regularText"><%= goal.goalName %></p>
+          <div class="progress mb-1">
+            <div class="progress-bar bg-success" style="width: <%= progress %>%">
+              <%= progress %>%
+            </div>
           </div>
-          <hr style="width:50%;margin-top: -3px">
-          <p class="mb-1 regularText">House down payment</p>
-          <div class="progress mb-1"><div class="progress-bar bg-success" style="width: 56%">56%</div></div>
-          <p class="small mb-1">RM560,000 of RM1,000,000</p>
-  
-          <p class="mt-3 mb-1 regularText">Education fund</p>
-          <div class="progress mb-1"><div class="progress-bar bg-success" style="width: 33%">33%</div></div>
-          <p class="small mb-1">RM330,000 of RM1,000,000</p>
-        </div>
-      </section>
+          <p class="small mb-1">
+            RM<%= Number(goal.currentAmount).toLocaleString('en-MY', { minimumFractionDigits: 2 }) %> 
+            of RM<%= Number(goal.goalAmount).toLocaleString('en-MY', { minimumFractionDigits: 2 }) %>
+          </p>
+        <% }) %>
+      <% } else { %>
+        <p class="text-muted">No upcoming goals found.</p>
+      <% } %>
     </div>
+  </section>
+</div>
   
-    <div class="col-md-6 mb-3">
-        <section id="strategy">
-            <div class="card p-3 h-100" style="background-color: #fef5eb;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="fw-semibold mb-0">Investment Strategy Overview</h5>
-                    <a href="/investment-strategy" class="btn btn-sm btn-outline-secondary">See more →</a>
-                </div>
-                <hr style="width:50%;margin-top: -3px">
+    <!-- Investment Strategy -->
+<div class="col-md-6 mb-3">
+  <section id="strategy">
+    <div class="card p-3 h-100" style="background-color: #fef5eb;">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="fw-semibold mb-0">Investment Strategy Overview</h5>
+        <a href="/investment-strategy" class="btn btn-sm btn-outline-secondary">See more →</a>
+      </div>
+      <hr style="width:50%;margin-top: -3px;margin-bottom: 35px;">
 
                 <div class="row">
                     <% if (pastStrategies && pastStrategies.length > 0) { %>
