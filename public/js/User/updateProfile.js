@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayMessage(message, type, containerElement) {
         if (containerElement) {
             // Clear previous messages
-            containerElement.innerHTML = ''; 
-            
+            containerElement.innerHTML = '';
+
             let messageDiv = document.createElement('div');
             messageDiv.classList.add('alert', `alert-${type}`);
             messageDiv.textContent = message;
@@ -119,14 +119,16 @@ document.getElementById("profile-pic-form").addEventListener("submit", async fun
 
         const result = await response.json();
         if (result.success) {
-            alert("Profile picture updated!");
-            location.reload(); // or update image src with result.profilePicture
+            window.toast.success("Profile picture updated!");
+            setTimeout(() => {
+                location.reload(); // or update image src with result.profilePicture
+            }, 1500);
         } else {
-            alert("Upload failed: " + result.message);
+            window.toast.error("Upload failed: " + result.message);
         }
     } catch (err) {
         console.error(err);
-        alert("An error occurred during upload.");
+        window.toast.error("An error occurred during upload.");
     }
 });
 
@@ -144,7 +146,7 @@ if (deleteAccountForm) {
 
         // If it's a local user and no password was entered
         if (isLocalUser && !passwordToDelete) {
-            alert('Please enter your password to confirm account deletion.');
+            window.toast.warning('Please enter your password to confirm account deletion.');
             return;
         }
 
@@ -160,14 +162,16 @@ if (deleteAccountForm) {
             const result = await response.json();
 
             if (response.ok) {
-                alert(result.message || 'Account deleted successfully! Redirecting to login page.');
-                window.location.href = '/';
+                window.toast.success(result.message || 'Account deleted successfully! Redirecting to login page.');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1500);
             } else {
-                alert('Account deletion failed: ' + (result.message || 'An unknown error occurred.'));
+                window.toast.error('Account deletion failed: ' + (result.message || 'An unknown error occurred.'));
             }
         } catch (error) {
             console.error('Error deleting account:', error);
-            alert('An error occurred during account deletion. Please try again.');
+            window.toast.error('An error occurred during account deletion. Please try again.');
         }
     });
 }

@@ -232,3 +232,110 @@ body {
     border-radius: 20px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.3);
 }
+
+.toast-container {
+    max-width: 380px;
+    z-index: 1055;
+}
+
+.toast {
+    display: flex;
+    align-items: center; 
+    background-color: #fff;
+    border-left: 5px solid; 
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.95rem; 
+    animation: slideInRight 0.4s ease-out forwards, fadeOut 0.3s ease-in 2.7s forwards; 
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.toast-icon {
+    font-size: 1.6rem; 
+    margin-right: 1rem; 
+    line-height: 1; 
+}
+
+.toast-body {
+    flex: 1;
+    color: #333;
+    font-weight: 500;
+    margin-right: 25px; 
+}
+
+.btn-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    font-size: 1.3rem;
+    color: #888;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: color 0.2s, opacity 0.2s;
+}
+
+.btn-close:hover {
+    color: #333;
+    opacity: 1;
+}
+
+/* Specific toast types - keeping existing colors, just modifying border-left */
+.toast-success {
+    background-color: #eafaf1;
+    border-left-color: #198754;
+}
+
+.toast-warning {
+    background-color: #fffbe6;
+    border-left-color: #ffc107;
+}
+
+.toast-error {
+    background-color: #fdecea;
+    border-left-color: #dc3545;
+}
+
+.toast-info {
+    background-color: #e9f7fd;
+    border-left-color: #0dcaf0;
+}
+
+@keyframes slideInRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(20px); 
+    }
+}
+
+
+@media (max-width: 576px) {
+    .toast-container {
+        position: fixed !important;
+        top: 1rem !important;
+        left: 1rem !important;
+        right: 1rem !important;
+        max-width: none !important;
+    }
+}

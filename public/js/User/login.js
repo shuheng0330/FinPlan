@@ -4,7 +4,7 @@ document.getElementById("login-btn").addEventListener("click", async function ()
 
     // Basic validation
     if (!email || !password) {
-        alert("Please enter both email and password.");
+        window.toast.warning('Please enter both email and password.');
         return;
     }
 
@@ -20,14 +20,15 @@ document.getElementById("login-btn").addEventListener("click", async function ()
         const data = await response.json();
 
         if (response.ok) {
-            alert("Login successful!");
-            // Redirect user to dashboard or home page
-            window.location.href = "/dashboard";
+            window.toast.success('Login successful!');
+            setTimeout(() => {
+                window.location.href = "/dashboard";
+            }, 1500); // 3 seconds delay
         } else {
-            alert("Login failed: " + data.message);
+            window.toast.error('Login failed: ' + data.message);
         }
     } catch (error) {
         console.error("Login error:", error);
-        alert("An error occurred. Please try again later.");
+        window.toast.error('An error occurred. Please try again later.');
     }
 });

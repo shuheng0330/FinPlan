@@ -6,12 +6,12 @@ document.getElementById("register-btn").addEventListener("click", async function
 
     // Simple validation
     if (!name || !email || !password || !confirmPassword) {
-        alert("Please fill in all fields.");
+        window.toast.warning("Please fill in all fields.");
         return;
     }
 
     if (password !== confirmPassword) {
-        alert("Passwords do not match.");
+        window.toast.warning("Passwords do not match.");
         return;
     }
 
@@ -31,14 +31,16 @@ document.getElementById("register-btn").addEventListener("click", async function
         const data = await response.json();
 
         if (response.ok) {
-            alert("Registration successful!");
-            window.location.href = "/";
+            window.toast.success("Registration successful!");
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 1500);
         } else {
-            alert("Registration failed: " + data.message);
+            window.toast.error("Registration failed: " + data.message);
         }
 
     } catch (error) {
         console.error("Registration error:", error);
-        alert("An error occurred. Please try again later.");
+        window.toast.error("An error occurred. Please try again later.");
     }
 });
