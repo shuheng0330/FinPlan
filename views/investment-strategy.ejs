@@ -205,39 +205,8 @@
 
 <section id="pastStrategiesSection" class="goal-selector">
     <h2 class="h4 text-center mb-4">Your Past Investment Strategies</h2>
-    <!-- <hr style="width: 100%; margin-top: -5px;"> -->
-
-    <div class="d-flex justify-content-end mb-4">
-        <div class="dropdown me-2">
-            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="goalFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                Filter by Goal
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="goalFilterDropdown">
-                <li><a class="dropdown-item" href="#" data-filter-goal="all">All Goals</a></li>
-                <% if (goals && goals.length > 0) { %>
-                    <% goals.forEach(goal => { %>
-                        <li><a class="dropdown-item" href="#" data-filter-goal="<%= goal._id %>"><%= goal.goalName %></a></li>
-                    <% }); %>
-                <% } else { %>
-                    <li><a class="dropdown-item" href="#">No Goals Available</a></li>
-                <% } %>
-            </ul>
-        </div>
-
-        <div class="dropdown">
-            <button class="btn btn-sm btn-outline-secondary dropdown-button-text dropdown-toggle" type="button" id="riskFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                Filter by Risk
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="riskFilterDropdown">
-                <li><a class="dropdown-item" href="#" data-filter-risk="all">All Risks</a></li>
-                <li><a class="dropdown-item" href="#" data-filter-risk="Conservative">Conservative</a></li>
-                <li><a class="dropdown-item" href="#" data-filter-risk="Moderate">Moderate</a></li>
-                <li><a class="dropdown-item" href="#" data-filter-risk="Aggressive">Aggressive</a></li>
-            </ul>
-        </div>
-    </div>
     <div id="pastStrategiesContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <div class="col-12 text-center" id="noPastStrategiesMessage">
+        <div class="col-12 text-center" id="noPastStrategiesMessage" style="display: none;">
             <p class="text-muted">No past strategies found. Generate and implement one to see it here!</p>
         </div>
     </div>
