@@ -59,13 +59,12 @@ app.set('views', path.join(__dirname, '/views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use("/uploads", express.static("public/uploads"));
 
-app.use('/', viewRouter);
 app.use('/goal-planning', goalRouter);
-app.use('/investment-strategy', investmentRouter);
 app.use('/goal-details', goalDetailsRouter);
+app.use('/investment-strategy', investmentRouter);
+app.use('/', viewRouter);
 app.use('/users', userRouter);
-app.use('/dashboard', dashboardRouter);
-app.use('/auth', authRoutes);
-app.use('/market', marketRouter);
+app.use('/', dashboardRouter);
+app.use('/users', authRoutes);
 
 module.exports = app;

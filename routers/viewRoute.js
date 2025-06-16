@@ -30,8 +30,6 @@ router.get("/goal-planning", (req, res, next) => {
     goalPlanningController.getAllGoals(req, res, next); 
 });
 
-
-
 router.get('/investment-strategy', (req, res, next) => { 
     if (!req.isAuthenticated()) return res.redirect('/users/login'); 
     investmentController.renderStrategypage(req, res, next);
