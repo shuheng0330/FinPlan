@@ -1,12 +1,12 @@
 const API_CONFIG = {
-    fmp: {
-        key: 'JqUVNZD4kTHT23KoBjxMBTIqZNg6eaUB',
-        baseUrl: 'https://financialmodelingprep.com/api/v3/'
-    },
-    newsAPI: {
-        key: 'd76cb9f3154849a9bd846f9b2779ff7e',
-        baseUrl: 'https://newsapi.org/v2/'
-    }
+  fmp: {
+    key: 'RipG4Z6vScFUHiukMU9oFaQ90nh2CRCi',
+    baseUrl: 'https://financialmodelingprep.com/api/v3/'
+  },
+  newsAPI: {
+    key: 'd76cb9f3154849a9bd846f9b2779ff7e',
+    baseUrl: 'https://newsapi.org/v2/'
+  }
 };
 
 const USE_DUMMY_DATA = false;
