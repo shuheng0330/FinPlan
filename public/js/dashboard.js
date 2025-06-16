@@ -1,6 +1,6 @@
 const API_CONFIG = {
     fmp: {
-        key: 'hqdrP0yscAebCSnc8lDxgDvautN5olD7', 
+        key: 'JqUVNZD4kTHT23KoBjxMBTIqZNg6eaUB', 
         baseUrl: 'https://financialmodelingprep.com/api/v3/'
     },
     newsAPI: {

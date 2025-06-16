@@ -34,9 +34,8 @@
             justify-content: center;
             padding: 2rem;
         }
-        /* New style to ensure footer takes full width within its flex container */
         footer {
-            width: 100%; /* Ensure footer takes full width of its parent flex item */
+            width: 100%;
         }
     </style>
 </head>
@@ -53,7 +52,7 @@
                 <h5 class="fw-semibold mb-0">Market Insights</h5>
                 <div class="dropdown">
                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="timeRangeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        Today
+                        Last 7 Days
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="timeRangeDropdown">
                         <li><a class="dropdown-item" href="#" data-range="today">Today</a></li>
@@ -119,8 +118,13 @@
         <div class="card p-3 mb-4" style="background-color: #fef5eb;">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="fw-semibold mb-0">Stock Watchlist</h5>
-                <div>
-                    <button class="btn btn-sm btn-outline-secondary me-2" id="add-stock-btn">Add Stock</button>
+                <div class="d-flex align-items-center">
+                    <!-- Stock selection dropdown -->
+                    <select id="stock-select" class="form-select form-select-sm me-2" style="width: 200px;">
+                        <!-- Options will be populated by JavaScript -->
+                        <option value="">Select a stock...</option>
+                    </select>
+                    <button class="btn btn-sm btn-outline-secondary" id="add-stock-btn">Add Stock</button>
                 </div>
             </div>
             <hr style="width: 50%; margin-top: -5px;">
@@ -149,10 +153,12 @@
                             <th scope="col">Volume</th>
                             <th scope="col">52W High</th>
                             <th scope="col">52W Low</th>
-                            </tr>
+                            <th scope="col">Actions</th> <!-- Crucial for remove button -->
+                        </tr>
                     </thead>
                     <tbody>
-                        </tbody>
+                        <!-- Watchlist stocks will be populated here by JavaScript -->
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -218,5 +224,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/market.js"></script>
+<input type="hidden" id="initialWatchlist" value="<%= JSON.stringify(currentUserWatchlist) %>">
 </body>
 </html>
