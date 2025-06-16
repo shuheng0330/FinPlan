@@ -9,7 +9,7 @@ document.getElementById("login-btn").addEventListener("click", async function ()
     }
 
     try {
-        const response = await fetch("/users/login", {
+        const response = await fetch("/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
