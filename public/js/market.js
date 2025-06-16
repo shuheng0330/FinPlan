@@ -399,28 +399,31 @@ async function fetchStockData(symbols = watchlist, timeRange = '30d') {
 }
 
 async function fetchMarketNews() {
-    try {
-        showLoading('news');
-        if (USE_DUMMY_DATA) {
-            return dummyNewsArticles;
-        }
-        if (cache.news && Date.now() - cache.lastUpdated < 300000) {
-            return cache.news;
-        }
-        const response = await fetch(
-            `${API_CONFIG.newsAPI.baseUrl}top-headlines?category=business&language=en&pageSize=5&apiKey=${API_CONFIG.newsAPI.key}`
-        );
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        cache.news = data.articles;
-        cache.lastUpdated = Date.now();
-        hideLoading('news');
-        return data.articles;
-    } catch (error) {
-        console.error('Error fetching news:', error);
-        showError('news');
-        return [];
+  try {
+    showLoading('news');
+    if (USE_DUMMY_DATA) {
+      console.log('DEBUG: Using dummy data for news.');
+      hideLoading('news');
+      return dummyNewsArticles;
     }
+    if (cache.news && Date.now() - cache.lastUpdated < 300000) {
+      return cache.news;
+    }
+    const response = await fetch(
+      `${API_CONFIG.newsAPI.baseUrl}top-headlines?category=business&language=en&pageSize=8&apiKey=${API_CONFIG.newsAPI.key}`
+    );
+    if (!response.ok) throw new Error('Network response was not ok');
+    const data = await response.json();
+    console.log('New length',data.articles.length);
+    cache.news = data.articles;
+    cache.lastUpdated = Date.now();
+    hideLoading('news');
+    return data.articles;
+  } catch (error) {
+    console.error('Error fetching news:', error);
+    showError('news');
+    return [];
+  }
 }
 
 async function fetchAnalystRatings(symbols = ['AAPL', 'NVDA', 'TSLA']) {

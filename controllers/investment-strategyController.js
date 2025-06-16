@@ -415,7 +415,8 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
 
 exports.getPastStrategies = async(req,res,next)=>{
     try{
-        const userId = req.user ? req.user._id : '60d0fe4f5311236168a10000';
+        // Use req.user._id directly for authentication. If no user, it means not logged in.
+        const userId = req.user ? req.user._id : null;
 
         if(! userId){
             return res.status(401).json({
@@ -424,13 +425,30 @@ exports.getPastStrategies = async(req,res,next)=>{
             });
         }
 
-        let query = Strategy.find({user: userId})
-                                             .populate('goal')
-                                             .sort({createdAt: -1});
-        const totalStrategies = await Strategy.countDocuments({user: userId});
+        // Initialize the filter object with the user ID
+        let filter = { user: userId };
+
+        // Add goal filter if provided in query parameters and it's not 'all'
+        if (req.query.goal && req.query.goal !== 'all') {
+            filter.goal = req.query.goal; // This will correctly filter by goal ID
+        }
+
+        // Add risk appetite filter if provided in query parameters and it's not 'all'
+        if (req.query.risk && req.query.risk !== 'all') {
+            filter.riskLevel = req.query.risk; // This will correctly filter by risk string
+        }
+
+        // Get total count of strategies matching the filters (before applying limit)
+        const totalStrategies = await Strategy.countDocuments(filter);
+
+        // Build the Mongoose query using the constructed filter
+        let query = Strategy.find(filter) // <--- CRITICAL FIX: APPLY THE FILTER HERE
+                                         .populate('goal') // Populate goal details
+                                         .sort({createdAt: -1}); // Sort by newest first
+
+        // Apply limit if provided
         const limitParam = req.query.limit;
-        
-         if (limitParam && limitParam !== 'all') { // If limit is a number, apply it
+        if (limitParam && limitParam !== 'all') {
             const limit = parseInt(limitParam, 10);
             if (!isNaN(limit) && limit > 0) {
                 query = query.limit(limit);
@@ -442,7 +460,7 @@ exports.getPastStrategies = async(req,res,next)=>{
         res.status(200).json({
             status: 'success',
             results: pastStrategies.length,
-            totalCount: totalStrategies,
+            totalCount: totalStrategies, // Send total count for frontend pagination logic
             data: {
                 strategies: pastStrategies
             }
@@ -452,7 +470,7 @@ exports.getPastStrategies = async(req,res,next)=>{
         res.status(500).json({
             status: 'error',
             message: 'Failed to retrieve past strategies',
-            error : err.message
+            error: err.message // Include error message for debugging
         });
     }
-}
+};
