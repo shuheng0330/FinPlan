@@ -13,9 +13,6 @@ const INITIAL_STRATEGY_LIMIT = 3;
 let strategiesCache = [];
 let isShowingAllStrategies = false;
 
-let currentGoalFilter = 'all'; // Initialize filter for goals
-let currentRiskFilter = 'all'; // Initialize filter for risk appetite
-
 document.addEventListener('DOMContentLoaded', function() {
     const goalCards = document.querySelectorAll('.goal-card');
     const riskAppetiteSlider = document.getElementById('riskSlider');
@@ -689,127 +686,66 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
       // Function to fetch and display initial past strategies on page load
+    async function fetchAndDisplayPastStrategies(fetchAll = false) {
+        console.log("Fetching strategies, fetchAll:", fetchAll);
+        //we using d-none, so that we can remove it
+        seeMoreStrategiesBtn.classList.add('d-none');
+        hideStrategiesBtn.classList.add('d-none');
 
-async function fetchAndDisplayPastStrategies(fetchAll = false) {
-    console.log("Fetching strategies, fetchAll:", fetchAll);
-    
-    // Hide buttons initially
-    seeMoreStrategiesBtn.classList.add('d-none');
-    hideStrategiesBtn.classList.add('d-none');
-
-    // Clear existing content (this removes the message too)
-    pastStrategiesContainer.innerHTML = '';
-    isShowingAllStrategies = fetchAll;
+        pastStrategiesContainer.innerHTML = ''; // Clear existing cards
+        noPastStrategiesMessage.style.display = 'none'; // Hide no strategies message by default
+        seeMoreStrategiesBtn.style.display = ''; // Initially hide "See More" button
+        hideStrategiesBtn.style.display = ''; // Initially hide "Hide Strategies" button
+        isShowingAllStrategies = fetchAll;
 
     try {
         let url = `/investment-strategy/past-strategies`;
-        const params = [];
-
-        // Add filters to parameters array
-        if (currentGoalFilter !== 'all') {
-            params.push(`goal=${currentGoalFilter}`);
-        }
-        if (currentRiskFilter !== 'all') {
-            params.push(`risk=${currentRiskFilter}`);
-        }
-
-        // Add limit parameter
         if (!fetchAll) {
-            params.push(`limit=${INITIAL_STRATEGY_LIMIT}`);
+            url += `?limit=${INITIAL_STRATEGY_LIMIT}`;
         }
-
-        // Construct the final URL with query parameters
-        if (params.length > 0) {
-            url += `?${params.join('&')}`;
-        }
-        
-        console.log("Fetching from URL:", url);
+        console.log("Fetching from URL:", url); // Log the URL for the API request
 
         const response = await fetch(url);
         const data = await response.json();
-        console.log("Data fetched:", data);
+        console.log("Data fetched:", data); // Log the response data
 
-        // Check if we have strategies
-        if (data.status === 'success' && data.data.strategies && data.data.strategies.length > 0) {
+        if (data.status === 'success' && data.data.strategies.length > 0) {
             strategiesCache = data.data.strategies;
 
             let strategiesToRender = strategiesCache;
 
             if (!fetchAll && data.totalCount > INITIAL_STRATEGY_LIMIT) {
+                // If not fetching all, and there are more than the initial limit,
+                // slice the cache to show only the initial limit.
                 strategiesToRender = strategiesCache.slice(0, INITIAL_STRATEGY_LIMIT);
-                seeMoreStrategiesBtn.classList.remove('d-none');
+                seeMoreStrategiesBtn.classList.remove('d-none'); // Show "See More" button
                 console.log("See More button should be shown");
             } else if (fetchAll && data.totalCount > INITIAL_STRATEGY_LIMIT) {
+                // If fetching all, show all strategies
                 strategiesToRender = strategiesCache;
-                hideStrategiesBtn.classList.remove('d-none');
+                hideStrategiesBtn.classList.remove('d-none'); // Show "Hide Strategies" button
                 console.log("Hide Strategies button should be shown");
             } else {
+                // Scenario: Either only a few strategies, no need for both buttons
                 strategiesToRender = strategiesCache;
                 console.log("Both buttons hidden");
             }
 
-            // Render the strategies
             strategiesToRender.forEach(strategy => {
                 const card = createStrategyCard(strategy);
                 pastStrategiesContainer.appendChild(card);
             });
         } else {
-            // No strategies found - recreate and show the message
-            console.log("No strategies found, showing message");
-            showNoStrategiesMessage('No past strategies found.');
+            noPastStrategiesMessage.style.display = 'block'; // Show message if no strategies
+            noPastStrategiesMessage.textContent = 'No past strategies found.'
         }
     } catch (error) {
         console.error('Error fetching past strategies:', error);
-        // Show error message
-        showNoStrategiesMessage('Failed to load past strategies. Please try again later.');
+        noPastStrategiesMessage.style.display = 'block'; // Show message on error
+        noPastStrategiesMessage.textContent = 'Failed to load past strategies. Please try again later.';
         window.toast.error('Failed to load past strategies.', 'error');
     }
 }
-
-// Helper function to show no strategies message
-function showNoStrategiesMessage(messageText) {
-    // Create the message element since it was cleared
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'col-12 p-3';
-    messageDiv.id = 'noPastStrategiesMessage';
-    
-    const messageP = document.createElement('p');
-    messageP.className = 'text-muted';
-    messageP.textContent = messageText;
-    
-    messageDiv.appendChild(messageP);
-    pastStrategiesContainer.appendChild(messageDiv);
-}
-
-// --- Start of Filter Logic ---
-    const goalFilterDropdownButton = document.getElementById('goalFilterDropdown'); // Reference the button
-    const riskFilterDropdownButton = document.getElementById('riskFilterDropdown'); // Reference the button
-
-    // Event listener for Goal Filter Dropdown items
-    document.querySelectorAll('#goalFilterDropdown + .dropdown-menu .dropdown-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const filterValue = this.dataset.filterGoal;
-            const filterText = this.textContent;
-
-            currentGoalFilter = filterValue;
-            goalFilterDropdownButton.textContent = `Filter by Goal: ${filterText}`; // Update button text
-            fetchAndDisplayPastStrategies(); // Re-fetch strategies with new filter
-        });
-    });
-
-    // Event listener for Risk Filter Dropdown items
-    document.querySelectorAll('#riskFilterDropdown + .dropdown-menu .dropdown-item').forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const filterValue = this.dataset.filterRisk;
-            const filterText = this.textContent;
-
-            currentRiskFilter = filterValue;
-            riskFilterDropdownButton.textContent = `Filter by Risk: ${filterText}`; // Update button text
-            fetchAndDisplayPastStrategies(); // Re-fetch strategies with new filter
-        });
-    });
 
 // Event Listener for "See More" Button
 seeMoreStrategiesBtn.addEventListener('click', function() {
