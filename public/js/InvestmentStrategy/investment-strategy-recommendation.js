@@ -690,7 +690,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Function to fetch and display initial past strategies on page load
 
-async function fetchAndDisplayPastStrategies(fetchAll = false) {
+async function fetchAndDisplayPastStrategies(fetchAll = true) {
     console.log("Fetching strategies, fetchAll:", fetchAll);
     
     // Hide buttons initially
