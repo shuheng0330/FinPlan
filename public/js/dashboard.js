@@ -88,7 +88,7 @@ async function fetchDashboardNews() {
     try {
         // Fetch only 3 recent business headlines, always from API
         const response = await fetch(
-            `${API_CONFIG.newsAPI.baseUrl}top-headlines?category=business&language=en&pageSize=3&apiKey=${API_CONFIG.newsAPI.key}`
+            `${API_CONFIG.newsAPI.baseUrl}top-headlines?category=business&language=en&pageSize=4&apiKey=${API_CONFIG.newsAPI.key}`
         );
         if (!response.ok) throw new Error(`Network response was not ok for news: ${response.status}`);
         const data = await response.json();
