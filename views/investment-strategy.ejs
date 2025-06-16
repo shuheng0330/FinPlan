@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/investment-strategy-reconmmendation.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="/css/Styles.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Matemasie&family=New+Amsterdam&display=swap" rel="stylesheet">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="fade-in d-flex">
+
+<!-- Sidebar -->
+<%- include('partials/sidebar') %>
+
+<!-- Main Content -->
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+  <!-- Toasts will be dynamically added here -->
+  </div>
+
+<div class="container-fluid p-4" style="background-color: #f8f9fa;">
+  <%- include('partials/header') %>
+
+  <!-- Strategy Header -->
+  <div class="strategy-header d-flex align-items-start gap-3">
+    <img src="/svgs/strategy.png" alt="Strategy Icon" style="width: 100px; height: 100px; object-fit: contain;" />
+    
+    <div>
+      <h4 class="mb-2">Personalized Investment Strategy</h4>
+      <p class="regularText mb-0">
+        Our system analyzes your financial goals, risk tolerance, and investment horizon to recommend personalized investment strategies that align with your objectives. Select a goal below to get started.
+      </p>
+    </div>
+  </div>
+
+  <!-- Goal Selection -->
+  <div class="goal-selector">
+    <h5 class="mb-3">Select a Goal</h5>
+    
+<div class="goal-pages">
+  <div class="goal-page active" data-page="1">
+    <div class="row mb-3">
+      <% goals.forEach((goal, index) => { %>
+        <div class="col-md-4 mb-3">
+          <div class="goal-card selected" data-goal-id="<%= goal._id %>">
+            <div class="d-flex align-items-center mb-2">
+              <img src="/svgs/<%= goal.icon%>-svgrepo-com.svg" alt="Goal Icon" class="goal-icon">
+              <div>
+                <h6 class="mb-0"><%= goal.goalName %></h6>
+                <small class="text-muted">
+                  <%= new Date(goal.targetDate).getFullYear() - new Date(goal.startDate).getFullYear() <= 2 ? "Short-term (≤ 2 years)" : "Long-term (> 2 years)" %>
+                </small>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Target: RM<%= goal.goalAmount.toLocaleString() %></span>
+              <span>
+                Progress: 
+                <% if (goal.goalAmount ===0) {%>
+                  N/A
+                <%} else { %>
+                  <%= Math.min(100, Math.round((goal.currentAmount / goal.goalAmount) * 100)) %>%
+                <% } %>
+              </span>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+          
+
+    <div class="pagination-controls">
+      <button class="pagination-btn" id="prevGoalsBtn" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        Previous
+      </button>
+      <button class="pagination-btn" id="nextGoalsBtn">
+        Next
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="text-center">
+      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addGoalModal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+        </svg>
+        Add New Goal
+      </button>
+    </div>
+    
+    <div class="risk-slider-container mt-4">
+      <h6>Risk Appetite</h6>
+      <input type="range" class="form-range" min="1" max="10" step="1" value="5" id="riskSlider">
+      <div class="risk-labels">
+        <span>Conservative</span>
+        <span>Moderate</span>
+        <span>Aggressive</span>
+      </div>
+    </div>
+    
+    <div class="text-center mt-4">
+      <button class="btn btn-primary" id="generateStrategyBtn" disabled>Generate Strategy</button>
+    </div>
+  </div>
+
+  <!-- Strategy Recommendation -->
+<div id="strategyDisplaySection" class="mt-5 strategy-section" style="display: none;">
+    <div class="strategy-recommendation">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Recommended Strategy <span class="risk-level-badge" id="riskLevelBadge"></span></h5>
+            <button class="btn btn-sm btn-outline-secondary" id="regenerateBtn">Regenerate</button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="allocation-chart-container">
+                    <canvas id="allocationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h6 class="mb-3">Asset Allocation</h6>
+
+                <div id="dynamicAssetAllocationContainer">
+                    </div>
+
+                <div class="mt-4">
+                    <h6 class="mb-3">Recommended Funds</h6>
+                    <ul class="list-group" id="recommendedFundsList">
+                        </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="strategy-details mt-4">
+            <div class="strategy-detail-item">
+                <div class="strategy-detail-value" id="suggestedMonthlyInvestmentValue"></div>
+                <div class="strategy-detail-label">Suggested Monthly Investment</div>
+            </div>
+
+            <div class="strategy-detail-item">
+                <div class="strategy-detail-value" id="expectedAnnualReturnValue"></div>
+                <div class="strategy-detail-label">Expected Annual Return</div>
+            </div>
+
+            <div class="strategy-detail-item">
+                <div class="strategy-detail-value" id="riskLevelValue"></div>
+                <div class="strategy-detail-label">Risk Level</div>
+            </div>
+
+            <div class="strategy-detail-item">
+                <div class="strategy-detail-value" id="investmentHorizonValue"></div>
+                <div class="strategy-detail-label">Investment Horizon</div>
+            </div>
+        </div>
+
+        <div class="strategy-actions mt-4">
+            <button class="btn btn-outline-primary" id="downloadStrategyBtn" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-2" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Download Strategy
+            </button>
+
+            <button class="btn btn-success" id="implementStrategyBtn" disabled>Implement Strategy</button>
+        </div>
+    </div>
+
+    <div class="strategy-explanation mt-4">
+        <h5 class="mb-3">Strategy Explanation</h5>
+
+        <div class="explanation-item">
+            <div class="explanation-title">Why This Strategy?</div>
+            <div class="explanation-text" id="whyThisStrategyText">
+                </div>
+        </div>
+
+        <div class="explanation-item">
+            <div class="explanation-title">Risk vs. Return Analysis</div>
+            <div class="explanation-text" id="riskReturnAnalysisText">
+                </div>
+        </div>
+
+        <div class="explanation-item">
+            <div class="explanation-title">Investment Horizon Impact</div>
+            <div class="explanation-text" id="investmentHorizonImpactText">
+                </div>
+        </div>
+    </div>
+</div>
+
+<section id="pastStrategiesSection" class="goal-selector">
+    <h2 class="h4 text-center mb-4">Your Past Investment Strategies</h2>
+    <!-- <hr style="width: 100%; margin-top: -5px;"> -->
+
+    <div class="d-flex justify-content-end mb-4">
+        <div class="dropdown me-2">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="goalFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Filter by Goal
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="goalFilterDropdown">
+                <li><a class="dropdown-item" href="#" data-filter-goal="all">All Goals</a></li>
+                <% if (goals && goals.length > 0) { %>
+                    <% goals.forEach(goal => { %>
+                        <li><a class="dropdown-item" href="#" data-filter-goal="<%= goal._id %>"><%= goal.goalName %></a></li>
+                    <% }); %>
+                <% } else { %>
+                    <li><a class="dropdown-item" href="#">No Goals Available</a></li>
+                <% } %>
+            </ul>
+        </div>
+
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-button-text dropdown-toggle" type="button" id="riskFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Filter by Risk
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="riskFilterDropdown">
+                <li><a class="dropdown-item" href="#" data-filter-risk="all">All Risks</a></li>
+                <li><a class="dropdown-item" href="#" data-filter-risk="Conservative">Conservative</a></li>
+                <li><a class="dropdown-item" href="#" data-filter-risk="Moderate">Moderate</a></li>
+                <li><a class="dropdown-item" href="#" data-filter-risk="Aggressive">Aggressive</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="pastStrategiesContainer" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col-12 text-center" id="noPastStrategiesMessage">
+            <p class="text-muted">No past strategies found. Generate and implement one to see it here!</p>
+        </div>
+    </div>
+    <div class="text-center mt-4">
+        <button id="seeMoreStrategiesBtn" class="btn btn-outline-primary">See More Strategies</button>
+        <button id="hideStrategiesBtn" class="btn btn-outline-secondary d-none">Hide Strategies</button>
+    </div>
+</section>
+
+<div class="modal fade" id="strategyDetailModal" tabindex="-1" aria-labelledby="strategyDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="strategyDetailModalLabel">Investment Strategy Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Goal:</strong> <span id="modalGoalName"></span></p>
+                <p><strong>Risk Level:</strong> <span id="modalRiskLevel"></span></p>
+                <p><strong>Investment Horizon:</strong> <span id="modalInvestmentHorizon"></span></p>
+                <p><strong>Expected Annual Return:</strong> <span id="modalExpectedAnnualReturn"></span>%</p>
+                <p><strong>Suggested Monthly Investment:</strong> RM<span id="modalSuggestedMonthlyInvestment"></span></p>
+
+                <h6 class="mt-4"><strong>Asset Allocation:</strong></h6>
+                <div id="modalAssetAllocationContainer" class="mb-3"></div>
+                <canvas id="modalAllocationChart" style="max-height: 250px;"></canvas> <h6 class="mt-4">Recommended Funds:</h6>
+                <ul id="modalRecommendedFundsList" class="list-group"></ul>
+
+                <h6 class="mt-4">Strategy Explanation:</h6>
+                <ul id="modalStrategyExplanationContainer" class="list-group mb-3">
+                </ul>
+              </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- Strategy Comparison -->
+  <div class="strategy-container">
+    <div class="mt-4">
+      <div id="strategyComparisonContainer" style="display: none;">
+      </div>
+    </div>
+
+    
+    <div class="mt-4">
+    <table class="comparison-table" >
+        <thead>
+            <tr>
+                <th>Strategy</th>
+                <th>Expected Return</th>
+                <th>Volatility</th>
+                <th>Best For</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (strategy && strategy.strategyComparison) { %>
+                <% 
+                const strategies = ['Conservative', 'Moderate', 'Aggressive'];
+                const currentRiskLevel = strategy.riskLevel || 'Moderate';
+                %>
+                <% strategies.forEach(function(strategyType) { %>
+                    <% const strategyData = strategy.strategyComparison[strategyType]; %>
+                    <% if (strategyData) { %>
+                        <tr <%= strategyType === currentRiskLevel ? 'class="highlight"' : '' %>>
+                            <td><%= strategyType %></td>
+                            <td><%= strategyData.Expectedreturns || 0 %>%</td>
+                            <td><%= strategyData.Volatility || 'N/A' %></td>
+                            <td><%= strategyData.BestFor || 'N/A' %></td>
+                        </tr>
+                    <% } %>
+                <% }); %>
+            <% } else { %>
+                <!-- Fallback to default data if no strategy comparison is available -->
+                <tr>
+                    <td>No strategy generated yet</td>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+  </div>
+
+  <!-- Interactive Tools -->
+  <div class="interactive-tools">
+    <h5 class="mb-3">Interactive Tools</h5>
+    
+    <div class="row">
+      <div class="col-md-4">
+        <a href="#" class="tool-button" data-bs-toggle="modal" data-bs-target="#roiCalculatorModal">
+          <img src="/svgs/calculator-svgrepo-com.svg" alt="Calculator" class="tool-icon">
+          <div class="tool-title">ROI Calculator</div>
+        </a>
+      </div>
+      
+      <div class="col-md-4">
+        <a href="#" class="tool-button" data-bs-toggle="modal" data-bs-target="#comparisonToolModal">
+          <img src="/svgs/comparison-svgrepo-com.svg" alt="Comparison" class="tool-icon">
+          <div class="tool-title">Investment Option Comparison</div>
+        </a>
+      </div>
+      
+      <div class="col-md-4">
+        <a href="#" class="tool-button" data-bs-toggle="modal" data-bs-target="#riskAnalyzerModal">
+          <img src="/svgs/risk-svgrepo-com.svg" alt="Risk" class="tool-icon">
+          <div class="tool-title">Risk vs. Return Analyzer</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+<!-- Add Goal Modal -->
+  <div class="modal fade" id="addGoalModal" tabindex="-1" aria-labelledby="addGoalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #fef5eb;">
+          <h5 class="modal-title" id="addGoalModalLabel">Add New Financial Goal</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addGoalForm">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="goalName" class="form-label">Goal Name</label>
+                <input type="text" class="form-control" id="goalName" placeholder="e.g., Vacation" required>
+              </div>
+              <div class="col-md-6">
+                <label for="goalAmount" class="form-label">Target Amount (RM)</label>
+                <input type="number" class="form-control" id="goalAmount" placeholder="e.g., 10000" required>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="currentAmount" class="form-label">Current Savings (RM)</label>
+                <input type="number" class="form-control" id="currentAmount" placeholder="e.g., 2500" required>
+              </div>
+              <div class="col-md-6">
+                <label for="targetDate" class="form-label">Target Date</label>
+                <input type="date" class="form-control" id="targetDate" required>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="startDate" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="startDate" required>
+              </div>
+              <div class="col-md-6">
+                <label for="goalPriority" class="form-label">Priority Level</label>
+                <select class="form-select" id="goalPriority" required>
+                  <option value="High">High Priority</option>
+                  <option value="Medium" selected>Medium Priority</option>
+                  <option value="Low">Low Priority</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Select Icon</label>
+              <div class="icon-selector">
+                <div class="icon-option selected">
+                  <div class="icon-circle">
+                    <img src="../../svgs/vacation-svgrepo-com.svg" alt="Vacation" data-icon="vacation">
+                  </div>
+                  <span>Vacation</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/house-svgrepo-com.svg" alt="House" data-icon="house">
+                  </div>
+                  <span>House</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/emergency-svgrepo-com.svg" alt="Emergency" data-icon="emergency">
+                  </div>
+                  <span>Emergency</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/car-svgrepo-com.svg" alt="Car" data-icon="car">
+                  </div>
+                  <span>Car</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/education-svgrepo-com.svg" alt="Education" data-icon="education">
+                  </div>
+                  <span>Education</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/investment-svgrepo-com.svg" alt="Investment" data-icon="investment">
+                  </div>
+                  <span>Investment</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/retirement-svgrepo-com.svg" alt="Retirement" data-icon="retirement">
+                  </div>
+                  <span>Retirement</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/wedding-svgrepo-com.svg" alt="Wedding" data-icon="wedding">
+                  </div>
+                  <span>Wedding</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/family-svgrepo-com.svg" alt="Family" data-icon="family">
+                  </div>
+                  <span>Family</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/electronic-svgrepo-com.svg" alt="Electronics" data-icon="electronic">
+                  </div>
+                  <span>Electronics</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/debt-svgrepo-com.svg" alt="Debt" data-icon="debt">
+                  </div>
+                  <span>Debt</span>
+                </div>
+                <div class="icon-option">
+                  <div class="icon-circle">
+                    <img src="../../svgs/charity-svgrepo-com.svg" alt="Charity" data-icon="charity">
+                  </div>
+                  <span>Charity</span>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveGoalBtn">Save Goal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ROI Calculator Modal -->
+  <div class="modal fade" id="roiCalculatorModal" tabindex="-1" aria-labelledby="roiCalculatorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: #fef5eb;">
+          <h5 class="modal-title" id="roiCalculatorModalLabel">ROI Calculator</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <form id="roiCalculatorForm">
+                <div class="mb-3">
+                  <label for="initialInvestment" class="form-label">Initial Investment (RM)</label>
+                  <input type="number" class="form-control" id="initialInvestment" value="1000">
+                </div>
+                
+                <div class="mb-3">
+                  <label for="monthlyContribution" class="form-label">Monthly Contribution (RM)</label>
+                  <input type="number" class="form-control" id="monthlyContribution" value="250">
+                </div>
+                
+                <div class="mb-3">
+                  <label for="annualReturn" class="form-label">Expected Annual Return (%)</label>
+                  <input type="number" class="form-control" id="annualReturn" value="5.8">
+                </div>
+                
+                <div class="mb-3">
+                  <label for="investmentPeriod" class="form-label">Investment Period (Years)</label>
+                  <input type="number" class="form-control" id="investmentPeriod" value="2">
+                </div>
+                
+                <button type="button" class="btn btn-primary" id="calculateRoiBtn">Calculate</button>
+              </form>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Results</h5>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Total Investment</label>
+                    <div class="form-control" id="totalInvestment">RM7,000.00</div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Total Interest Earned</label>
+                    <div class="form-control" id="totalInterest">RM498.76</div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">Final Balance</label>
+                    <div class="form-control" id="finalBalance">RM7,498.76</div>
+                  </div>
+                  
+                  <div class="mb-3">
+                    <label class="form-label">ROI</label>
+                    <div class="form-control" id="roiPercentage">7.13%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Comparison Tool Modal -->
+<div class="modal fade" id="comparisonToolModal" tabindex="-1" aria-labelledby="comparisonToolModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #fef5eb;">
+        <h5 class="modal-title" id="comparisonToolModalLabel">
+          Investment Option Comparison
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Investment Option</th>
+                  <th>Risk Level</th>
+                  <th>Minimum Investment</th>
+                  <th>Liquidity</th>
+                  <th>Fees</th>
+                </tr>
+              </thead>
+              <tbody id="comparisonTableBody">
+                <!-- Table rows will be dynamically populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+          <!-- The "No investment options available" message should now be handled by JS -->
+          <div id="noInvestmentOptionsMessage" class="text-center py-4" >
+            <p class="text-muted">No investment options available to compare.</p>
+          </div>
+        
+        <div id="recommendationSection" class="mt-4" style="display: none;">
+            <h6>Recommendation for Your Goal</h6>
+            <p id="recommendationText"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Risk Analyzer Modal -->
+<div class="modal fade" id="riskAnalyzerModal" tabindex="-1" aria-labelledby="riskAnalyzerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: #fef5eb;">
+        <h5 class="modal-title" id="riskAnalyzerModalLabel">Risk vs. Return Analyzer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <canvas id="riskReturnChart" height="300"></canvas>
+          </div>
+          
+          <div class="col-md-6">
+            <h6>Risk-Return Analysis</h6>
+            <p>This chart shows the relationship between risk (volatility) and potential returns for different investment strategies. Higher potential returns typically come with higher risk.</p>
+            
+            <div class="mt-4">
+              <h6 id="yourRiskProfileText">Your Risk Profile: <span id="dynamicRiskLevel">Moderate</span></h6>
+              <p id="riskReturnAnalysistext">Based on your responses, you have a moderate risk tolerance. This means you're willing to accept some market fluctuations in exchange for growth potential, but you also value stability.</p>
+              
+              <h6 class="mt-3">Recommended Strategy</h6>
+              <p id="recommendedStrategyText">The recommended balanced strategy (50% stocks, 35% bonds/cash) aligns with your moderate risk profile and 2-year time horizon. This provides a good balance between growth potential and capital preservation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Footer -->
+  <%- include('partials/footer') %>
+</div>
+
+<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+    <div id="successToast" class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="successToastBody">
+                </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <div id="errorToast" class="toast text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="errorToastBody">
+                </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="/js/SavingGoals/goal-planning.js"></script>
+<script src="/js/SavingGoals/bootstrap-toast-system.js"></script>
+<script type ="module" defer src="/js/InvestmentStrategy/investment-strategy-recommendation.js"></script>
+
+</body>
+</html>

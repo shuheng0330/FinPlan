@@ -1,0 +1,195 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+#sidebar {
+    min-height: 100vh;
+    background-color: #faf1e6;
+    position: fixed;
+}
+
+#sidebar .nav-link {
+    font-weight: 500;
+    color: #2c2c2c;
+}
+
+#sidebar .nav-link:hover {
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.container-fluid {
+    margin-left: 240px;
+}
+
+.card {
+    background-color: #faf1e6;
+    border: 1px solid #e0d7c6;
+    border-radius: 10px;
+}
+
+
+#rounded-circle {
+    float: left;
+    height: 19px;
+    width: 19px;
+}
+
+a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.regularText {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.1em;
+}
+
+.small {
+    font-size: 0.85em;
+}
+
+.card {
+    border-radius: 12px;
+    background-color: #faf1e6;
+    border: 1px solid #e0d7c6;
+}
+
+.card-body h5,
+.card-body h6 {
+    font-family: 'Crimson Text', serif;
+    font-weight: bold;
+}
+
+input.form-control[readonly] {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background-color: #0061F2;
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0348b1;
+}
+
+/* fade.css */
+.fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.toast-container {
+    max-width: 380px;
+    z-index: 1055;
+}
+
+.toast {
+    display: flex;
+    align-items: center; 
+    background-color: #fff;
+    border-left: 5px solid; 
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.95rem; 
+    animation: slideInRight 0.4s ease-out forwards, fadeOut 0.3s ease-in 2.7s forwards; 
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.toast-icon {
+    font-size: 1.6rem; 
+    margin-right: 1rem; 
+    line-height: 1; 
+}
+
+.toast-body {
+    flex: 1;
+    color: #333;
+    font-weight: 500;
+    margin-right: 25px; 
+}
+
+.btn-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: transparent;
+    border: none;
+    font-size: 1.3rem;
+    color: #888;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: color 0.2s, opacity 0.2s;
+}
+
+.btn-close:hover {
+    color: #333;
+    opacity: 1;
+}
+
+/* Specific toast types - keeping existing colors, just modifying border-left */
+.toast-success {
+    background-color: #eafaf1;
+    border-left-color: #198754;
+}
+
+.toast-warning {
+    background-color: #fffbe6;
+    border-left-color: #ffc107;
+}
+
+.toast-error {
+    background-color: #fdecea;
+    border-left-color: #dc3545;
+}
+
+.toast-info {
+    background-color: #e9f7fd;
+    border-left-color: #0dcaf0;
+}
+
+@keyframes slideInRight {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(20px); 
+    }
+}
+
+
+@media (max-width: 576px) {
+    .toast-container {
+        position: fixed !important;
+        top: 1rem !important;
+        left: 1rem !important;
+        right: 1rem !important;
+        max-width: none !important;
+    }
+}

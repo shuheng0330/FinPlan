@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/login_register.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="/svgs/logo_FinPlan(remove bg).png" height="50" width="50">
+            <p>FinPlan</p>
+        </div>
+
+        <div class="left">
+
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
+            <h1>Sign In</h1>
+            <p>Welcome back! Continue your financial journey.</p>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Enter your email address" required />
+            </div>
+
+            <div class="form-group password-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Enter your password" required />
+            </div>
+
+            <button class="login-btn" id="login-btn">Login</button>
+
+            <div class="or-login">
+                <hr>
+                <span>Or Login With</span>
+                <hr>
+            </div>
+
+            <a href="/users/auth/google" class="google-btn">
+                <img src="/svgs/google.jpg" height="15" width="15">
+                Sign in with Google
+            </a>
+
+            <div class="signup">
+                Don't have an account? <a href="/register">Sign Up.</a>
+            </div>
+
+            <div class="footer">
+                Copyright © <%= new Date().getFullYear() %> FinPlan Enterprises LTD.
+                    <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+
+        <div class="right">
+            <h2>Your Smart Financial Planning Companion</h2>
+            <p>Manage your goals, explore investment strategies, and plan your future—all in one place. Sign up or log
+                in to start building your financial success today.</p>
+            <img src="/svgs/financial planning.jpg" class="dashboard-img" />
+        </div>
+    </div>
+
+    <script src="/js/User/login.js"></script>
+    <script src="/js/User/toast.js"></script>
+
+</body>
+
+</html>

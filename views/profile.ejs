@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+    <%= title %>
+  </title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/profile.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="/css/Styles.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Creepster&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Matemasie&family=New+Amsterdam&display=swap"
+    rel="stylesheet">
+</head>
+
+<body class="fade-in d-flex">
+
+  <!-- Sidebar -->
+  <%- include('partials/sidebar') %>
+
+    <!-- Main Content -->
+    <div class="container-fluid p-4">
+      <%- include('partials/header') %>
+
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
+        <div class="row g-4">
+          <!-- Left Column -->
+          <div class="col-md-4">
+            <!-- Profile Picture Card -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body text-center">
+                <h5 class="mb-4">Profile Picture</h5>
+                <img
+                  src="<%= profilePicture && profilePicture.trim() !== '' ? profilePicture : '/svgs/man-user-circle-icon.svg' %>"
+                  alt="Avatar" class="rounded-circle mb-3" width="120" height="120" />
+                <p class="text-muted mb-2 small">JPG or PNG no larger than 5 MB</p>
+                <form id="profile-pic-form" enctype="multipart/form-data">
+                  <input type="file" class="form-control mb-2" id="profilePicture" name="profilePicture"
+                    accept="image/*" required>
+                  <button type="submit" class="btn btn-primary">Upload new image</button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Delete Account Card -->
+            <div class="card shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="mb-4 text-danger">Delete Account</h5>
+                <form id="delete-account-form"
+                  onsubmit="return confirm('Are you sure you want to delete your account permanently? This action cannot be undone.')">
+                  <div class="modal-body">
+                    <p>Are you sure you want to permanently delete your account and all associated data? This action
+                      cannot be undone.</p>
+
+                    <div class="mb-3">
+                      <label for="confirmPassword" class="form-label">Enter your password to confirm:</label>
+
+                      <% if (user.authProvider==='local' ) { %>
+                        <input type="password" class="form-control" id="passwordToDelete" name="passwordToDelete"
+                          placeholder="Enter password">
+                        <% } else { %>
+                          <input type="password" class="form-control" id="passwordToDelete" readonly>
+                          <div class="alert alert-info mt-2">
+                            Your account is managed via Google. Please use your Google account settings to manage
+                            security and deletion.
+                          </div>
+                          <% } %>
+                    </div>
+                  </div>
+                  <% if (user.authProvider==='local' ) { %>
+                    <button type="submit" class="btn btn-danger">Delete Account</button>
+                    <% } %>
+              </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Account Details -->
+          <div class="col-md-8">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="mb-4">Account Details</h5>
+                <div id="general-messages-container" class="mb-3"></div>
+
+                <form id="profile-update-form" action="/users/profile/updateProfile" method="POST">
+                  <!-- Account Info -->
+                  <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="username" name="username" value="<%= username %>">
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="user-email" value="<%= userEmail %>" readonly>
+                  </div>
+
+                  <hr class="my-4">
+
+                  <h5 class="mb-4">Change Password</h5>
+
+                  <% if (user.authProvider==='local' ) { %>
+                    <div id="password-messages-container" class="mt-2"></div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Current Password</label>
+                      <input type="password" class="form-control" name="currentPassword">
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">New Password</label>
+                      <input type="password" class="form-control" name="newPassword">
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Confirm New Password</label>
+                      <input type="password" class="form-control" name="confirmPassword">
+                    </div>
+                    <% } else { %>
+                      <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" name="currentPassword" readonly>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" name="newPassword" readonly>
+                      </div>
+
+                      <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" name="confirmPassword" readonly>
+
+                        <div class="alert alert-info mt-4">Password changes are managed through your Google account.
+                        </div>
+                        <% } %>
+
+                          <!-- Only one button -->
+                          <button type="submit" id="save-btn" class="btn btn-primary mt-3">Save Changes</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <%- include('partials/footer') %>
+
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+          <script src="/js/User/updateProfile.js"></script>
+          <script src="/js/User/toast.js"></script>
+
+</body>
+
+</html>
