@@ -22,6 +22,52 @@ const dashboardRouter = require('./routers/dashboardRoute');
 const authRoutes = require('./routers/authRoutes');
 const marketRouter = require('./routers/marketRouter')
 
+
+app.get('/api/quote/:symbol', async (req, res) => {
+  const symbol = req.params.symbol;
+  const url = `https://financialmodelingprep.com/api/v3/quote/${symbol}?apikey=${process.env.FMP_API_KEY}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  res.json(data);
+});
+
+app.get('/api/news/top-headlines', async (req, res) => {
+  const { category, language, pageSize } = req.query;
+
+  const url = `https://newsapi.org/v2/top-headlines?category=${category}&language=${language}&pageSize=${pageSize}&apiKey=${process.env.NEWS_API_KEY}`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+  res.json(data);
+});
+
+app.get('/api/fmp/historical-price-full/:symbol', async (req, res) => {
+  const symbol = req.params.symbol;
+  
+  const url = `https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?apikey=${process.env.FMP_API_KEY}`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch data from FMP' });
+  }
+});
+
+
+app.get('/api/historical-price-full/:symbol', async (req, res) => {
+  const symbol = req.params.symbol;
+  const { from, to } = req.query;
+  
+  const url = `https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?from=${from}&to=${to}&apikey=${process.env.FMP_API_KEY}`;
+  
+  const response = await fetch(url);
+  const data = await response.json();
+  res.json(data);
+});
+
+
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your-default-secret',
     resave: false,
