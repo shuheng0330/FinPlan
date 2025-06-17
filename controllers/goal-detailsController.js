@@ -109,6 +109,11 @@ exports.createTransaction = async (req, res) => {
 
     // Update the goal’s current amount based on transaction type
     if (type === 'deposit') {
+      // Check if the goal is already completed before allowing new deposits
+      if (goal.status === 'completed') {
+        return res.status(400).json({ message: 'Cannot deposit to a completed goal.' });
+      }
+
       const remainingAmount = goal.goalAmount - goal.currentAmount;
       if (amount > remainingAmount) {
         return res.status(400).json({
@@ -117,12 +122,26 @@ exports.createTransaction = async (req, res) => {
       }
       goal.currentAmount += amount;
 
-      } else if (type === 'withdrawal') {
+    } else if (type === 'withdrawal') {
       if (goal.currentAmount < amount) {
         return res.status(400).json({ message: 'Insufficient goal balance for withdrawal.' });
       }
-      goal.currentAmount -= amount;}
+      goal.currentAmount -= amount;
+      // If a withdrawal occurs, the goal is no longer completed (if it was)
+      if (goal.status === 'completed') {
+          goal.status = 'in-progress'; // Or whatever your default active status is
+      }
+    }
 
+    // --- NEW LOGIC TO UPDATE GOAL STATUS ---
+    if (goal.currentAmount >= goal.goalAmount && goal.status !== 'completed') {
+      goal.status = 'completed';
+    } else if (goal.currentAmount < goal.goalAmount && goal.status === 'completed') {
+        // This handles cases where a withdrawal drops the currentAmount below the goalAmount
+        // after it was previously completed. Adjust status back to 'in-progress'.
+        goal.status = 'in-progress'; // Or 'active', 'uncompleted', etc.
+    }
+    // --- END NEW LOGIC ---
 
     await goal.save();
 
@@ -137,7 +156,8 @@ exports.createTransaction = async (req, res) => {
 
     res.status(201).json({
       message: 'Transaction created successfully.',
-      transaction
+      transaction,
+      goalStatus: goal.status // Optionally return the updated goal status in the response
     });
   } catch (err) {
     console.error('Error creating transaction:', err);
