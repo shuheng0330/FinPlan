@@ -1,16 +1,5 @@
 // public/js/dashboard.js (This file now contains all logic for the dashboard page)
 
-// --- API Configurations (Shared) ---
-const API_CONFIG = {
-    fmp: {
-        key: 'RipG4Z6vScFUHiukMU9oFaQ90nh2CRCi', 
-        baseUrl: 'https://financialmodelingprep.com/api/v3/'
-    },
-    newsAPI: {
-        key: 'd76cb9f3154849a9bd846f9b2779ff7e',
-        baseUrl: 'https://newsapi.org/v2/'
-    }
-};
 
 const ALPHA_VANTAGE_API_KEY = '24WFSJXQ4N24BBBR'; // Your Alpha Vantage API Key for MSFT data
 
@@ -77,7 +66,7 @@ async function fetchDashboardStockData() {
 
     try {
         for (const symbol of symbols) {
-            const quoteUrl = `${API_CONFIG.fmp.baseUrl}quote/${symbol}?apikey=${API_CONFIG.fmp.key}`;
+            const quoteUrl = `/api/quote/${symbol}`;
             const response = await fetch(quoteUrl);
             if (!response.ok) throw new Error(`Failed to fetch current data for ${symbol}: ${response.status}`);
             const data = await response.json();
@@ -105,8 +94,9 @@ async function fetchDashboardStockData() {
 async function fetchDashboardNews() {
     try {
         const response = await fetch(
-            `${API_CONFIG.newsAPI.baseUrl}top-headlines?category=business&language=en&pageSize=4&apiKey=${API_CONFIG.newsAPI.key}`
+           `/api/news/top-headlines?category=business&language=en&pageSize=8`
         );
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`NewsAPI error: ${errorData.message || response.statusText}`);
@@ -216,24 +206,13 @@ const fetchMsftRoi = async () => {
     if (msftLoadingMessage) msftLoadingMessage.classList.remove('d-none');
     if (msftCardContainer) msftCardContainer.innerHTML = '';
 
-    const FMP_API_KEY = API_CONFIG.fmp.key;
-    const FMP_BASE_URL = API_CONFIG.fmp.baseUrl;
+    const FMP_BASE_URL = '/api/fmp';
     const MSFT_SYMBOL = 'MSFT';
 
-    if (!FMP_API_KEY || FMP_API_KEY === 'YOUR_FMP_API_KEY') { // Use your actual FMP key check
-        console.error('FMP API Key is not set or is a placeholder for MSFT data. Skipping fetch.');
-        if (exampleStockSymbolElement) exampleStockSymbolElement.textContent = 'API Key Missing';
-        if (exampleRoiPercentageElement) exampleRoiPercentageElement.textContent = 'N/A';
-        if (msftLoadingMessage) {
-            msftLoadingMessage.textContent = 'FMP API Key required for MSFT data.';
-            msftLoadingMessage.classList.remove('d-none');
-        }
-        return;
-    }
 
     try {
         console.log(`DEBUG: Attempting to fetch FMP historical data for ${MSFT_SYMBOL}...`);
-        const fmpResponse = await fetch(`${FMP_BASE_URL}historical-price-full/${MSFT_SYMBOL}?apikey=${FMP_API_KEY}`);
+        const fmpResponse = await fetch(`/api/fmp/historical-price-full/${MSFT_SYMBOL}`);
         const fmpData = await fmpResponse.json();
         console.log('DEBUG: FMP response received.', fmpData);
 

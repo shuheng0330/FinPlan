@@ -1,15 +1,3 @@
-// market.js
-// API Configuration
-const API_CONFIG = {
-  fmp: {
-    key: 'RipG4Z6vScFUHiukMU9oFaQ90nh2CRCi',
-    baseUrl: 'https://financialmodelingprep.com/api/v3/'
-  },
-  newsAPI: {
-    key: 'd76cb9f3154849a9bd846f9b2779ff7e',
-    baseUrl: 'https://newsapi.org/v2/'
-  }
-};
 
 // --- Dummy Data Configuration ---
 const USE_DUMMY_DATA = false; // Set to true to use dummy data, false to use actual API calls
@@ -210,7 +198,7 @@ async function fetchIndexData(timeRange = '1d') {
 
       // --- 1. Fetch current quote data (for latest price, name, marketCap, volume) ---
       try {
-        const quoteUrl = `${API_CONFIG.fmp.baseUrl}quote/${symbol}?apikey=${API_CONFIG.fmp.key}`;
+        const quoteUrl = `/api/quote/${symbol}`;;
         console.log(`DEBUG: Fetching current quote for ${symbol} from: ${quoteUrl}`);
         const quoteResponse = await fetch(quoteUrl);
         if (!quoteResponse.ok) throw new Error(`Quote network response not ok for ${symbol}: ${quoteResponse.status}`);
@@ -240,7 +228,7 @@ async function fetchIndexData(timeRange = '1d') {
           startPeriodPrice = currentPrice - (currentQuoteData.change || 0);
           if (startPeriodPrice === 0) startPeriodPrice = currentPrice; // Avoid division by zero
         } else {
-          const historyUrl = `${API_CONFIG.fmp.baseUrl}historical-price-full/${symbol}?from=${startDate}&to=${endDate}&apikey=${API_CONFIG.fmp.key}`;
+          const historyUrl = `/api/historical-price-full/${symbol}?from=${startDate}&to=${endDate}`;
           console.log(`DEBUG: Fetching historical data for ${symbol} from: ${historyUrl}`);
           const historyResponse = await fetch(historyUrl);
           if (!historyResponse.ok) throw new Error(`Historical network response not ok for ${symbol}: ${historyResponse.status}`);
@@ -331,7 +319,7 @@ async function fetchStockData(symbols = watchlist, timeRange = '30d') {
 
       // --- 1. Fetch current quote data (for latest price, name, marketCap, volume) ---
       try {
-        const quoteUrl = `${API_CONFIG.fmp.baseUrl}quote/${symbol}?apikey=${API_CONFIG.fmp.key}`;
+        const quoteUrl = `/api/quote/${symbol}`;
         console.log(`DEBUG: Fetching current quote for ${symbol} from: ${quoteUrl}`);
         const quoteResponse = await fetch(quoteUrl);
         if (!quoteResponse.ok) throw new Error(`Quote network response not ok for ${symbol}: ${quoteResponse.status}`);
@@ -358,7 +346,7 @@ async function fetchStockData(symbols = watchlist, timeRange = '30d') {
           startPeriodPrice = currentPrice - (currentQuoteData.change || 0);
           if (startPeriodPrice === 0) startPeriodPrice = currentPrice;
         } else {
-          const historyUrl = `${API_CONFIG.fmp.baseUrl}historical-price-full/${symbol}?from=${startDate}&to=${endDate}&apikey=${API_CONFIG.fmp.key}`;
+          const historyUrl = `/api/historical-price-full/${symbol}?from=${startDate}&to=${endDate}`;
           console.log(`DEBUG: Fetching historical data for ${symbol} from: ${historyUrl}`);
           const historyResponse = await fetch(historyUrl);
           if (!historyResponse.ok) throw new Error(`Historical network response not ok for ${symbol}: ${historyResponse.status}`);
@@ -427,11 +415,10 @@ async function fetchMarketNews() {
       return cache.news;
     }
     const response = await fetch(
-      `${API_CONFIG.newsAPI.baseUrl}top-headlines?category=business&language=en&pageSize=8&apiKey=${API_CONFIG.newsAPI.key}`
+     `/api/news/top-headlines?category=business&language=en&pageSize=9`
     );
     if (!response.ok) throw new Error('Network response was not ok');
     const data = await response.json();
-    console.log('New length',data.articles.length);
     cache.news = data.articles;
     cache.lastUpdated = Date.now();
     hideLoading('news');
@@ -459,7 +446,7 @@ async function fetchAnalystRatings(symbols = ['AAPL', 'NVDA', 'TSLA']) {
     const ratings = [];
     for (const symbol of symbols) {
       const response = await fetch(
-        `${API_CONFIG.fmp.baseUrl}rating/${symbol}?apikey=${API_CONFIG.fmp.key}`
+        `/api/quote/${symbol}`
       );
       if (!response.ok) throw new Error(`Failed to fetch rating for ${symbol}`);
       const data = await response.json();
@@ -552,6 +539,7 @@ function updateStockTable(stocks) {
 function updateNewsSection(articles) {
   const newsContainer = document.querySelector('#news-container');
   if (!newsContainer) return;
+  console.log('New arcticle length:',articles.length);
   newsContainer.innerHTML = '';
   if (articles.length > 0) {
     const featured = articles[0];
