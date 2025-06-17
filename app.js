@@ -21,6 +21,7 @@ const userRouter = require('./routers/userRoute');
 const dashboardRouter = require('./routers/dashboardRoute');
 const authRoutes = require('./routers/authRoutes');
 const marketRouter = require('./routers/marketRouter')
+const watchlistRouter = require('./routers/watchlistRoute'); 
 
 
 app.get('/api/quote/:symbol', async (req, res) => {
@@ -110,5 +111,6 @@ app.use('/users', userRouter);
 app.use('/', dashboardRouter);
 app.use('/users', authRoutes);
 app.use('/market', marketRouter); 
+app.use('/api', watchlistRouter); 
 
 module.exports = app;
