@@ -149,72 +149,27 @@
         <a href="/roi-calculator" class="btn btn-sm btn-outline-secondary">See more →</a>
       </div>
       <hr style="width: 50%; margin-top: -5px;">
-      <h6 class="fw-bold">Your investment</h6>
+      
 
-      <div class="row mt-2">
-        <div class="col-md-4 mb-3">
-          <div class="p-3 bg-white rounded shadow-sm h-100">
-            <div class="d-flex align-items-center mb-2">
-              <img src="/svgs/nvidia-svgrepo-com.svg" alt="Nvidia logo" class="me-2" style="width: 35px; height: 35px; object-fit: contain;">
-              <span class="fw-semibold">Nvidia, Inc</span>
-            </div>
-            <p class="mb-1 mt-3 d-flex justify-content-between">
-              <span class="regularText">Invested amount:</span>
-              <span class="fw-bold">$1200</span>
-            </p>
-            <p class="mb-1 d-flex justify-content-between">
-              <span clas="regularText">Current value:</span>
-              <span class="fw-bold">$7200</span>
-            </p>
-            <p class="mb-0 d-flex justify-content-between">
-              <span class="regularText">ROI:</span>
-              <span class="text-success fw-semibold">+5.21%</span>
-            </p>
-          </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-          <div class="p-3 bg-white rounded shadow-sm h-100">
-            <div class="d-flex align-items-center mb-2">
-              <img src="/svgs/google-icon-logo-svgrepo-com.svg" alt="Google logo" class="me-2" style="width: 35px; height: 35px; object-fit: contain;">
-              <span class="fw-semibold">Google, Inc</span>
-            </div>
-            <p class="mb-1 mt-3 d-flex justify-content-between">
-              <span class="regularText">Invested amount:</span>
-              <span class="fw-bold">$3200</span>
-            </p>
-            <p class="mb-1 d-flex justify-content-between">
-              <span clas="regularText">Current value:</span>
-              <span class="fw-bold">$9200</span>
-            </p>
-            <p class="mb-0 d-flex justify-content-between">
-              <span class="regularText">ROI:</span>
-              <span class="text-success fw-semibold">+3.91%</span>
-            </p>
-          </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-          <div class="p-3 bg-white rounded shadow-sm h-100">
-            <div class="d-flex align-items-center mb-2">
-              <img src="/svgs/mcdonalds-icon.svg" alt="McDonald's logo" class="me-2" style="width: 35px; height: 35px; object-fit: contain;">
-              <span class="fw-semibold">McDonald's, Inc</span>
-            </div>
-            <p class="mb-1 mt-3 d-flex justify-content-between">
-              <span class="regularText">Invested amount:</span>
-              <span class="fw-bold">$200</span>
-            </p>
-            <p class="mb-1 d-flex justify-content-between">
-              <span clas="regularText">Current value:</span>
-              <span class="fw-bold">$8200</span>
-            </p>
-            <p class="mb-0 d-flex justify-content-between">
-              <span class="regularText">ROI:</span>
-              <span class="text-success fw-semibold">+0.61%</span>
-            </p>
-          </div>
-        </div>
+      <div class="content text-center py-3">
+        <p class="mb-3 regularText">
+          If you invested <span class="fw-bold highlight">RM 1,000</span> in 
+          <span class="fw-bold text-primary" id="example-stock-symbol">...loading...</span> 
+          1 year ago, your ROI would be approx. 
+          <span class="fw-bold" id="example-roi-percentage">...%</span>.
+        </p>
+        <p class="small text-muted mb-4">
+          Discover the potential returns on your own investments using our comprehensive ROI Calculator.
+        </p>
+        <a href="/roi-calculator" class="btn btn-primary dashboard-button">Calculate Your Own ROI!</a>
       </div>
+
+      <h6 class="fw-bold mt-4">Microsoft Corp. (MSFT) Price History</h6>
+      <div class="row" id="msft-card-container">
+        <p class="text-center text-muted" id="msft-loading-message">Loading MSFT data...</p>
+        </div>
+
+      
     </div>
   </section>
 
