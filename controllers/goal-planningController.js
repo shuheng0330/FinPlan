@@ -3,6 +3,15 @@ const Goal = require('./../models/goal-planningModel');
 exports.getAllGoals = async (req, res) => {
   try {
     const goals = await Goal.find({user: req.user._id});
+
+    const today = new Date();
+    for (const goal of goals) {
+      if (goal.status !== 'completed' && goal.targetDate < today) {
+        goal.status = 'expired';
+         await goal.save({ validateBeforeSave: false }); // Triggers pre-save hook to recalculate progress and status
+      }
+    }
+
     res.render("goal-planning", {
       title: "FinPlan - Goal Planning",
       pageTitle: "Financial Goals",
@@ -202,16 +211,26 @@ exports.updateGoal = async (req, res) => {
             return res.status(400).json({ message: `Invalid icon. Allowed icons: ${allowedIcons.join(', ')}` });
         }
 
+        const progress = Math.min(100, Math.round((currentAmount / goalAmount) * 100));
+        let status = 'in-progress';
+        if (progress >= 100) {
+            status = 'completed';
+        } else if (parsedTargetDate < new Date()) {
+            status = 'expired';
+        }
+
         const updatedGoal = await Goal.findByIdAndUpdate(
             goalId,
             {
                 goalName,
                 goalAmount,
                 currentAmount,
+                progress,
                 targetDate: parsedTargetDate,
                 startDate: parsedStartDate,
                 goalPriority,
-                icon
+                icon,
+                status
             },
             { new: true, runValidators: true }
         );

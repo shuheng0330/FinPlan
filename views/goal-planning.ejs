@@ -135,7 +135,7 @@
     <div class="col-md-4 mb-4"
           data-category="<%= goal.icon %>"
           data-progress="<%= goal.status || 'in-progress' %>"
-          data-priority="<%= goal.goalPriority?.toLowerCase() || 'medium' %>">
+          data-priority="<%= goal.goalPriority || 'medium' %>">
 
       <div class="goal-card" data-goal-id="<%= goal._id %>">
         <div class="goal-options">
