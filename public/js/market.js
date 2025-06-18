@@ -114,10 +114,64 @@ function hideLoading(type) {
 }
 
 function showError(type) {
-  const element = document.getElementById(`error-${type}`);
-  if (element) element.classList.remove('d-none');
-  hideLoading(type);
+    const toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+        console.error('DEBUG: Toast container not found');
+        return;
+    }
+
+    let toastType, message;
+    switch (type) {
+        case 'indices':
+            message = 'Failed to load market data.';
+            toastType = 'toast-error';
+            break;
+        case 'stocks':
+            message = 'Failed to load stock data.';
+            toastType = 'toast-error';
+            break;
+        case 'news':
+            message = 'Failed to load news.';
+            toastType = 'toast-error';
+            break;
+        case 'ratings':
+            message = 'Failed to load analyst ratings.';
+            toastType = 'toast-error';
+            break;
+        default:
+            message = 'An error occurred.';
+            toastType = 'toast-error';
+    }
+
+    const toastHtml = `
+        <div class="toast ${toastType}" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <span class="toast-icon">!</span>
+                <strong class="me-auto">Error</strong>
+                <small class="text-muted">Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+
+    const toastElement = document.createElement('div');
+    toastElement.innerHTML = toastHtml;
+    toastContainer.appendChild(toastElement.firstChild);
+
+    const toast = new bootstrap.Toast(toastElement.firstChild);
+    toast.show();
+
+    // Automatically remove the toast after 5 seconds
+    setTimeout(() => {
+        toast.hide();
+        toastElement.firstChild.remove();
+    }, 5000);
 }
+
+
 
 // --- Existing Data Fetching Functions ---
 async function fetchIndexData(timeRange = '1d') {
@@ -545,7 +599,7 @@ async function addStock(symbol) {
     updateStockTable(stocks);
     const ratings = await fetchAnalystRatings(watchlist);
     updateAnalystRatings(ratings);
-    alert(`${symbol} added to market insight!`);
+    window.toast.success(`${symbol} added to market insight!`);
   } catch (error) {
     console.error('DEBUG: Error adding stock:', error);
     showError('stocks');
@@ -566,7 +620,7 @@ async function deleteStock(symbol) {
     updateStockTable(stocks);
     const ratings = await fetchAnalystRatings(watchlist);
     updateAnalystRatings(ratings);
-    alert(`${symbol} removed from market insight!`);
+    window.toast.success('success',`${symbol} removed from market insight!`);
   } catch (error) {
     console.error('DEBUG: Error deleting stock:', error);
     showError('stocks');
@@ -788,6 +842,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dropdown.id = 'add-stock-dropdown';
     dropdown.style.position = 'absolute';
     dropdown.style.zIndex = '1000';
+    dropdown.style.right = '0';
     dropdown.className = 'dropdown-menu show';
     const stocksToAdd = accessibleStocks.filter(stock => !watchlist.includes(stock.symbol));
 
