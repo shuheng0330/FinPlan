@@ -23,7 +23,7 @@ const sector = document.getElementById('sector');
 const previousClose = document.getElementById('previousClose');
 const stockOpen = document.getElementById('stockOpen');
 const stockHigh = document.getElementById('stockHigh');
-const stockLow = document = document.getElementById('stockLow');
+const stockLow = document.getElementById('stockLow');
 const stockVolume = document.getElementById('stockVolume');
 const stock52WeekHigh = document.getElementById('stock52WeekHigh');
 const stock52WeekLow = document.getElementById('stock52WeekLow');
@@ -40,9 +40,8 @@ const dayMovingAverage = document.getElementById('dayMovingAverage');
 const selectedStocksSection = document.getElementById('selectedStocksSection'); // The main container for the section
 const selectedStocksContainer = document.getElementById('selectedStocksContainer'); // The .row where cards will be added
 
-// --- NEW ---
+// Charts Container
 const chartsContainer = document.getElementById('chartsContainer'); // Get the new charts container div
-// --- END NEW ---
 
 // Global array to store selected investments
 let selectedInvestments = [];
@@ -51,6 +50,80 @@ const MAX_SELECTED_STOCKS = 10; // Maximum number of cards to display
 // --- Chart Instances (Global) ---
 let riskChartInstance = null;
 let returnChartInstance = null;
+
+// Global variable to hold the fetched stock data before adding to comparison
+// This is CRITICAL for the AddInvestment function to know what stock to add.
+let currentFetchedStockData = null; // Initialize as null
+
+// Reference to the toast container
+const toastContainer = document.querySelector('.toast-container');
+
+// --- Custom Toast Alert Function ---
+// This function dynamically creates and displays toast notifications
+function showCustomToast(type, title, message, duration = 3000) {
+    if (!toastContainer) {
+        console.error('Toast container not found!');
+        return; // Cannot show toast without container
+    }
+
+    const toastId = `toast-${Date.now()}`; // Unique ID for each toast
+    const iconMap = {
+        'success': 'check-circle',
+        'error': 'x-circle',
+        'warning': 'alert-triangle',
+        'info': 'info',
+        'question': 'help-circle' // Using Lucide 'help-circle' for 'question'
+    };
+    const iconSvg = iconMap[type] || 'info'; // Default to info icon if type is unknown
+
+    // Create a temporary div to parse HTML, so we can ensure icons are processed before appending
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = `
+        <div id="${toastId}" class="toast toast-${type}" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i data-lucide="${iconSvg}" class="toast-icon"></i>
+                <strong class="me-auto text-capitalize">${title}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    const newToast = tempDiv.firstElementChild; // Get the toast element from the tempDiv
+
+    // IMPORTANT: Call lucide.createIcons on the newToast element ONLY before appending
+    // This processes icons specifically for this toast, preventing global re-render conflicts.
+    lucide.createIcons({
+        container: newToast // Limit icon creation to just this new toast element
+    });
+
+    // Append the toast to the container
+    toastContainer.appendChild(newToast);
+
+    // Trigger the show animation
+    setTimeout(() => {
+        newToast.classList.add('show');
+    }, 10); // Small delay to allow DOM to render before adding 'show' class
+
+    // Auto-hide the toast after 'duration'
+    setTimeout(() => {
+        newToast.classList.remove('show');
+        // Remove toast from DOM after animation completes (0.3s for transition)
+        setTimeout(() => {
+            newToast.remove();
+        }, 300); // This duration should match your CSS transition for opacity/transform
+    }, duration);
+
+    // Add event listener for manual close button
+    newToast.querySelector('.btn-close')?.addEventListener('click', () => {
+        newToast.classList.remove('show');
+        setTimeout(() => {
+            newToast.remove();
+        }, 300);
+    });
+}
+
 
 // Initialize the page
 document.addEventListener("DOMContentLoaded", () => {
@@ -61,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         input.addEventListener("input", () => {
             const val = parseInt(input.value);
-            if (val >= 1 && val <= 50) {
+            if (!isNaN(val) && val >= 1 && val <= 50) {
                 slider.value = val;
             }
         });
@@ -86,30 +159,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Pop-up close listeners
     if (popupCard && closePopupBtn) {
-        closePopupBtn.addEventListener('click', closePopup);
+        closePopupBtn.addEventListener('click', () => {
+            closePopup(true); // Indicate it's a user-initiated close, clear currentFetchedStockData
+        });
         popupCard.addEventListener('click', function(event) {
             if (event.target === popupCard) {
-                closePopup();
+                closePopup(true); // Indicate it's a user-initiated close, clear currentFetchedStockData
             }
         });
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' && popupCard.classList.contains('show')) {
-                closePopup();
+                closePopup(true); // Indicate it's a user-initiated close, clear currentFetchedStockData
             }
         });
     }
 
     // Event listener for the "Add Investment" button in the pop-up
+    // Ensure this is attached ONLY ONCE
     if (addInvestmentButton) {
         addInvestmentButton.addEventListener('click', AddInvestment);
     }
 
     // Initial render of selected stocks and charts (will be empty on first load)
     renderSelectedStocks();
-    updateCharts(); // Call charts on load too
+    updateCharts();
 });
 
-// ROI Calculator Function (unchanged)
+// ROI Calculator Function
 function handleROISubmit(e) {
     e.preventDefault();
     const initialInvestment = parseFloat(document.getElementById("initialInvestment").value);
@@ -118,7 +194,7 @@ function handleROISubmit(e) {
 
     if (isNaN(initialInvestment) || isNaN(finalValue) || isNaN(years) ||
         initialInvestment <= 0 || years <= 0) {
-        alert("Please enter valid numbers. Initial investment must be > 0 and years must be >= 1.");
+        showCustomToast('error', 'Input Error', 'Please enter valid numbers. Initial investment must be greater than 0 and years must be 1 or more.');
         return;
     }
     const gain = finalValue - initialInvestment;
@@ -132,24 +208,25 @@ function handleROISubmit(e) {
 
 
 // ------------------- Stock Data Functions -------------------
-const apiKey = "24WFSJXQ4N24BBBR"; // Replace with your Alpha Vantage API Key
+// Using a mock API key, replace with your actual Alpha Vantage API Key
+const apiKey = "WC1APVXJW1Y7SNZL";
 
 // Define your allowed stock symbols with mock data for pop-up descriptions and LOGO PATHS
 const allowedStocks = [
-    { symbol: "AAPL", name: "Apple Inc.", description: "A technology company that designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.", logo_path: "/svgs/Xiang/aapl.png" }, // Updated path
-    { symbol: "NVDA", name: "NVIDIA Corp", description: "A multinational technology company that designs graphics processing units (GPUs) for the gaming and professional markets, as well as chipsets for mobile computing and automotive markets.", logo_path: "/svgs/Xiang/nvda.png" }, // Updated path
-    { symbol: "TSLA", name: "Tesla, Inc.", description: "Designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems.", logo_path: "/svgs/Xiang/tsla.png" }, // Updated path
-    { symbol: "AMZN", name: "Amazon.com, Inc.", description: "An American multinational technology company focusing on e-commerce, cloud computing, online advertising, digital streaming, and artificial intelligence.", logo_path: "/svgs/Xiang/amzn.png" }, // Updated path
-    { symbol: "GOOGL", name: "Alphabet Inc.", description: "A multinational technology conglomerate. Google, its main subsidiary, specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.", logo_path: "/svgs/Xiang/googl.png" }, // Updated path
-    { symbol: "WMT", name: "Walmart Inc.", description: "An American multinational retail corporation that operates a chain of hypermarkets, discount department stores, and grocery stores.", logo_path: "/svgs/Xiang/wmt.png" }, // Updated path
-    { symbol: "MSFT", name: "Microsoft Corp", description: "A multinational technology corporation that produces computer software, consumer electronics, personal computers, and related services.", logo_path: "/svgs/Xiang/msft.png" }, // Updated path
-    { symbol: "META", name: "Meta Platforms, Inc.", description: "Focuses on building technologies that help people connect, find communities and grow businesses. It operates Facebook, Instagram, Messenger, and WhatsApp.", logo_path: "/svgs/Xiang/meta.png" }, // Updated path
-    { symbol: "JPM", name: "JPMorgan Chase & Co.", description: "A multinational financial services firm. It is the largest bank in the United States by assets.", logo_path: "/svgs/Xiang/jpm.png" }, // Updated path
-    { symbol: "KO", name: "The Coca-Cola Company", description: "A multinational beverage corporation best known as the producer of Coca-Cola.", logo_path: "/svgs/Xiang/ko.png" }  // Updated path
+    { symbol: "AAPL", name: "Apple Inc.", description: "A technology company that designs, manufactures and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.", logo_path: "/svgs/Xiang/aapl.png" },
+    { symbol: "NVDA", name: "NVIDIA Corp", description: "A multinational technology company that designs graphics processing units (GPUs) for the gaming and professional markets, as well as chipsets for mobile computing and automotive markets.", logo_path: "/svgs/Xiang/nvda.png" },
+    { symbol: "TSLA", name: "Tesla, Inc.", description: "Designs, develops, manufactures, leases, and sells electric vehicles, and energy generation and storage systems.", logo_path: "/svgs/Xiang/tsla.png" },
+    { symbol: "AMZN", name: "Amazon.com, Inc.", description: "An American multinational technology company focusing on e-commerce, cloud computing, online advertising, digital streaming, and artificial intelligence.", logo_path: "/svgs/Xiang/amzn.png" },
+    { symbol: "GOOGL", name: "Alphabet Inc.", description: "A multinational technology conglomerate. Google, its main subsidiary, specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware.", logo_path: "/svgs/Xiang/googl.png" },
+    { symbol: "WMT", name: "Walmart Inc.", description: "An American multinational retail corporation that operates a chain of hypermarkets, discount department stores, and grocery stores.", logo_path: "/svgs/Xiang/wmt.png" },
+    { symbol: "MSFT", name: "Microsoft Corp", description: "A multinational technology corporation that produces computer software, consumer electronics, personal computers, and related services.", logo_path: "/svgs/Xiang/msft.png" },
+    { symbol: "META", name: "Meta Platforms, Inc.", description: "Focuses on building technologies that help people connect, find communities and grow businesses. It operates Facebook, Instagram, Messenger, and WhatsApp.", logo_path: "/svgs/Xiang/meta.png" },
+    { symbol: "JPM", name: "JPMorgan Chase & Co.", description: "A multinational financial services firm. It is the largest bank in the United States by assets.", logo_path: "/svgs/Xiang/jpm.png" },
+    { symbol: "KO", name: "The Coca-Cola Company", description: "A multinational beverage corporation best known as the producer of Coca-Cola.", logo_path: "/svgs/Xiang/ko.png" }
 ];
 
 
-// --- Search Hint Functions (RESTORED) ---
+// --- Search Hint Functions ---
 
 function displayHints(hints) {
     stockHintsDiv.innerHTML = '';
@@ -173,7 +250,7 @@ function hideHints() {
     stockHintsDiv.innerHTML = '';
 }
 
-function handleSearchInput() {
+async function handleSearchInput() {
     const query = stockSymbolInput.value.toLowerCase().trim();
     if (query.length === 0) {
         hideHints();
@@ -192,48 +269,52 @@ async function handleHintClick(event) {
         stockSymbolInput.value = selectedSymbol;
         hideHints();
 
+        currentFetchedStockData = null; // Clear any previously loaded stock data before new fetch
         await fetchStockData(selectedSymbol);
     }
 }
 
-// --- Pop-up Functions (unchanged) ---
+// --- Pop-up Functions ---
 function openPopup() {
     if (popupCard) {
         popupCard.classList.add('show');
     }
 }
 
-function closePopup() {
+// Modified closePopup to control clearing currentFetchedStockData
+function closePopup(userInitiated = false) {
     if (popupCard) {
         popupCard.classList.remove('show');
         stockSymbolInput.value = ''; // Clear search input
         clearStockDisplay(); // Clear displayed data when pop-up closes
+
+        // ONLY clear currentFetchedStockData if the user manually closed the popup
+        // or if it's not being closed as part of the AddInvestment process.
+        if (userInitiated) {
+            currentFetchedStockData = null;
+        }
     }
 }
 
-// --- Fetch Stock Data Function (Modified to store change percent and beta) ---
-let currentFetchedStockData = {}; // Temp storage for data needed by AddInvestment
-
+// --- Fetch Stock Data Function ---
 async function fetchStockData(symbol) {
-    if (!symbol) {
-        symbol = stockSymbolInput.value.toUpperCase();
-    }
+    currentFetchedStockData = null; // Always clear at the start of a new fetch
 
     if (!symbol) {
-        alert("Please enter a stock symbol to search.");
+        showCustomToast('warning', 'Missing Symbol', 'Please enter a stock symbol to search.');
+        clearStockDisplay();
         return;
     }
 
     const selectedStockDefinition = allowedStocks.find(item => item.symbol === symbol);
     if (!selectedStockDefinition) {
-        alert(`Searching for '${symbol}' is not allowed. Please select from the suggestions.`);
+        showCustomToast('info', 'Symbol Not Allowed', `Searching for '${symbol}' is not allowed. Please select from the predefined suggestions.`);
         hideHints();
         clearStockDisplay();
         return;
     }
 
     clearStockDisplay();
-    currentFetchedStockData = {}; // Clear previous fetched data
 
     if (companyLogo && selectedStockDefinition.logo_path) {
         companyLogo.src = selectedStockDefinition.logo_path;
@@ -245,23 +326,22 @@ async function fetchStockData(symbol) {
     }
 
     try {
-        // Fetch Real-Time Stock Data
         const stockUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`;
         const stockResponse = await fetch(stockUrl);
         const stockData = await stockResponse.json();
 
         if (!stockData["Global Quote"] || Object.keys(stockData["Global Quote"]).length === 0) {
-            alert("No real-time data found for this stock symbol. It might be invalid or API limit exceeded.");
+            showCustomToast('error', 'Data Not Found', 'No real-time data found for this stock symbol. It might be invalid or the API limit has been exceeded.', 5000);
             companyLogo.style.display = 'none';
             return;
         }
 
         const stock = stockData["Global Quote"];
         const changeValue = parseFloat(stock["09. change"]);
-        const changePercent = parseFloat(stock["10. change percent"].replace('%', '')); // Parse as number
+        const changePercent = parseFloat(stock["10. change percent"].replace('%', ''));
 
         stockPrice.innerText = `$${parseFloat(stock["05. price"]).toFixed(2)}`;
-        stockChange.innerText = `${changeValue.toFixed(2)} (${changePercent.toFixed(2)}%)`; // Re-add % for display
+        stockChange.innerText = `${changeValue.toFixed(2)} (${changePercent.toFixed(2)}%)`;
         stockChange.className = 'stock-change';
         if (changeValue >= 0) {
             stockChange.classList.add('positive');
@@ -271,35 +351,33 @@ async function fetchStockData(symbol) {
         stockOpen.innerText = `$${parseFloat(stock["02. open"]).toFixed(2)}`;
         stockHigh.innerText = `$${parseFloat(stock["03. high"]).toFixed(2)}`;
         stockLow.innerText = `$${parseFloat(stock["04. low"]).toFixed(2)}`;
-        stockVolume.innerText = `${stock["06. volume"]}`;
+        stockVolume.innerText = `${parseInt(stock["06. volume"]).toLocaleString()}`;
         previousClose.innerText = `$${parseFloat(stock["08. previous close"]).toFixed(2)}`;
 
-        // Fetch Additional Company Information
         const overviewUrl = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${apiKey}`;
         const overviewResponse = await fetch(overviewUrl);
         const overviewData = await overviewResponse.json();
 
-        let fetchedBeta = null; // Default to null
-        let fetchedSector = null; // Default to null
+        let fetchedBeta = null;
+        let fetchedSector = null;
 
         if (overviewData && Object.keys(overviewData).length > 0) {
             companyName.innerText = overviewData["Name"] || selectedStockDefinition.name || "Company Name Not Available";
             companyDescription.innerText = overviewData["Description"] || selectedStockDefinition.description || "No description available.";
-            stock52WeekHigh.innerText = `$${overviewData["52WeekHigh"]}`;
-            stock52WeekLow.innerText = `$${overviewData["52WeekLow"]}`;
+            stock52WeekHigh.innerText = `$${parseFloat(overviewData["52WeekHigh"]).toFixed(2)}`;
+            stock52WeekLow.innerText = `$${parseFloat(overviewData["52WeekLow"]).toFixed(2)}`;
             marketCap.innerText = `$${(parseFloat(overviewData["MarketCapitalization"]) / 1e9).toFixed(2)}B`;
-            peRatio.innerText = overviewData["PERatio"];
-            dividendYield.innerText = `${(parseFloat(overviewData["DividendYield"]) * 100).toFixed(2)}%`;
+            peRatio.innerText = overviewData["PERatio"] !== "None" ? parseFloat(overviewData["PERatio"]).toFixed(2) : "-";
+            dividendYield.innerText = overviewData["DividendYield"] !== "None" ? `${(parseFloat(overviewData["DividendYield"]) * 100).toFixed(2)}%` : "-";
             sector.innerText = `${overviewData["Sector"]}`;
-            bookValue.innerText = `${overviewData["BookValue"]}`;
-            eps.innerText = `${overviewData["EPS"]}`;
-            ebitda.innerText = `${(parseFloat(overviewData["EBITDA"]) / 1e9).toFixed(2)}B`;
-            beta.innerText = `${overviewData["Beta"]}`; // Display beta on the popup
-            dayMovingAverage.innerText = `${overviewData["200DayMovingAverage"]}`;
+            bookValue.innerText = overviewData["BookValue"] !== "None" ? parseFloat(overviewData["BookValue"]).toFixed(2) : "-";
+            eps.innerText = overviewData["EPS"] !== "None" ? parseFloat(overviewData["EPS"]).toFixed(2) : "-";
+            ebitda.innerText = overviewData["EBITDA"] !== "None" ? `$${(parseFloat(overviewData["EBITDA"]) / 1e9).toFixed(2)}B` : "-";
+            beta.innerText = overviewData["Beta"] !== "None" ? parseFloat(overviewData["Beta"]).toFixed(2) : "-";
+            dayMovingAverage.innerText = overviewData["200DayMovingAverage"] !== "None" ? parseFloat(overviewData["200DayMovingAverage"]).toFixed(2) : "-";
 
-            // Store fetched data for AddInvestment
             fetchedBeta = parseFloat(overviewData["Beta"]);
-            fetchedSector = overviewData["Sector"]; // Also store sector if needed for future charts
+            fetchedSector = overviewData["Sector"];
         } else {
             companyName.innerText = selectedStockDefinition.name || "Company Name Not Available";
             companyDescription.innerText = selectedStockDefinition.description || "No description available.";
@@ -312,23 +390,22 @@ async function fetchStockData(symbol) {
             dayMovingAverage.innerText = "-";
         }
 
-        // Store data to be used by AddInvestment
         currentFetchedStockData = {
             symbol: symbol,
-            name: companyName.innerText, // Use the potentially fallback name
+            name: companyName.innerText,
             price: parseFloat(stock["05. price"]),
             change: changeValue,
-            changePercent: changePercent, // Store as number for charts
+            changePercent: changePercent,
             changeClass: stockChange.classList.contains('positive') ? 'positive' : (stockChange.classList.contains('negative') ? 'negative' : ''),
-            logo: companyLogo.src, // Store the path to the logo
-            beta: fetchedBeta // Store beta as number for charts
+            logo: companyLogo.src,
+            beta: fetchedBeta
         };
 
-        openPopup();
+        openPopup(); // Only open popup if all data is successfully fetched
 
     } catch (error) {
         console.error("Error fetching stock data:", error);
-        alert("Error fetching stock data. Please try again later.");
+        showCustomToast('error', 'API Error', 'Error fetching stock data. Please try again later or check your network connection.', 5000);
         clearStockDisplay();
     }
 }
@@ -344,46 +421,54 @@ function clearStockDisplay() {
     peRatio.innerText = "-"; dividendYield.innerText = "-";
     sector.innerText = "-"; bookValue.innerText = "-";
     eps.innerText = "-"; ebitda.innerText = "-";
-    beta.innerText = "-"; dayMovingAverage.innerText = "-"; // Clear beta display
+    beta.innerText = "-"; dayMovingAverage.innerText = "-";
     if (companyLogo) { companyLogo.src = ""; companyLogo.alt = "Company Logo"; companyLogo.style.display = 'none'; }
-
-    currentFetchedStockData = {}; // Clear temp storage
 }
 
-// ------------------- Selected Investments Logic (Modified for chart data) -------------------
+
+// ------------------- Selected Investments Logic -------------------
 
 function AddInvestment() {
-    // Use data from currentFetchedStockData, which was populated by fetchStockData
-    const newInvestment = currentFetchedStockData;
+   
 
-    if (!newInvestment.symbol || !newInvestment.name || newInvestment.price === undefined || !newInvestment.logo) {
-        alert("Please search for a valid stock and ensure its data is loaded before adding.");
-        return;
-    }
+    const newInvestment = currentFetchedStockData;
 
     const isDuplicate = selectedInvestments.some(investment => investment.symbol === newInvestment.symbol);
     if (isDuplicate) {
-        alert(`${newInvestment.name} (${newInvestment.symbol}) is already in your selected investments.`);
-        closePopup();
+        showCustomToast('info', 'Stock Already Added', `${newInvestment.name} (${newInvestment.symbol}) is already in your comparison section.`);
+        closePopup(true); // Close the popup and clear data
         return;
     }
 
     if (selectedInvestments.length >= MAX_SELECTED_STOCKS) {
-        alert(`You can only select up to ${MAX_SELECTED_STOCKS} investments.`);
-        closePopup();
+        showCustomToast('warning', 'Selection Limit Reached', `You can only select up to ${MAX_SELECTED_STOCKS} investments. Please remove one to add another.`);
+        closePopup(true); // Close the popup and clear data
         return;
     }
 
+    // If all checks pass, add the investment
     selectedInvestments.push(newInvestment);
-    renderSelectedStocks(); // Update cards
-    updateCharts(); // Update charts
-    closePopup(); // Close the pop-up
+    renderSelectedStocks();
+    updateCharts();
+    closePopup(false); // Do NOT clear currentFetchedStockData here, it will be nulled below.
+
+    showCustomToast('success', 'Stock Added!', `${newInvestment.name} (${newInvestment.symbol}) has been successfully added to your comparison section.`);
+
+    // VERY IMPORTANT: Only clear currentFetchedStockData *after* successful addition or
+    // after determining it's a duplicate/limit reached and a toast has been shown.
+    currentFetchedStockData = null;
 }
 
+
 function removeInvestment(symbolToRemove) {
+    const removedStock = selectedInvestments.find(investment => investment.symbol === symbolToRemove);
+    const removedStockName = removedStock ? `${removedStock.name} (${removedStock.symbol})` : 'A stock';
+
     selectedInvestments = selectedInvestments.filter(investment => investment.symbol !== symbolToRemove);
-    renderSelectedStocks(); // Update cards
-    updateCharts(); // Update charts
+    renderSelectedStocks();
+    updateCharts();
+
+    showCustomToast('info', 'Stock Removed', `${removedStockName} has been removed from your comparison list.`);
 }
 
 function renderSelectedStocks() {
@@ -396,7 +481,6 @@ function renderSelectedStocks() {
     }
 
     selectedInvestments.forEach(investment => {
-        // Format price and change for card display
         const displayPrice = `$${investment.price.toFixed(2)}`;
         const displayChange = `${investment.change.toFixed(2)} (${investment.changePercent.toFixed(2)}%)`;
 
@@ -426,37 +510,31 @@ function renderSelectedStocks() {
     });
 }
 
-// ------------------- Chart Logic (NEW) -------------------
+// ------------------- Chart Logic -------------------
 
 function updateCharts() {
-    // Get data for charts
     const stockSymbols = selectedInvestments.map(inv => inv.symbol);
-    const dailyReturns = selectedInvestments.map(inv => inv.changePercent); // Use changePercent for return
-    const betaValues = selectedInvestments.map(inv => inv.beta); // Use beta for risk/volatility
+    const dailyReturns = selectedInvestments.map(inv => inv.changePercent);
+    const betaValues = selectedInvestments.map(inv => inv.beta);
 
-    // --- NEW ---
     if (selectedInvestments.length === 0) {
-        chartsContainer.classList.add('d-none'); // Hide the entire charts container if no stocks
-        // Destroy charts if they exist when hiding the container
+        chartsContainer.classList.add('d-none');
         if (riskChartInstance) {
             riskChartInstance.destroy();
-            riskChartInstance = null; // Important: nullify the instance
+            riskChartInstance = null;
         }
         if (returnChartInstance) {
             returnChartInstance.destroy();
-            returnChartInstance = null; // Important: nullify the instance
+            returnChartInstance = null;
         }
-        return; // Exit the function, no charts to draw
+        return;
     } else {
-        chartsContainer.classList.remove('d-none'); // Show the charts container if stocks exist
+        chartsContainer.classList.remove('d-none');
     }
-    // --- END NEW ---
 
-    // Get canvas contexts
     const riskCtx = document.getElementById('RiskChart').getContext('2d');
     const returnCtx = document.getElementById('ReturnChart').getContext('2d');
 
-    // Destroy existing chart instances if they exist
     if (riskChartInstance) {
         riskChartInstance.destroy();
     }
@@ -472,8 +550,18 @@ function updateCharts() {
             datasets: [{
                 label: 'Beta (Risk Level)',
                 data: betaValues,
-                backgroundColor: betaValues.map(beta => beta > 1 ? 'rgba(255, 99, 132, 0.7)' : (beta < 0.8 ? 'rgba(75, 192, 192, 0.7)' : 'rgba(255, 206, 86, 0.7)')), // Red for high risk, Green for low, Yellow for moderate
-                borderColor: betaValues.map(beta => beta > 1 ? 'rgba(255, 99, 132, 1)' : (beta < 0.8 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 206, 86, 1)')),
+                backgroundColor: betaValues.map(beta => {
+                    if (beta === null || isNaN(beta)) return 'rgba(128, 128, 128, 0.7)';
+                    if (beta > 1) return 'rgba(255, 99, 132, 0.7)';
+                    if (beta < 0.8) return 'rgba(75, 192, 192, 0.7)';
+                    return 'rgba(255, 206, 86, 0.7)';
+                }),
+                borderColor: betaValues.map(beta => {
+                    if (beta === null || isNaN(beta)) return 'rgba(128, 128, 128, 1)';
+                    if (beta > 1) return 'rgba(255, 99, 132, 1)';
+                    if (beta < 0.8) return 'rgba(75, 192, 192, 1)';
+                    return 'rgba(255, 206, 86, 1)';
+                }),
                 borderWidth: 1
             }]
         },
@@ -489,7 +577,7 @@ function updateCharts() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `${context.dataset.label}: ${context.raw !== null ? context.raw.toFixed(2) : 'N/A'}`;
+                            return `${context.dataset.label}: ${context.raw !== null && !isNaN(context.raw) ? context.raw.toFixed(2) : 'N/A'}`;
                         }
                     }
                 }
@@ -520,7 +608,7 @@ function updateCharts() {
             datasets: [{
                 label: 'Daily Return (%)',
                 data: dailyReturns,
-                backgroundColor: dailyReturns.map(ret => ret >= 0 ? 'rgba(75, 192, 192, 0.7)' : 'rgba(255, 99, 132, 0.7)'), // Green for positive, Red for negative
+                backgroundColor: dailyReturns.map(ret => ret >= 0 ? 'rgba(75, 192, 192, 0.7)' : 'rgba(255, 99, 132, 0.7)'),
                 borderColor: dailyReturns.map(ret => ret >= 0 ? 'rgba(75, 192, 192, 1)' : 'rgba(255, 99, 132, 1)'),
                 borderWidth: 1
             }]
@@ -537,14 +625,14 @@ function updateCharts() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `${context.dataset.label}: ${context.raw !== null ? context.raw.toFixed(2) : 'N/A'}%`;
+                            return `${context.dataset.label}: ${context.raw !== null && !isNaN(context.raw) ? context.raw.toFixed(2) : 'N/A'}%`;
                         }
                     }
                 }
             },
             scales: {
                 y: {
-                    beginAtZero: false, // Can go negative
+                    beginAtZero: false,
                     title: {
                         display: true,
                         text: 'Return (%)'
