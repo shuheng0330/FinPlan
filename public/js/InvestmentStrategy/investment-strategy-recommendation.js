@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     const errorData = await response.json();
                     console.error('Error generating strategy:', errorData);
-                    showindow.toast.error('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'), 'error'); 
+                    window.toast.error('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'), 'error'); 
                 }
             } catch (error) {
                 console.error('Network error during strategy generation:', error);
