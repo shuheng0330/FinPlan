@@ -63,6 +63,19 @@ exports.createUser = async (req, res) => {
                 return res.status(400).json({ message: 'Password is required for local signup.' });
             }
 
+            // Using validator.isStrongPassword
+            if (!validator.isStrongPassword(password, {
+                minLength: 8,
+                minLowercase: 1,
+                minUppercase: 1,
+                minNumbers: 1,
+                minSymbols: 1,
+            })) {
+                return res.status(400).json({
+                    message: 'Password is not strong enough. Use at least 8 characters, including uppercase, lowercase, numbers, and symbols.'
+                });
+            }
+
             // Hash the password
             passwordHash = await bcrypt.hash(password, 12); // 12 salt rounds
         }
@@ -262,6 +275,21 @@ exports.updateProfile = async (req, res) => {
             const isSameAsCurrent = await bcrypt.compare(newPassword, user.passwordHash);
             if (isSameAsCurrent) {
                 return res.status(400).json({ message: 'New password cannot be the same as your current password.' });
+            }
+
+            // Validate new password strength
+            const passwordOptions = {
+                minLength: 8,
+                minLowercase: 1,
+                minUppercase: 1,
+                minNumbers: 1,
+                minSymbols: 1,
+            };
+
+            if (!validator.isStrongPassword(newPassword, passwordOptions)) {
+                return res.status(400).json({
+                    message: 'New password is not strong enough. Use at least 8 characters, including uppercase, lowercase, numbers, and symbols.'
+                });
             }
 
             user.passwordHash = await bcrypt.hash(newPassword, 12);
