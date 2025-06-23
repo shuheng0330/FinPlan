@@ -327,11 +327,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     const errorData = await response.json();
                     console.error('Error generating strategy:', errorData);
-                    showindow.toast.error('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'), 'error'); // Replaced alert
+                    showindow.toast.error('Failed to generate strategy: ' + (errorData.message || 'Something went wrong.'), 'error'); 
                 }
             } catch (error) {
                 console.error('Network error during strategy generation:', error);
-                window.toast.error('Could not connect to the server to generate strategy. Please check your internet connection.', 'error'); // Replaced alert
+                window.toast.error('Could not connect to the server to generate strategy. Please check your internet connection.', 'error'); 
             } finally {
                 this.disabled = false;
                 this.textContent = 'Generate Strategy';
@@ -688,7 +688,6 @@ document.addEventListener('DOMContentLoaded', function() {
         strategyDetailModal.show(); // Show the Bootstrap modal
     }
 
-      // Function to fetch and display initial past strategies on page load
 
 async function fetchAndDisplayPastStrategies(fetchAll = true) {
     console.log("Fetching strategies, fetchAll:", fetchAll);

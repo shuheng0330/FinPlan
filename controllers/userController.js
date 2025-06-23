@@ -42,12 +42,6 @@ exports.createUser = async (req, res) => {
             return res.status(400).json({ message: 'Username, email, and auth provider are required.' });
         }
 
-        /*
-                if (username.length < 3 || username.length > 20) {
-                    return res.status(400).json({ message: 'Username must be between 3 and 20 characters.' });
-                }
-        */
-
         if (!validator.isEmail(email)) {
             return res.status(400).json({ message: 'Invalid email format.' });
         }
@@ -93,7 +87,7 @@ exports.createUser = async (req, res) => {
         const newUser = new User({
             username,
             email,
-            passwordHash, // <--- IMPORTANT: Ensure passwordHash is set here for local users
+            passwordHash, 
             authProvider,
             googleId: authProvider === 'google' ? googleId : null,
             profilePicture,
