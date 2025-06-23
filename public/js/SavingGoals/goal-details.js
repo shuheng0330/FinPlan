@@ -83,11 +83,13 @@ saveTransactionBtn.addEventListener('click', function () {
     const modal = bootstrap.Modal.getInstance(document.getElementById('addTransactionModal'));
     modal.hide();
     form.reset();
-    location.reload(); 
+    location.reload();
+    
+    window.toast.success('Transaction added successfully');
   })
   .catch(error => {
     console.error(error);
-    window.toast.error('An error occurred while saving the transaction:\n' + error.message);
+    window.toast.warning('An error occurred while saving the transaction:\n' + error.message);
   });
 
   });
@@ -161,7 +163,7 @@ saveTransactionBtn.addEventListener('click', function () {
 
         location.reload();
         // Optional: show success feedback
-        console.log('Transaction deleted successfully');
+        window.toast.success('Transaction deleted successfully');
       })
       .catch(err => {
         console.error(err);

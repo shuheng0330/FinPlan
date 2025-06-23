@@ -74,16 +74,15 @@ exports.createGoal = async(req,res)=>{
         }
 
         // Create a new goal instance
-        // Mongoose will handle casting types and applying defaults from the schema
         const newGoal = new Goal({
             goalName,
             goalAmount,
             currentAmount,
-            targetDate: parsedTargetDate, // Use parsed Date objects
-            startDate: parsedStartDate,   // Use parsed Date objects
+            targetDate: parsedTargetDate, 
+            startDate: parsedStartDate,   
             goalPriority,
             icon,
-            user: req.user.id // Assuming req.user is populated by authentication middleware
+            user: req.user.id 
         });
 
         // Save the goal to the database
