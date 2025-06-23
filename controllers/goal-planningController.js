@@ -34,9 +34,6 @@ exports.createGoal = async(req,res)=>{
         console.log("goalPriority received:", req.body.goalPriority);
 
 
-        // Mongoose Schema validation will handle most 'required' and 'min' checks.
-        // We'll add custom logical checks here.
-
         if (!req.user || !req.user._id){
             return res.status(400).json({ message: 'User must be logged in to create new goal' });
         }
@@ -52,10 +49,6 @@ exports.createGoal = async(req,res)=>{
             return res.status(400).json({ message: 'Invalid Start Date or Target Date format.' });
         }
 
-        // The Mongoose pre('validate') hook will handle:
-        // - currentAmount > goalAmount
-        // - startDate > targetDate
-        // So you don't *strictly* need to repeat these here, but it's good for immediate feedback.
         if (currentAmount > goalAmount) {
             return res.status(400).json({ message: 'Current Savings cannot be greater than Target Amount.' });
         }
@@ -64,7 +57,6 @@ exports.createGoal = async(req,res)=>{
         }
 
 
-        // Ensure the icon is one of your allowed icons (important for data consistency)
         const allowedIcons = [
             'vacation', 'house', 'emergency', 'car', 'education', 'investment',
             'retirement', 'wedding', 'family', 'electronic', 'debt', 'charity'
@@ -86,7 +78,7 @@ exports.createGoal = async(req,res)=>{
         });
 
         // Save the goal to the database
-        const savedGoal = await newGoal.save(); // This will trigger the pre('validate') and pre('save') hooks
+        const savedGoal = await newGoal.save(); 
 
         res.status(201).json({
             status: 'success',

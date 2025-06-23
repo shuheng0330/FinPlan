@@ -41,11 +41,7 @@ exports.createUser = async (req, res) => {
         if (!username || !email || !authProvider) {
             return res.status(400).json({ message: 'Username, email, and auth provider are required.' });
         }
-        /*
-                if (username.length < 3 || username.length > 20) {
-                    return res.status(400).json({ message: 'Username must be between 3 and 20 characters.' });
-                }
-        */
+
         if (!validator.isEmail(email)) {
             return res.status(400).json({ message: 'Invalid email format.' });
         }
@@ -67,18 +63,18 @@ exports.createUser = async (req, res) => {
                 return res.status(400).json({ message: 'Password is required for local signup.' });
             }
 
-            // // Using validator.isStrongPassword
-            // if (!validator.isStrongPassword(password, {
-            //     minLength: 8,
-            //     minLowercase: 1,
-            //     minUppercase: 1,
-            //     minNumbers: 1,
-            //     minSymbols: 1,
-            // })) {
-            //     return res.status(400).json({
-            //         message: 'Password is not strong enough. Use at least 8 characters, including uppercase, lowercase, numbers, and symbols.'
-            //     });
-            // }
+            // Using validator.isStrongPassword
+            if (!validator.isStrongPassword(password, {
+                minLength: 8,
+                minLowercase: 1,
+                minUppercase: 1,
+                minNumbers: 1,
+                minSymbols: 1,
+            })) {
+                return res.status(400).json({
+                    message: 'Password is not strong enough. Use at least 8 characters, including uppercase, lowercase, numbers, and symbols.'
+                });
+            }
 
             // Hash the password
             passwordHash = await bcrypt.hash(password, 12); // 12 salt rounds
@@ -91,7 +87,7 @@ exports.createUser = async (req, res) => {
         const newUser = new User({
             username,
             email,
-            passwordHash, // <--- IMPORTANT: Ensure passwordHash is set here for local users
+            passwordHash, 
             authProvider,
             googleId: authProvider === 'google' ? googleId : null,
             profilePicture,
@@ -279,6 +275,21 @@ exports.updateProfile = async (req, res) => {
             const isSameAsCurrent = await bcrypt.compare(newPassword, user.passwordHash);
             if (isSameAsCurrent) {
                 return res.status(400).json({ message: 'New password cannot be the same as your current password.' });
+            }
+
+            // Validate new password strength
+            const passwordOptions = {
+                minLength: 8,
+                minLowercase: 1,
+                minUppercase: 1,
+                minNumbers: 1,
+                minSymbols: 1,
+            };
+
+            if (!validator.isStrongPassword(newPassword, passwordOptions)) {
+                return res.status(400).json({
+                    message: 'New password is not strong enough. Use at least 8 characters, including uppercase, lowercase, numbers, and symbols.'
+                });
             }
 
             user.passwordHash = await bcrypt.hash(newPassword, 12);

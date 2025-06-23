@@ -1,0 +1,116 @@
+.stock-logo {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            margin-right: 8px;
+        }
+        .positive-change {
+            color: #28a745;
+        }
+        .negative-change {
+            color: #dc3545;
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+        #loading-stocks, #loading-news, #loading-indices, #loading-ratings, #loading-earnings {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        /* New style to ensure footer takes full width within its flex container */
+        footer {
+            width: 100%; /* Ensure footer takes full width of its parent flex item */
+        }
+        .toast-container {
+        max-width: 350px;
+        }
+
+        .toast {
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        }
+
+        .toast-success {
+        background-color: #d1e7dd;
+        border-left: 4px solid #198754;
+        }
+
+        .toast-error {
+        background-color: #f8d7da;
+        border-left: 4px solid #dc3545;
+        }
+
+        .toast-warning {
+        background-color: #fff3cd;
+        border-left: 4px solid #ffc107;
+        }
+
+        .toast-info {
+        background-color: #d1ecf1;
+        border-left: 4px solid #0dcaf0;
+        }
+
+        .toast-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        padding: 0.75rem;
+        }
+
+        .toast-body {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+        }
+
+        .toast-icon {
+        font-size: 1.25rem;
+        margin-right: 0.5rem;
+        }
+
+        .toast-success .toast-icon {
+        color: #198754;
+        }
+
+        .toast-error .toast-icon {
+        color: #dc3545;
+        }
+
+        .toast-warning .toast-icon {
+        color: #ffc107;
+        }
+
+        .toast-info .toast-icon {
+        color: #0dcaf0;
+        }
+
+        /* Animation for toast entrance */
+        @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        }
+
+        .toast.show {
+        animation: slideInRight 0.3s ease-out;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+        .toast-container {
+            position: fixed !important;
+            top: 1rem !important;
+            left: 1rem !important;
+            right: 1rem !important;
+            max-width: none !important;
+        }
+        }
+

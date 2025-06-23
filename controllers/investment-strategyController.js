@@ -65,7 +65,6 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             });
         }
 
-        // Calculate investment horizon (in years) - **UPDATED ROBUST CALCULATION**
         const startDate = new Date(goal.startDate);
         const targetDate = new Date(goal.targetDate);
 
@@ -89,7 +88,6 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
         investmentHorizonYears = parseFloat(investmentHorizonYears.toFixed(1));
 
 
-        // 2. Prepare Prompt for Grok (or your chosen AI model)
         const remainingAmount = goal.goalAmount - goal.currentAmount;
         // The .toLocaleString() is fine for the prompt string as it's sent to Grok as text.
         const prompt = `Generate a diversified investment strategy for a user in the Malaysian market with the following details:
@@ -355,8 +353,6 @@ exports.downloadStrategyPdf = async (req, res) => {
 exports.saveInvestmentStrategy = async (req, res, next) => {
     try {
         const { goalId, strategy } = req.body;
-        // Assuming user ID is available from authentication middleware (e.g., req.user.id)
-        // const userId = req.user.id; // Or req.user._id, depending on your auth setup
 
         if (!req.user._id) {
             return res.status(401).json({
@@ -372,8 +368,6 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
             });
         }
 
-        // You might want to do more robust validation of the 'strategy' object here
-        // to ensure it matches your SavedStrategy schema.
 
         const newSavedStrategy = await Strategy.create({
             user: req.user._id,
@@ -399,12 +393,12 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
     } catch (err) {
         console.error('Error saving investment strategy:', err);
         // Handle duplicate key errors if you've added a unique index
-        if (err.code === 11000) {
-            return res.status(409).json({
-                status: 'fail',
-                message: 'This strategy for this goal has already been saved.'
-            });
-        }
+        // if (err.code === 11000) {
+        //     return res.status(409).json({
+        //         status: 'fail',
+        //         message: 'This strategy for this goal has already been saved.'
+        //     });
+        // }
         res.status(500).json({
             status: 'error',
             message: 'Failed to save investment strategy.',
@@ -415,7 +409,6 @@ exports.saveInvestmentStrategy = async (req, res, next) => {
 
 exports.getPastStrategies = async(req,res,next)=>{
     try{
-        // Use req.user._id directly for authentication. If no user, it means not logged in.
         const userId = req.user ? req.user._id : null;
 
         if(! userId){
@@ -425,7 +418,6 @@ exports.getPastStrategies = async(req,res,next)=>{
             });
         }
 
-        // Initialize the filter object with the user ID
         let filter = { user: userId };
 
         // Add goal filter if provided in query parameters and it's not 'all'
@@ -435,18 +427,16 @@ exports.getPastStrategies = async(req,res,next)=>{
 
         // Add risk appetite filter if provided in query parameters and it's not 'all'
         if (req.query.risk && req.query.risk !== 'all') {
-            filter.riskLevel = req.query.risk; // This will correctly filter by risk string
+            filter.riskLevel = req.query.risk; 
         }
 
         // Get total count of strategies matching the filters (before applying limit)
         const totalStrategies = await Strategy.countDocuments(filter);
 
-        // Build the Mongoose query using the constructed filter
-        let query = Strategy.find(filter) // <--- CRITICAL FIX: APPLY THE FILTER HERE
-                                         .populate('goal') // Populate goal details
+        let query = Strategy.find(filter) 
+                                         .populate('goal') 
                                          .sort({createdAt: -1}); // Sort by newest first
 
-        // Apply limit if provided
         const limitParam = req.query.limit;
         if (limitParam && limitParam !== 'all') {
             const limit = parseInt(limitParam, 10);
@@ -460,7 +450,7 @@ exports.getPastStrategies = async(req,res,next)=>{
         res.status(200).json({
             status: 'success',
             results: pastStrategies.length,
-            totalCount: totalStrategies, // Send total count for frontend pagination logic
+            totalCount: totalStrategies, 
             data: {
                 strategies: pastStrategies
             }

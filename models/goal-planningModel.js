@@ -1,4 +1,3 @@
-// models/goal.js
 const mongoose = require('mongoose');
 
 const goalSchema = new mongoose.Schema(
@@ -69,7 +68,6 @@ const goalSchema = new mongoose.Schema(
     }
 );
 
-// --- Middleware (Hooks) ---
 
 // 1. Pre-validation hook to ensure currentAmount <= goalAmount and startDate <= targetDate
 goalSchema.pre('validate', function(next) {
@@ -84,7 +82,7 @@ goalSchema.pre('validate', function(next) {
     }
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Clear time for comparison
+    today.setHours(0, 0, 0, 0); 
 
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -93,7 +91,7 @@ goalSchema.pre('validate', function(next) {
         this.invalidate('targetDate', 'Target Date must be at least one day in the future.', this.targetDate);
     }
 
-    next(); // Continue with validation
+    next(); 
 });
 
 // 2. Pre-save hook to calculate progress and update status BEFORE saving
@@ -102,10 +100,9 @@ goalSchema.pre('save', function(next) {
     if (this.goalAmount > 0) {
         this.progress = Math.min(100, Math.round((this.currentAmount / this.goalAmount) * 100));
     } else {
-        this.progress = 0; // If goalAmount is 0, progress is 0
+        this.progress = 0; 
     }
 
-    // Update status based on progress and dates
     if (this.progress >= 100) {
         this.status = 'completed';
     } else if (this.targetDate && new Date() > this.targetDate) {
