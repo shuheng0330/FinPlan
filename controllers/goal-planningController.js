@@ -70,8 +70,8 @@ exports.createGoal = async(req,res)=>{
             goalName,
             goalAmount,
             currentAmount,
-            targetDate: parsedTargetDate, // Use parsed Date objects
-            startDate: parsedStartDate,   // Use parsed Date objects
+            targetDate: parsedTargetDate, 
+            startDate: parsedStartDate,   
             goalPriority,
             icon,
             user: req.user.id 
