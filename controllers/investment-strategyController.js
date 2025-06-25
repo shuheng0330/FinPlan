@@ -55,7 +55,6 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             });
         }
 
-        // 1. Fetch Goal Details from Database
         const goal = await Goal.findById(goalId);
 
         if (!goal) {
@@ -70,21 +69,19 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
 
         let investmentHorizonYears;
 
-        // Ensure target date is not before start date for calculation purposes
         if (targetDate < startDate) {
             console.warn(`Target Date (${targetDate.toISOString()}) is before Start Date (${startDate.toISOString()}) for Goal ID: ${goalId}. Setting investment horizon to 0.1 years.`);
-            investmentHorizonYears = 0.1; // Set a small positive default to avoid division by zero or negative horizon
+            investmentHorizonYears = 0.1; 
         } else {
             const diffTime = Math.abs(targetDate.getTime() - startDate.getTime());
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            investmentHorizonYears = diffDays / 365.25; // Use 365.25 for leap years average
+            investmentHorizonYears = diffDays / 365.25; 
 
             // Ensure a minimum horizon, avoid 0 or very tiny numbers close to zero
             if (investmentHorizonYears < 0.1) {
                 investmentHorizonYears = 0.1;
             }
         }
-        // Round to 1 decimal place for clarity in the prompt
         investmentHorizonYears = parseFloat(investmentHorizonYears.toFixed(1));
 
         const remainingAmount = goal.goalAmount - goal.currentAmount;
@@ -127,7 +124,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             "riskReturnAnalysis": "Analyze the risk vs. return.",
             "investmentHorizonImpact": "Explain the impact of the investment horizon."
 
-          "Recommendation" : "Give and explain the recommendation based on goal and risk appetite. e.g. Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape."
+          "Recommendation" : "Give and explain the recommendation based on goal and risk appetite. e.g. Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape.",
           "strategyComparison": {
             "Conservative": [
                 { "Stocks": 0 },
@@ -175,29 +172,24 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
                     model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
                     response_format: { type: "json_object" },
                 });
-                aiRawResponse = completion.choices[0]?.message?.content; // Use optional chaining
+                aiRawResponse = completion.choices[0]?.message?.content; 
                 console.log('AI Raw Response:', aiRawResponse);
             } else {
-                // This block is for production or when not in development,
-                // and acts as a primary fallback if no AI integration is active.
                 const calculatedMonthlyInvestment = Math.round(remainingAmount / (investmentHorizonYears * 12) * (1 + (riskAppetite === 'Aggressive' ? 0.02 : riskAppetite === 'Moderate' ? 0.01 : 0)));
                 aiRawResponse = generateFallbackStrategy(goal, riskAppetite, investmentHorizonYears, remainingAmount, calculatedMonthlyInvestment);
             }
 
-            // Attempt to parse the AI's response as JSON
             generatedStrategy = JSON.parse(aiRawResponse);
             console.log('Parsed AI Response:', generatedStrategy);
 
         } catch (error) {
             console.error('Error with AI model response or parsing, falling back to static strategy:', error);
 
-            // Fallback JSON approach if AI call fails or parsing fails
             const calculatedMonthlyInvestment = Math.round(remainingAmount / (investmentHorizonYears * 12) * (1 + (riskAppetite === 'Aggressive' ? 0.02 : riskAppetite === 'Moderate' ? 0.01 : 0)));
             generatedStrategy = JSON.parse(generateFallbackStrategy(goal, riskAppetite, investmentHorizonYears, remainingAmount, calculatedMonthlyInvestment));
             console.log('Using Fallback Strategy:', generatedStrategy);
         }
 
-        // 4. Send Strategy to Frontend
         res.status(200).json({
             status: 'success',
             data: {
