@@ -89,7 +89,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
 
         const remainingAmount = goal.goalAmount - goal.currentAmount;
         const prompt = `Generate a diversified investment strategy for a user in the Malaysian market with the following details:
-        The response must be purely JSON, with no markdown or extra text.
+        The response must be purely JSON, with no markdown or extra text. Directly start with {...}
 
         Goal Details:
         - Goal: ${goal.goalName}
@@ -128,10 +128,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             "investmentHorizonImpact": "Explain the impact of the investment horizon."
 
           "Recommendation" : "Give and explain the recommendation based on goal and risk appetite. e.g. Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape."
-
-          For the strategy comparison, could u show me the percentage of assest for different risk appetide in json format
-          The total percentage of stocks, bonds, cash and others must be sum up to 100%
-           "strategyComparison": {
+          "strategyComparison": {
             "Conservative": [
                 { "Stocks": 0 },
                 { "Bonds": 0 },
@@ -162,6 +159,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
           }
         }
         Ensure the asset allocation percentages sum up to 100%. Adjust the percentage for each asset class and provide suitable fund names based on the risk appetite and investment horizon.
+        Show all the percentage of stocks,bonds,cash and other for each risk level and must be sum up to 100%
         Ensure numerical values are correctly formatted and strings are descriptive. If possible, please explain the strategy generated with more detail and suit to the goal selected and risk appetite level
         Focus on Malaysian context for funds and financial advice.`;
 
@@ -174,7 +172,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             if (process.env.NODE_ENV === 'development') {
                 const completion = await openai.chat.completions.create({
                     messages: [{ role: 'user', content: prompt }],
-                    model: 'mistralai/mistral-small-3.2-24b-instruct:free',
+                    model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
                     response_format: { type: "json_object" },
                 });
                 aiRawResponse = completion.choices[0]?.message?.content; // Use optional chaining
@@ -244,7 +242,7 @@ function generateFallbackStrategy(goal, riskAppetite, investmentHorizonYears, re
             expectedAnnualReturn = 0.06;
             strategyExplanationWhy = `This balanced strategy seeks to achieve growth for your ${goal.goalName} goal while maintaining a moderate level of risk, aligning with your risk appetite.`;
             riskReturnAnalysis = "A moderate allocation balances growth potential from equities with stability from bonds. This offers a reasonable return outlook with manageable volatility, suitable for medium-term goals.";
-            recommendation = `Given your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market and a moderate risk profile, we suggest a balanced mix. This includes allocations to **KLCI ETFs** and **Malaysian equity funds** for growth potential, supplemented by **Malaysian corporate bonds** and **Islamic REITs** for income and diversification. This approach aims for steady appreciation while cushioning against significant market downturns.`;
+            recommendation = `Given your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market and a moderate risk profile, we suggest a balanced mix. This includes allocations to KLCI ETFs and Malaysian equity funds for growth potential, supplemented by Malaysian corporate bonds and Islamic REITs for income and diversification. This approach aims for steady appreciation while cushioning against significant market downturns.`;
             recommendedFunds = [
                 { "fundName": "FSMOne - Kenanga Growth Fund", "description": "Invests primarily in Malaysian equities with growth potential.", "RiskLevel": "Medium", "MinimumInvestment": "RM100", "Liquidity": "High", "Fees": "Up to 5% sales charge, 1.5% management fee." },
                 { "fundName": "Principal Bond Fund", "description": "Invests in a diversified portfolio of Malaysian fixed income securities.", "RiskLevel": "Low-Medium", "MinimumInvestment": "RM1000", "Liquidity": "High", "Fees": "Up to 3% sales charge, 0.8% management fee." },
@@ -256,7 +254,7 @@ function generateFallbackStrategy(goal, riskAppetite, investmentHorizonYears, re
             expectedAnnualReturn = 0.08;
             strategyExplanationWhy = `This aggressive strategy is designed to maximize potential returns for your ${goal.goalName} goal, suitable for your high-risk appetite and longer investment horizon.`;
             riskReturnAnalysis = "An aggressive allocation emphasizes equities for higher growth potential, accepting higher volatility. This approach is best for investors with a long-term horizon who can withstand significant market fluctuations.";
-            recommendation = `With your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market and an aggressive risk appetite, we advise a growth-oriented portfolio. This involves a significant allocation to **Malaysian and ASEAN equity funds**, including small-cap and technology-focused funds for higher returns. A smaller portion can be allocated to **high-yield corporate bonds** for some income, with minimal cash holdings to ensure maximum capital deployment.`;
+            recommendation = `With your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market and an aggressive risk appetite, we advise a growth-oriented portfolio. This involves a significant allocation to Malaysian and ASEAN equity funds, including small-cap and technology-focused funds for higher returns. A smaller portion can be allocated to high-yield corporate bonds for some income, with minimal cash holdings to ensure maximum capital deployment.`;
             recommendedFunds = [
                 { "fundName": "RHB Emerging ASEAN Growth Fund", "description": "Focuses on high-growth companies in emerging ASEAN markets, including Malaysia.", "RiskLevel": "High", "MinimumInvestment": "RM1000", "Liquidity": "Medium", "Fees": "Up to 5.5% sales charge, 1.8% management fee." },
                 { "fundName": "Kenanga Syariah Growth Fund", "description": "Invests in Shariah-compliant equities with strong growth prospects in Malaysia.", "RiskLevel": "Medium-High", "MinimumInvestment": "RM100", "Liquidity": "High", "Fees": "Up to 5.25% sales charge, 1.5% management fee." },
@@ -269,7 +267,7 @@ function generateFallbackStrategy(goal, riskAppetite, investmentHorizonYears, re
             expectedAnnualReturn = 0.06;
             strategyExplanationWhy = `This balanced strategy seeks to achieve growth for your ${goal.goalName} goal while maintaining a moderate level of risk, as your risk appetite was not specified or recognized.`;
             riskReturnAnalysis = "A moderate allocation balances growth potential from equities with stability from bonds. This offers a reasonable return outlook with manageable volatility, suitable for medium-term goals.";
-            recommendation = `Based on your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market, and without a specified risk appetite, a moderate approach is recommended. This includes allocations to **KLCI ETFs** and **Malaysian equity funds** for growth potential, supplemented by **Malaysian corporate bonds** and **Islamic REITs** for income and diversification. This approach aims for steady appreciation while cushioning against significant market downturns.`;
+            recommendation = `Based on your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market, and without a specified risk appetite, a moderate approach is recommended. This includes allocations to KLCI ETFs and Malaysian equity funds for growth potential, supplemented by Malaysian corporate bonds and Islamic REITs for income and diversification. This approach aims for steady appreciation while cushioning against significant market downturns.`;
             recommendedFunds = [
                 { "fundName": "FSMOne - Kenanga Growth Fund", "description": "Invests primarily in Malaysian equities with growth potential.", "RiskLevel": "Medium", "MinimumInvestment": "RM100", "Liquidity": "High", "Fees": "Up to 5% sales charge, 1.5% management fee." },
                 { "fundName": "Principal Bond Fund", "description": "Invests in a diversified portfolio of Malaysian fixed income securities.", "RiskLevel": "Low-Medium", "MinimumInvestment": "RM1000", "Liquidity": "High", "Fees": "Up to 3% sales charge, 0.8% management fee." },
@@ -279,33 +277,33 @@ function generateFallbackStrategy(goal, riskAppetite, investmentHorizonYears, re
     }
 
     const strategyComparisonData = {
-        "Conservative": {
-            "Stocks": 25,
-            "Bonds": 45,
-            "Cash": 30,
-            "Other": 0,
-            "Expectedreturns": 0.04,
-            "Volatility": "Low",
-            "BestFor": "Short-term goals (1-3 years), capital preservation"
-        },
-        "Moderate": {
-            "Stocks": 50,
-            "Bonds": 35,
-            "Cash": 15,
-            "Other": 0,
-            "Expectedreturns": 0.06,
-            "Volatility": "Medium",
-            "BestFor": "Medium-term goals (3-7 years), balanced growth and risk"
-        },
-        "Aggressive": {
-            "Stocks": 70,
-            "Bonds": 20,
-            "Cash": 10,
-            "Other": 0,
-            "Expectedreturns": 0.08,
-            "Volatility": "High",
-            "BestFor": "Long-term goals (7+ years), maximizing growth"
-        }
+        "Conservative": [
+            {"Stocks": 15},
+            {"Bonds": 55},
+            {"Cash": 20},
+            {"Other": 10},
+            {"Expectedreturns": 0.04},
+            {"Volatility": "Low"},
+            {"BestFor": "Short-term goals (1-3 years), capital preservation"}
+        ],
+        "Moderate": [
+            {"Stocks": 40},
+            {"Bonds": 30},
+            {"Cash": 15},
+            {"Other": 15},
+            {"Expectedreturns": 0.06},
+            {"Volatility": "Medium"},
+            {"BestFor": "Medium-term goals (3-7 years), balanced growth and risk"}
+        ],
+        "Aggressive": [
+            {"Stocks": 65},
+            {"Bonds": 15},
+            {"Cash": 10},
+            {"Other": 10},
+            {"Expectedreturns": 0.08},
+            {"Volatility": "High"},
+            {"BestFor": "Long-term goals (7+ years), maximizing growth"}
+        ]
     };
 
 
