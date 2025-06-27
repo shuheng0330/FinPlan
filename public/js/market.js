@@ -819,7 +819,6 @@ async function refreshStock(timeRange = '1d') {
   const stocks = await fetchStockData(watchlist, timeRange);
   updateStockTable(stocks);
   const ratings = await fetchAnalystRatings(watchlist);
-  updateAnalystRatings(ratings);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -136,4 +136,5 @@ goalSchema.virtual('transactions', {
 });
 
 const Goal = mongoose.model('Goal', goalSchema);
+
 module.exports = Goal;

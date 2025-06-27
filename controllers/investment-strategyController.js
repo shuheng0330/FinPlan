@@ -169,7 +169,7 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             if (process.env.NODE_ENV === 'development') {
                 const completion = await openai.chat.completions.create({
                     messages: [{ role: 'user', content: prompt }],
-                    model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
+                    model: 'mistralai/mistral-small-3.2-24b-instruct:free',
                     response_format: { type: "json_object" },
                 });
                 aiRawResponse = completion.choices[0]?.message?.content; 
