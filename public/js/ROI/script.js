@@ -209,7 +209,7 @@ function handleROISubmit(e) {
 
 // ------------------- Stock Data Functions -------------------
 // Using a mock API key, replace with your actual Alpha Vantage API Key
-const apiKey = "WC1APVXJW1Y7SNZL";
+const apiKey = "6ZPIUPMEUE9295ZA";
 
 // Define your allowed stock symbols with mock data for pop-up descriptions and LOGO PATHS
 const allowedStocks = [

@@ -55,7 +55,6 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             });
         }
 
-        // 1. Fetch Goal Details from Database
         const goal = await Goal.findById(goalId);
 
         if (!goal) {
@@ -70,28 +69,24 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
 
         let investmentHorizonYears;
 
-        // Ensure target date is not before start date for calculation purposes
         if (targetDate < startDate) {
             console.warn(`Target Date (${targetDate.toISOString()}) is before Start Date (${startDate.toISOString()}) for Goal ID: ${goalId}. Setting investment horizon to 0.1 years.`);
-            investmentHorizonYears = 0.1; // Set a small positive default to avoid division by zero or negative horizon
+            investmentHorizonYears = 0.1; 
         } else {
             const diffTime = Math.abs(targetDate.getTime() - startDate.getTime());
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            investmentHorizonYears = diffDays / 365.25; // Use 365.25 for leap years average
+            investmentHorizonYears = diffDays / 365.25; 
 
             // Ensure a minimum horizon, avoid 0 or very tiny numbers close to zero
             if (investmentHorizonYears < 0.1) {
                 investmentHorizonYears = 0.1;
             }
         }
-        // Round to 1 decimal place for clarity in the prompt
         investmentHorizonYears = parseFloat(investmentHorizonYears.toFixed(1));
 
-
         const remainingAmount = goal.goalAmount - goal.currentAmount;
-        // The .toLocaleString() is fine for the prompt string as it's sent to Grok as text.
         const prompt = `Generate a diversified investment strategy for a user in the Malaysian market with the following details:
-        The response must be purely JSON, with no markdown or extra text.
+        The response must be purely JSON, with no markdown or extra text. Directly start with {...}
 
         Goal Details:
         - Goal: ${goal.goalName}
@@ -129,11 +124,8 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
             "riskReturnAnalysis": "Analyze the risk vs. return.",
             "investmentHorizonImpact": "Explain the impact of the investment horizon."
 
-          "Recommendation" : "Give and explain the recommendation based on goal and risk appetite. e.g. Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape."
-
-          For the strategy comparison, could u show me the percentage of assest for different risk appetide in json format
-          The total percentage of stocks, bonds, cash and others must be sum up to 100%
-           "strategyComparison": {
+          "Recommendation" : "Give and explain the recommendation based on goal and risk appetite. e.g. Based on your 2-year time horizon for the vacation goal in the Malaysian market, we recommend a mix of Malaysian government securities and fixed deposits for stability, with allocations to KLCI ETFs and ASEAN equity funds for growth potential. This balanced approach aligns with your moderate risk profile while providing reasonable returns in the Malaysian investment landscape.",
+          "strategyComparison": {
             "Conservative": [
                 { "Stocks": 0 },
                 { "Bonds": 0 },
@@ -164,88 +156,40 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
           }
         }
         Ensure the asset allocation percentages sum up to 100%. Adjust the percentage for each asset class and provide suitable fund names based on the risk appetite and investment horizon.
+        Show all the percentage of stocks,bonds,cash and other for each risk level and must be sum up to 100%
         Ensure numerical values are correctly formatted and strings are descriptive. If possible, please explain the strategy generated with more detail and suit to the goal selected and risk appetite level
         Focus on Malaysian context for funds and financial advice.`;
 
         console.log('Sending prompt to AI model:', prompt);
 
-        // 3. Integrate with Grok (Placeholder - Replace with actual Grok API call)
-        // This is where you would make the actual API call to Grok or your chosen AI model.
-        // For now, let's return a dummy response to test the flow.
         let aiRawResponse;
-        if (process.env.NODE_ENV === 'development') {
-            const completion = await openai.chat.completions.create({
-                messages: [{ role: 'user', content: prompt }],
-                model: 'mistralai/mistral-small-3.2-24b-instruct:free',
-                response_format: {type:"json_object"},
-            });
-            aiRawResponse = completion.choices[0].message.content; 
-        } else {
-            const calculatedMonthlyInvestment = Math.round(remainingAmount / (investmentHorizonYears * 12) * (1 + (riskAppetite === 'Aggressive' ? 0.02 : riskAppetite === 'Moderate' ? 0.01 : 0)));
-            
-            aiRawResponse = `{
-                "assetAllocation": [
-                    { "assetClass": "Equity Funds", "percentage": ${riskAppetite === 'Aggressive' ? 60 : riskAppetite === 'Moderate' ? 40 : 20} },
-                    { "assetClass": "Bonds", "percentage": ${riskAppetite === 'Aggressive' ? 20 : riskAppetite === 'Moderate' ? 30 : 50} },
-                    { "assetClass": "REITs", "percentage": ${riskAppetite === 'Aggressive' ? 10 : riskAppetite === 'Moderate' ? 15 : 10} },
-                    { "assetClass": "Fixed Deposits", "percentage": ${riskAppetite === 'Aggressive' ? 10 : riskAppetite === 'Moderate' ? 15 : 20} }
-                ],
-                "recommendedFunds": [
-                    { "fundName": "CIMB-Principal KLCI-Linked Fund", "description": "High-growth potential in Malaysian equities." },
-                    { "fundName": "Maybank Malaysian Government Bond Fund", "description": "Stable returns with low volatility." }
-                ],
-                "suggestedMonthlyInvestment": ${calculatedMonthlyInvestment},
-                "expectedAnnualReturn": ${riskAppetite === 'Aggressive' ? 0.08 : riskAppetite === 'Moderate' ? 0.06 : 0.04},
-                "investmentHorizon": "${investmentHorizonYears} years", 
-                "riskLevel": "${riskAppetite}", 
-                "strategyExplanation": {
-                    "whyThisStrategy": "This strategy balances your goal with your ${riskAppetite} risk appetite, aiming for optimal growth while managing potential volatility.",
-                    "riskReturnAnalysis": "A ${riskAppetite} allocation typically offers higher potential returns in exchange for higher volatility. Bonds provide stability, while equities drive growth.",
-                    "investmentHorizonImpact": "With a ${investmentHorizonYears}-year horizon, there's sufficient time for market fluctuations to smooth out, making growth-oriented assets more viable even for moderate risk."
-                },
-                "strategyComparison": {
-                    "Conservative": {
-                        "stocks": 25,
-                        "bonds": 45,
-                        "cash": 30,
-                        "expectedReturn": 4.0,
-                        "Volatility" : "high",
-                        "BestFor" : "Short-term goals (1-2 years)"
-                    },
-                    "Moderate": {
-                       "stocks": 50,
-                       "bonds": 35,
-                       "cash": 15,
-                       "expectedReturn": 6.0,
-                       "Volatility" : "medium",
-                       "BestFor" : "Medium-term goals (2-5 years)"
-                    },
-                    "Aggressive": {
-                       "stocks": 70,
-                       "bonds": 25,
-                       "cash": 5,
-                       "expectedReturn": 8.0,
-                       "Volatility" : "low",
-                       "BestFor" : "Long-term goals (5+ years)"
-                    }
-                }
-            }`;
-        }
-
-
         let generatedStrategy;
+
         try {
-            // Attempt to parse the AI's response as JSON
+            if (process.env.NODE_ENV === 'development') {
+                const completion = await openai.chat.completions.create({
+                    messages: [{ role: 'user', content: prompt }],
+                    model: 'mistralai/mistral-small-3.2-24b-instruct:free',
+                    response_format: { type: "json_object" },
+                });
+                aiRawResponse = completion.choices[0]?.message?.content; 
+                console.log('AI Raw Response:', aiRawResponse);
+            } else {
+                const calculatedMonthlyInvestment = Math.round(remainingAmount / (investmentHorizonYears * 12) * (1 + (riskAppetite === 'Aggressive' ? 0.02 : riskAppetite === 'Moderate' ? 0.01 : 0)));
+                aiRawResponse = generateFallbackStrategy(goal, riskAppetite, investmentHorizonYears, remainingAmount, calculatedMonthlyInvestment);
+            }
+
             generatedStrategy = JSON.parse(aiRawResponse);
-        } catch (parseError) {
-            console.error('Error parsing AI response:', parseError);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to parse AI model response. It might not be valid JSON.'
-            });
+            console.log('Parsed AI Response:', generatedStrategy);
+
+        } catch (error) {
+            console.error('Error with AI model response or parsing, falling back to static strategy:', error);
+
+            const calculatedMonthlyInvestment = Math.round(remainingAmount / (investmentHorizonYears * 12) * (1 + (riskAppetite === 'Aggressive' ? 0.02 : riskAppetite === 'Moderate' ? 0.01 : 0)));
+            generatedStrategy = JSON.parse(generateFallbackStrategy(goal, riskAppetite, investmentHorizonYears, remainingAmount, calculatedMonthlyInvestment));
+            console.log('Using Fallback Strategy:', generatedStrategy);
         }
 
-        // 4. Send Strategy to Frontend
         res.status(200).json({
             status: 'success',
             data: {
@@ -262,6 +206,120 @@ exports.generateInvestmentStrategy = async (req, res, next) => {
         });
     }
 };
+
+// Helper function to generate the fallback strategy JSON string
+function generateFallbackStrategy(goal, riskAppetite, investmentHorizonYears, remainingAmount, calculatedMonthlyInvestment) {
+    let assetAllocationPercentages;
+    let expectedAnnualReturn;
+    let strategyExplanationWhy;
+    let riskReturnAnalysis;
+    let recommendation;
+    let recommendedFunds;
+
+    switch (riskAppetite) {
+        case 'Conservative':
+            assetAllocationPercentages = { 'Equity Funds': 15, 'Bonds': 55, 'REITs': 10, 'Fixed Deposits': 20 };
+            expectedAnnualReturn = 0.04;
+            strategyExplanationWhy = `This strategy prioritizes capital preservation and stable income, suitable for your conservative risk appetite and aiming to meet your ${goal.goalName} goal.`;
+            riskReturnAnalysis = "A conservative allocation focuses on lower volatility assets like bonds and fixed deposits, providing steady but modest returns. Equity exposure is minimal to reduce risk.";
+            recommendation = `Based on your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market and a conservative risk profile, we recommend a portfolio heavily weighted towards **Malaysian Government Securities** and **Fixed Deposits** for stability and predictable income. A small allocation to **Malaysian Islamic REITs** could provide some growth and inflation hedge, while minimizing exposure to volatile equities.`;
+            recommendedFunds = [
+                { "fundName": "Amanah Saham Malaysia (ASM)", "description": "A popular unit trust in Malaysia offering stable returns with low risk, managed by PNB.", "RiskLevel": "Low", "MinimumInvestment": "RM10", "Liquidity": "High", "Fees": "No upfront fees, management fee embedded." },
+                { "fundName": "Public Far-East Property & Resorts Fund", "description": "Invests in REITs and property-related assets in the Asia Pacific region, including Malaysia, for income and potential growth.", "RiskLevel": "Medium-Low", "MinimumInvestment": "RM1000", "Liquidity": "Medium", "Fees": "Up to 5.25% sales charge, 1.5% management fee." },
+                { "fundName": "Malaysian Government Securities (MGS) via Direct Purchase", "description": "Investing directly in MGS offers competitive, fixed returns backed by the Malaysian government.", "RiskLevel": "Very Low", "MinimumInvestment": "RM1000", "Liquidity": "Medium", "Fees": "Minimal transaction costs." }
+            ];
+            break;
+        case 'Moderate':
+            assetAllocationPercentages = { 'Equity Funds': 40, 'Bonds': 30, 'REITs': 15, 'Fixed Deposits': 15 };
+            expectedAnnualReturn = 0.06;
+            strategyExplanationWhy = `This balanced strategy seeks to achieve growth for your ${goal.goalName} goal while maintaining a moderate level of risk, aligning with your risk appetite.`;
+            riskReturnAnalysis = "A moderate allocation balances growth potential from equities with stability from bonds. This offers a reasonable return outlook with manageable volatility, suitable for medium-term goals.";
+            recommendation = `Given your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market and a moderate risk profile, we suggest a balanced mix. This includes allocations to KLCI ETFs and Malaysian equity funds for growth potential, supplemented by Malaysian corporate bonds and Islamic REITs for income and diversification. This approach aims for steady appreciation while cushioning against significant market downturns.`;
+            recommendedFunds = [
+                { "fundName": "FSMOne - Kenanga Growth Fund", "description": "Invests primarily in Malaysian equities with growth potential.", "RiskLevel": "Medium", "MinimumInvestment": "RM100", "Liquidity": "High", "Fees": "Up to 5% sales charge, 1.5% management fee." },
+                { "fundName": "Principal Bond Fund", "description": "Invests in a diversified portfolio of Malaysian fixed income securities.", "RiskLevel": "Low-Medium", "MinimumInvestment": "RM1000", "Liquidity": "High", "Fees": "Up to 3% sales charge, 0.8% management fee." },
+                { "fundName": "Maybank Global Property Securities Fund", "description": "Provides exposure to global REITs, offering diversification beyond Malaysia while maintaining an income focus.", "RiskLevel": "Medium", "MinimumInvestment": "RM1000", "Liquidity": "Medium", "Fees": "Up to 5.5% sales charge, 1.8% management fee." }
+            ];
+            break;
+        case 'Aggressive':
+            assetAllocationPercentages = { 'Equity Funds': 65, 'Bonds': 15, 'REITs': 10, 'Fixed Deposits': 10 };
+            expectedAnnualReturn = 0.08;
+            strategyExplanationWhy = `This aggressive strategy is designed to maximize potential returns for your ${goal.goalName} goal, suitable for your high-risk appetite and longer investment horizon.`;
+            riskReturnAnalysis = "An aggressive allocation emphasizes equities for higher growth potential, accepting higher volatility. This approach is best for investors with a long-term horizon who can withstand significant market fluctuations.";
+            recommendation = `With your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market and an aggressive risk appetite, we advise a growth-oriented portfolio. This involves a significant allocation to Malaysian and ASEAN equity funds, including small-cap and technology-focused funds for higher returns. A smaller portion can be allocated to high-yield corporate bonds for some income, with minimal cash holdings to ensure maximum capital deployment.`;
+            recommendedFunds = [
+                { "fundName": "RHB Emerging ASEAN Growth Fund", "description": "Focuses on high-growth companies in emerging ASEAN markets, including Malaysia.", "RiskLevel": "High", "MinimumInvestment": "RM1000", "Liquidity": "Medium", "Fees": "Up to 5.5% sales charge, 1.8% management fee." },
+                { "fundName": "Kenanga Syariah Growth Fund", "description": "Invests in Shariah-compliant equities with strong growth prospects in Malaysia.", "RiskLevel": "Medium-High", "MinimumInvestment": "RM100", "Liquidity": "High", "Fees": "Up to 5.25% sales charge, 1.5% management fee." },
+                { "fundName": "AmIncome Bond Fund", "description": "A bond fund that seeks to generate income and capital appreciation by investing in a diversified portfolio of fixed income instruments, including higher-yield corporate bonds.", "RiskLevel": "Medium", "MinimumInvestment": "RM1000", "Liquidity": "High", "Fees": "Up to 3.0% sales charge, 0.5% management fee." }
+            ];
+            break;
+        default:
+            // Default to Moderate if riskAppetite is unknown
+            assetAllocationPercentages = { 'Equity Funds': 40, 'Bonds': 30, 'REITs': 15, 'Fixed Deposits': 15 };
+            expectedAnnualReturn = 0.06;
+            strategyExplanationWhy = `This balanced strategy seeks to achieve growth for your ${goal.goalName} goal while maintaining a moderate level of risk, as your risk appetite was not specified or recognized.`;
+            riskReturnAnalysis = "A moderate allocation balances growth potential from equities with stability from bonds. This offers a reasonable return outlook with manageable volatility, suitable for medium-term goals.";
+            recommendation = `Based on your ${investmentHorizonYears}-year time horizon for the ${goal.goalName} goal in the Malaysian market, and without a specified risk appetite, a moderate approach is recommended. This includes allocations to KLCI ETFs and Malaysian equity funds for growth potential, supplemented by Malaysian corporate bonds and Islamic REITs for income and diversification. This approach aims for steady appreciation while cushioning against significant market downturns.`;
+            recommendedFunds = [
+                { "fundName": "FSMOne - Kenanga Growth Fund", "description": "Invests primarily in Malaysian equities with growth potential.", "RiskLevel": "Medium", "MinimumInvestment": "RM100", "Liquidity": "High", "Fees": "Up to 5% sales charge, 1.5% management fee." },
+                { "fundName": "Principal Bond Fund", "description": "Invests in a diversified portfolio of Malaysian fixed income securities.", "RiskLevel": "Low-Medium", "MinimumInvestment": "RM1000", "Liquidity": "High", "Fees": "Up to 3% sales charge, 0.8% management fee." },
+                { "fundName": "Maybank Global Property Securities Fund", "description": "Provides exposure to global REITs, offering diversification beyond Malaysia while maintaining an income focus.", "RiskLevel": "Medium", "MinimumInvestment": "RM1000", "Liquidity": "Medium", "Fees": "Up to 5.5% sales charge, 1.8% management fee." }
+            ];
+            break;
+    }
+
+    const strategyComparisonData = {
+        "Conservative": [
+            {"Stocks": 15},
+            {"Bonds": 55},
+            {"Cash": 20},
+            {"Other": 10},
+            {"Expectedreturns": 0.04},
+            {"Volatility": "Low"},
+            {"BestFor": "Short-term goals (1-3 years), capital preservation"}
+        ],
+        "Moderate": [
+            {"Stocks": 40},
+            {"Bonds": 30},
+            {"Cash": 15},
+            {"Other": 15},
+            {"Expectedreturns": 0.06},
+            {"Volatility": "Medium"},
+            {"BestFor": "Medium-term goals (3-7 years), balanced growth and risk"}
+        ],
+        "Aggressive": [
+            {"Stocks": 65},
+            {"Bonds": 15},
+            {"Cash": 10},
+            {"Other": 10},
+            {"Expectedreturns": 0.08},
+            {"Volatility": "High"},
+            {"BestFor": "Long-term goals (7+ years), maximizing growth"}
+        ]
+    };
+
+
+    return JSON.stringify({
+        "assetAllocation": [
+            { "assetClass": "Equity Funds", "percentage": assetAllocationPercentages['Equity Funds'] },
+            { "assetClass": "Bonds", "percentage": assetAllocationPercentages['Bonds'] },
+            { "assetClass": "REITs", "percentage": assetAllocationPercentages['REITs'] },
+            { "assetClass": "Fixed Deposits", "percentage": assetAllocationPercentages['Fixed Deposits'] }
+        ],
+        "recommendedFunds": recommendedFunds,
+        "suggestedMonthlyInvestment": parseFloat(calculatedMonthlyInvestment.toFixed(2)),
+        "expectedAnnualReturn": expectedAnnualReturn,
+        "investmentHorizon": `${investmentHorizonYears} years`,
+        "riskLevel": riskAppetite,
+        "strategyExplanation": {
+            "whyThisStrategy": strategyExplanationWhy,
+            "riskReturnAnalysis": riskReturnAnalysis,
+            "investmentHorizonImpact": `With a ${investmentHorizonYears}-year horizon, there's sufficient time for market fluctuations to smooth out, making growth-oriented assets more viable even for moderate risk.`
+        },
+        "Recommendation": recommendation,
+        "strategyComparison": strategyComparisonData
+    });
+}
 
 
 exports.downloadStrategyPdf = async (req, res) => {
